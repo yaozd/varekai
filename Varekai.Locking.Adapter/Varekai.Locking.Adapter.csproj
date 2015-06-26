@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{61D0BD6A-B9BC-4433-B486-84B61478BC25}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Varekai.Locking.Adapter</RootNamespace>
+    <AssemblyName>Varekai.Locking.Adapter</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Autofac">
+      <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="IServiceExecution.cs" />
+    <Compile Include="ILockingServiceExecution.cs" />
+    <Compile Include="LockingServiceExecutor.cs" />
+    <Compile Include="LockingExecutorBootstrapp.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Varekai.Locker\Varekai.Locker.csproj">
+      <Project>{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}</Project>
+      <Name>Varekai.Locker</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Varekai.Utils\Varekai.Utils.csproj">
+      <Project>{B0545B8D-EA20-46B2-8C99-1FEB3F2D2095}</Project>
+      <Name>Varekai.Utils</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
