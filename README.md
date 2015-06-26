@@ -1,3 +1,7 @@
 # Varekai
 Varekai is an experiment, it's a test implementation of the RedLock distributed locking algorithm (see this for more http://redis.io/topics/distlock).
-It also provides a Topshelf sample service blocking on the acquisition of the distributed lock.
+
+It is composed of the following Xamarin Studio C# projects
+- the locking library, implementing the locking strategy
+- a service adapter that contains the engine to block the services on the lock's acquisition
+- a sample Topshelf service using the service adapter to acquire the lock
