@@ -10,7 +10,7 @@ namespace Varekai.Utils.Logging.Implementations
 
         readonly ILog _logger;
 
-        public Log4NetLogger(Type callingAppType)
+        public Log4NetLogger(string appName)
         {
             if (!_configured)
             {
@@ -18,7 +18,7 @@ namespace Varekai.Utils.Logging.Implementations
                 Log4NetLogger._configured = true;
             }
 
-            _logger = LogManager.GetLogger(callingAppType.FullName);
+            _logger = LogManager.GetLogger(appName);
         }
 
 

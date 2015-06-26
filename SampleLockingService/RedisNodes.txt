@@ -1,0 +1,29 @@
+﻿{
+	[
+		{
+			address: localhost,
+			port: 7001
+
+		},
+		{
+			address: localhost,
+			port: 7002
+
+		},
+		{
+			address: localhost,
+			port: 7003
+
+		},
+		{
+			address: localhost,
+			port: 7004
+
+		},
+		{
+			address: localhost,
+			port: 7005
+
+		}
+	]
+}

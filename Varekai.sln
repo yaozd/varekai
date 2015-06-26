@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Varekai.Locking.Adapter", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Varekai.Utils.Tests", "Varekai.Utils.Tests\Varekai.Utils.Tests.csproj", "{0249D7FB-9D88-4BA3-9331-C520266412FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleLockingService.Tests", "SampleLockingService.Tests\SampleLockingService.Tests.csproj", "{103BFEED-8F53-4DFF-9D00-20494A469083}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{0249D7FB-9D88-4BA3-9331-C520266412FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0249D7FB-9D88-4BA3-9331-C520266412FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0249D7FB-9D88-4BA3-9331-C520266412FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{103BFEED-8F53-4DFF-9D00-20494A469083}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{103BFEED-8F53-4DFF-9D00-20494A469083}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{103BFEED-8F53-4DFF-9D00-20494A469083}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{103BFEED-8F53-4DFF-9D00-20494A469083}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3DE65FA1-E28F-43A5-A4A1-7230F1AF14FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3DE65FA1-E28F-43A5-A4A1-7230F1AF14FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DE65FA1-E28F-43A5-A4A1-7230F1AF14FE}.Release|Any CPU.ActiveCfg = Release|Any CPU

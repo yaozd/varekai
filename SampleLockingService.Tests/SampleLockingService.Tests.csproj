@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}</ProjectGuid>
+    <ProjectGuid>{103BFEED-8F53-4DFF-9D00-20494A469083}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Varekai.Locker</RootNamespace>
-    <AssemblyName>Varekai.Locker</AssemblyName>
+    <RootNamespace>SampleLockingService.Tests</RootNamespace>
+    <AssemblyName>SampleLockingService.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -29,21 +29,29 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="StackExchange.Redis">
-      <HintPath>..\packages\StackExchange.Redis.1.0.450\lib\net45\StackExchange.Redis.dll</HintPath>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac">
+      <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="LockId.cs" />
-    <Compile Include="Locker.cs" />
-    <Compile Include="LockingNode.cs" />
+    <Compile Include="AutofacIntegrationTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SampleLockingService\SampleLockingService.csproj">
+      <Project>{FA80446E-03BE-4DDC-BCA1-9522C24FC4C0}</Project>
+      <Name>SampleLockingService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Varekai.Locking.Adapter\Varekai.Locking.Adapter.csproj">
+      <Project>{61D0BD6A-B9BC-4433-B486-84B61478BC25}</Project>
+      <Name>Varekai.Locking.Adapter</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Varekai.Utils\Varekai.Utils.csproj">
       <Project>{B0545B8D-EA20-46B2-8C99-1FEB3F2D2095}</Project>
       <Name>Varekai.Utils</Name>

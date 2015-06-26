@@ -48,6 +48,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="RedisNodes.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Varekai.Utils\Varekai.Utils.csproj">

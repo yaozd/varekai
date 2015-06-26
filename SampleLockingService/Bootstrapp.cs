@@ -20,10 +20,9 @@ namespace SampleLockingService
                 .AsSelf();
 
             builder
-                .RegisterType<Log4NetLogger>()
+                .Register(ctx => new Log4NetLogger("SampleLockingService"))
                 .As<ILogger>();
-                
-            
+
             builder
                 .RegisterType<SampleServiceImplementation>()
                 .As<IServiceExecution>();

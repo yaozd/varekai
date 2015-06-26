@@ -12,7 +12,10 @@ namespace Varekai.Locking.Adapter
 
         readonly IServiceExecution _serviceExecution;
         
-        public LockingServiceExecutor(IServiceExecution serviceExecution, Func<DateTime> timeProvider, ILogger logger)
+        public LockingServiceExecutor(
+            IServiceExecution serviceExecution,
+            Func<DateTime> timeProvider,
+            ILogger logger)
         {
             _serviceExecution = serviceExecution;
             _timeProvider = timeProvider;
