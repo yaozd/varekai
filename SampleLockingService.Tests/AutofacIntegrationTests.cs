@@ -33,11 +33,19 @@ namespace SampleLockingService.Tests
             Assert.IsNotNull(container.Resolve<ILogger>());
         }
 
+        [Test]
+        public void TheServiceContainerRegistersASerilogConfiguration()
+        {
+            var container = SetupContainer();
+
+            Assert.IsNotNull(container.Resolve<Serilog.LoggerConfiguration>());
+        }
+
         static IContainer SetupContainer()
         {
             return Bootstrapp
                 .WithContainerBuilder()
-                .RegisterService()
+                .RegisterAllServiceDependencies()
                 .CreateContainer();
         }
     }

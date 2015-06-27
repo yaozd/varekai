@@ -1,6 +1,9 @@
-﻿using Varekai.Locking.Adapter;
+﻿using System;
 using Topshelf;
 using Topshelf.Autofac;
+using Varekai.Locking.Adapter;
+using Serilog;
+using Autofac;
 
 namespace SampleLockingService
 {
@@ -10,12 +13,14 @@ namespace SampleLockingService
         {
             var container = Bootstrapp
                 .WithContainerBuilder()
-                .RegisterService()
+                .RegisterAllServiceDependencies()
                 .RegisterLockingExecution()
                 .CreateContainer();
             
             HostFactory.Run(ctx =>
                 {
+                    ctx.UseSerilog(container.Resolve<LoggerConfiguration>());
+
                     ctx.UseAutofacContainer(container);
 
                     ctx.Service<ILockingServiceExecution>(s =>
@@ -34,6 +39,11 @@ namespace SampleLockingService
 
                     ctx.EnableServiceRecovery(rc => rc.RestartService(0));
                 });
+        }
+
+        static void UnhandledExceptionTrapper(object sender, UnhandledExceptionEventArgs e)
+        {
+            
         }
     }
 }

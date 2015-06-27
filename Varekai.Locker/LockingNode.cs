@@ -8,8 +8,7 @@
         public readonly long ConnectTimeoutMillis;
         public readonly long SyncOperationsTimeoutMillis;
 
-        LockingNode(string host, long port)
-            : this()
+        LockingNode(string host, long port) : this()
         {
             Host = host;
             Port = port;
