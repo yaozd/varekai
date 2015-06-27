@@ -35,7 +35,7 @@ namespace SampleLockingService
         {
             builder
                 .Register<SerilogRollingFileConfiguration>(
-                    ctx => new SerilogRollingFileConfiguration("/Logs/{Date}.txt", filesToKeep:50))
+                    ctx => new SerilogRollingFileConfiguration("../../../../Logs/Varekai-Sample-{Date}.txt", filesToKeep:50))
                 .AsSelf();
 
             builder

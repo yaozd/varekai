@@ -40,10 +40,5 @@ namespace SampleLockingService
                     ctx.EnableServiceRecovery(rc => rc.RestartService(0));
                 });
         }
-
-        static void UnhandledExceptionTrapper(object sender, UnhandledExceptionEventArgs e)
-        {
-            
-        }
     }
 }
