@@ -5,6 +5,7 @@ using StackExchange.Redis;
 using System.Threading;
 using Varekai.Utils.Logging;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 namespace Varekai.Locker
 {
@@ -13,7 +14,7 @@ namespace Varekai.Locker
         readonly CancellationTokenSource _lockAcquisitionCancellation;
 
         readonly ILogger _logger;
-        readonly IEnumerable<LockingNode> _nodes;
+        readonly ReadOnlyCollection<LockingNode> _nodes;
         readonly Func<DateTime> _timeProvider;
 
         List<ConnectionMultiplexer> _redisConnections;
@@ -21,21 +22,23 @@ namespace Varekai.Locker
         LockingCoordinator(IEnumerable<LockingNode> nodes, Func<DateTime> timeProvider, ILogger logger)
         {
             _logger = logger;
-            _nodes = nodes;
+            _nodes = new ReadOnlyCollection<LockingNode>(nodes.ToArray());
             _timeProvider = timeProvider;
             _lockAcquisitionCancellation = new CancellationTokenSource();
         }
 
         public static LockingCoordinator CreateNewForNodes(IEnumerable<LockingNode> nodes, Func<DateTime> timeProvider, ILogger logger)
         {
-            var newLocker = new LockingCoordinator(nodes, timeProvider, logger);
+            return new LockingCoordinator(nodes, timeProvider, logger);
+        }
 
-            newLocker._redisConnections = nodes
+        public void ConnectNodes()
+        {
+            _redisConnections = 
+                _nodes
                 .Select(
                     nd => ConnectionMultiplexer.Connect(nd.GetConnectionString()))
                 .ToList();
-
-            return newLocker;
         }
 
         public bool TryAcquireLock(LockId lockId)
@@ -93,6 +96,9 @@ namespace Varekai.Locker
 
         bool TryAcquireLockOnAllNodes(LockId lockId)
         {
+            if (_redisConnections.Count == 0)
+                return false;
+            
             var sessions = new List<Task<bool>>();
 
             foreach (var connection in _redisConnections)
@@ -197,6 +203,9 @@ namespace Varekai.Locker
         {
             if (!_lockAcquisitionCancellation.IsCancellationRequested)
                 _lockAcquisitionCancellation.Cancel();
+
+            if (_redisConnections == null)
+                return;
             
             foreach (var connection in _redisConnections.Where(con => con.IsConnected))
             {

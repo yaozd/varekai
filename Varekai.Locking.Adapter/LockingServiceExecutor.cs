@@ -1,6 +1,7 @@
 ﻿using System;
 using Varekai.Locker;
 using Varekai.Utils.Logging;
+using System.Collections.Generic;
 
 namespace Varekai.Locking.Adapter
 {
@@ -11,29 +12,64 @@ namespace Varekai.Locking.Adapter
         readonly Func<DateTime> _timeProvider;
 
         readonly IServiceExecution _serviceExecution;
+
+        readonly LockId _lockId;
         
         public LockingServiceExecutor(
             IServiceExecution serviceExecution,
             Func<DateTime> timeProvider,
-            ILogger logger)
+            ILogger logger,
+            IEnumerable<LockingNode> lockingNodes,
+            LockId lockId)
         {
             _serviceExecution = serviceExecution;
             _timeProvider = timeProvider;
             _logger = logger;
+            _lockId = lockId;
 
-            //_locker = LockingCoordinator.CreateNewForNodes();
+            _locker = LockingCoordinator.CreateNewForNodes(
+                lockingNodes,
+                _timeProvider,
+                _logger);
         }
 
         #region ILockingServiceExecution implementation
 
         public void LockedStart()
         {
-            _serviceExecution.Start();
+            try
+            {
+                _logger.ToDebugLog("Connecting to the locking nodes");
+
+                _locker.ConnectNodes();
+
+                if(_locker.TryAcquireLock(_lockId))
+                {
+                    _logger.ToDebugLog("DISTRIBUTED LCOK ACQUIRED");
+                    _logger.ToDebugLog("Entering lock retaining mode");
+
+                    _logger.ToDebugLog("Starting the service");
+
+                    _serviceExecution.Start();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.ToErrorLog(ex);
+            }
+
         }
 
         public void ReleasedStop()
         {
-            _serviceExecution.Stop();
+            try
+            {
+                _serviceExecution.Stop();
+            }
+            catch (Exception ex)
+            {
+                _logger.ToErrorLog(ex);
+            }
         }
 
         #endregion
@@ -42,7 +78,16 @@ namespace Varekai.Locking.Adapter
 
         public void Dispose()
         {
-            _serviceExecution.Dispose();
+            try
+            {
+                _locker.Dispose();
+
+                _serviceExecution.Dispose();
+            }
+            catch (Exception ex)
+            {
+                _logger.ToErrorLog(ex);
+            }
         }
 
         #endregion

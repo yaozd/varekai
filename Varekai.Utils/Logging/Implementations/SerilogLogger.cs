@@ -7,9 +7,11 @@ namespace Varekai.Utils.Logging.Implementations
     {
         readonly Serilog.ILogger _logger;
 
-        public static LoggerConfiguration CreateConfiguration(SerilogRollingFileConfiguration fileConfiguration)
+        public static LoggerConfiguration CreateDefaultConfiguration(SerilogRollingFileConfiguration fileConfiguration)
         {
             return new LoggerConfiguration()
+                .MinimumLevel
+                    .Debug()
                 .WriteTo
                     .ColoredConsole()
                 .WriteTo
@@ -22,7 +24,7 @@ namespace Varekai.Utils.Logging.Implementations
         public SerilogLogger(SerilogRollingFileConfiguration fileConfiguration)
         {
             _logger = 
-                CreateConfiguration(fileConfiguration)
+                CreateDefaultConfiguration(fileConfiguration)
                 .CreateLogger();
         }
 

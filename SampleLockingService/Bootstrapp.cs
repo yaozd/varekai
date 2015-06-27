@@ -11,6 +11,8 @@ namespace SampleLockingService
 {
     public static class Bootstrapp
     {
+        const string ApplicationPrefix = "Varekai_Sample_Service";
+        
         public static ContainerBuilder WithContainerBuilder()
         {
             return new ContainerBuilder();
@@ -37,12 +39,14 @@ namespace SampleLockingService
         {
             builder
                 .Register<SerilogRollingFileConfiguration>(
-                    ctx => new SerilogRollingFileConfiguration("../../../../Logs/Varekai-Sample-{Date}.txt", filesToKeep:50))
+                    ctx => new SerilogRollingFileConfiguration("" +
+                        "../../../../Logs/" + ApplicationPrefix + "-{Date}.txt",
+                        filesToKeep:50))
                 .AsSelf();
 
             builder
                 .Register<Serilog.LoggerConfiguration>(
-                    ctx => SerilogLogger.CreateConfiguration(ctx.Resolve<SerilogRollingFileConfiguration>()))
+                    ctx => SerilogLogger.CreateDefaultConfiguration(ctx.Resolve<SerilogRollingFileConfiguration>()))
                 .AsSelf();
 
             return builder;
@@ -66,6 +70,13 @@ namespace SampleLockingService
                         .GenerateLockingNodes())
                 .As<IEnumerable<LockingNode>>()
                 .SingleInstance();
+
+            builder
+                .Register(
+                    ctx => LockId.CreateNewFor(
+                        string.Format("{0}-{1}",
+                        ApplicationPrefix, Guid.NewGuid())))
+                .AsSelf();
 
             return builder;
         }

@@ -18,9 +18,10 @@ namespace SampleLockingService
             
             HostFactory.Run(ctx =>
                 {
+                    ctx.UseLinuxIfAvailable();
                     ctx.UseSerilog(container.Resolve<LoggerConfiguration>());
-
                     ctx.UseAutofacContainer(container);
+
 
                     ctx.Service<ILockingServiceExecution>(s =>
                         {
