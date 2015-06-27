@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutofacIntegrationTests.cs" />
+    <Compile Include="RedisNodesParserTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -61,6 +62,10 @@
     <ProjectReference Include="..\Varekai.Utils\Varekai.Utils.csproj">
       <Project>{B0545B8D-EA20-46B2-8C99-1FEB3F2D2095}</Project>
       <Name>Varekai.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Varekai.Locker\Varekai.Locker.csproj">
+      <Project>{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}</Project>
+      <Name>Varekai.Locker</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

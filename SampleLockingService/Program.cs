@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Autofac;
+using Serilog;
 using Topshelf;
 using Topshelf.Autofac;
 using Varekai.Locking.Adapter;
-using Serilog;
-using Autofac;
 
 namespace SampleLockingService
 {

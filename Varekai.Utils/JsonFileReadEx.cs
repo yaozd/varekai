@@ -1,18 +1,14 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using Newtonsoft.Json;
+﻿using System.IO;
 
 namespace Varekai.Utils
 {
     public static class JsonFileReadEx
     {
-        public static IEnumerable<T> LoadListFromFile<T>(string path)
+        public static string ReadJsonFromFile(string path)
         {
             using (var stream = new StreamReader(path))
             {
-                string json = stream.ReadToEnd();
-
-                return JsonConvert.DeserializeObject<List<T>>(json);
+                return stream.ReadToEnd();
             }
         }
     }

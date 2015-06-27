@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Autofac;
+using Varekai.Locker;
 using Varekai.Locking.Adapter;
+using Varekai.Utils;
 using Varekai.Utils.Logging;
 using Varekai.Utils.Logging.Implementations;
 
@@ -57,8 +59,12 @@ namespace SampleLockingService
                 .As<ILogger>();
 
             builder
-                .Register(ctx => new List<string>())
-                .As<IEnumerable<string>>()
+                .Register(
+                    ctx => 
+                        JsonFileReadEx
+                        .ReadJsonFromFile("../../RedisNodes.txt")
+                        .GenerateLockingNodes())
+                .As<IEnumerable<LockingNode>>()
                 .SingleInstance();
 
             return builder;
