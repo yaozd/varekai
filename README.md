@@ -5,4 +5,4 @@ It is composed of the following Xamarin Studio C# projects
 - the locking library, implementing the locking strategy
 - a service adapter that contains the engine to block the services on the lock's acquisition
 - a sample Topshelf service using the service adapter to start the execution after the lock's acquisition
-- some utility andtest projects
+- some utility and test projects
