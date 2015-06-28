@@ -22,12 +22,11 @@ namespace SampleLockingService
                     ctx.UseSerilog(container.Resolve<LoggerConfiguration>());
                     ctx.UseAutofacContainer(container);
 
-
                     ctx.Service<ILockingServiceExecution>(s =>
                         {
                             s.ConstructUsingAutofacContainer();
 
-                            s.WhenStarted(lckService => lckService.LockedStart());
+                            s.WhenStarted(async lckService => await lckService.LockedStart());
                             s.WhenStopped(lckService => lckService.ReleasedStop());
                         });
                     

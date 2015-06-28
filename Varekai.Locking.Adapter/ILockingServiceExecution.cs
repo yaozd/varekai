@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Varekai.Locking.Adapter
 {
     public interface ILockingServiceExecution : IDisposable
     {
-        void LockedStart();
+        Task LockedStart();
         void ReleasedStop();
     }
 }

@@ -11,7 +11,7 @@ namespace Varekai.Utils.Logging.Implementations
         {
             return new LoggerConfiguration()
                 .MinimumLevel
-                    .Debug()
+                    .Verbose()
                 .WriteTo
                     .ColoredConsole()
                 .WriteTo
