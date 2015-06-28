@@ -38,7 +38,7 @@ namespace Varekai.Locker
             return string.Format(@"SET {0} {1} NX PX {2}", Resource, SessionId, ExpirationTimeMillis);
         }
 
-        public string GetRefreshScript()
+        public string GetConfirmScript()
         {
             return 
                 @"if redis.call(""GET"",KEYS[1]) == ARGV[1] then
