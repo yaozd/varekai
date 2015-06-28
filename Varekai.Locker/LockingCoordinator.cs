@@ -36,9 +36,9 @@ namespace Varekai.Locker
         {
             _redisConnections = 
                 _nodes
-                .Select(
-                    nd => ConnectionMultiplexer.Connect(nd.GetConnectionString()))
-                .ToList();
+                    .Select(
+                        nd => ConnectionMultiplexer.Connect(nd.GetConnectionString()))
+                    .ToList();
         }
 
         public bool TryAcquireLock(LockId lockId)
@@ -85,7 +85,7 @@ namespace Varekai.Locker
             ReleaseTheLockOnAllNodes(_redisConnections, lockId, _lockAcquisitionCancellation);
         }
 
-        public long GetRefreshTimeMillis(LockId lockId)
+        public long GetConfirmationIntervalMillis(LockId lockId)
         {
             return lockId.ExpirationTimeMillis / 3;
         }
@@ -95,7 +95,7 @@ namespace Varekai.Locker
             return 
                 GetRemainingValidityTime(acquisitionStartTime, acquisitionEndTime, lockId) 
                 <= 
-                (GetRefreshTimeMillis(lockId) + GetValidityTimeSafetyMargin(lockId));
+                (GetConfirmationIntervalMillis(lockId) + GetValidityTimeSafetyMargin(lockId));
         }
 
         bool TryAcquireLockOnAllNodes(LockId lockId)
