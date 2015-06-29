@@ -17,7 +17,7 @@ namespace Varekai.Locker
         readonly ReadOnlyCollection<LockingNode> _nodes;
         readonly Func<DateTime> _timeProvider;
 
-        List<IRedisClient> _redisClients;
+        List<BasicRedisClientManager> _redisClientManagers;
 
         LockingCoordinator(IEnumerable<LockingNode> nodes, Func<DateTime> timeProvider, ILogger logger)
         {
@@ -34,10 +34,10 @@ namespace Varekai.Locker
 
         public void ConnectNodes()
         {
-            _redisClients = 
+            _redisClientManagers = 
                 _nodes
                     .Select(
-                        nd => new BasicRedisClientManager(nd.GetServiceStackConnectionString()).GetClient())
+                        nd => new BasicRedisClientManager(nd.GetServiceStackConnectionString()))
                     .ToList();
         }
 
@@ -51,7 +51,7 @@ namespace Varekai.Locker
 
             if (!IsLockStillUsable(startTime, finishTime, lockId))
             {
-                ReleaseTheLockOnAllNodes(_redisClients, lockId, _lockAcquisitionCancellation);
+                ReleaseTheLockOnAllNodes(_redisClientManagers, lockId, _lockAcquisitionCancellation);
                 return false;
             }
 
@@ -62,11 +62,11 @@ namespace Varekai.Locker
         {
             var sessions = new List<Task<string>>();
 
-            foreach (var connection in _redisClients)
+            foreach (var manager in _redisClientManagers)
             {   
                 sessions.Add(
                     Task.Run(
-                        () => { return ReleaseTheLockOnNode(connection, lockId); }
+                        () => { return ReleaseTheLockOnNode(manager, lockId); }
                         , _lockAcquisitionCancellation.Token)
                 );
             }
@@ -78,11 +78,11 @@ namespace Varekai.Locker
 
         public void ReleaseTheLock(LockId lockId)
         {
-            if (_redisClients == null
-                || _redisClients.Count == 0)
+            if (_redisClientManagers == null
+                || _redisClientManagers.Count == 0)
                 return;
             
-            ReleaseTheLockOnAllNodes(_redisClients, lockId, _lockAcquisitionCancellation);
+            ReleaseTheLockOnAllNodes(_redisClientManagers, lockId, _lockAcquisitionCancellation);
         }
 
         public long GetConfirmationIntervalMillis(LockId lockId)
@@ -100,12 +100,12 @@ namespace Varekai.Locker
 
         bool TryAcquireLockOnAllNodes(LockId lockId)
         {
-            if (_redisClients.Count == 0)
+            if (_redisClientManagers.Count == 0)
                 return false;
             
             var sessions = new List<Task<bool>>();
 
-            foreach (var client in _redisClients)
+            foreach (var client in _redisClientManagers)
             {   
                 sessions.Add(
                     Task.Run(
@@ -131,7 +131,7 @@ namespace Varekai.Locker
             return acquired >= quorum;
         }
 
-        static bool ReleaseTheLockOnAllNodes(IEnumerable<IRedisClient> connections, LockId lockId, CancellationTokenSource cancellation)
+        static bool ReleaseTheLockOnAllNodes(IEnumerable<BasicRedisClientManager> connections, LockId lockId, CancellationTokenSource cancellation)
         {
             var sessions = new List<Task<string>>();
 
@@ -149,39 +149,48 @@ namespace Varekai.Locker
             return release.IsCompleted;
         }
 
-        static bool TryAcquireLockOnNode(IRedisClient client, LockId lockId)
+        static bool TryAcquireLockOnNode(IRedisClientsManager clientManager, LockId lockId)
         {
-            return client
-                .Custom(new object[] {
-                    Commands.Set,
-                    lockId.Resource,
-                    lockId.SessionId,
-                    "NX",
-                    "PX",
-                    lockId.ExpirationTimeMillis
-                })
-                .GetResult()
-                .Equals("OK", StringComparison.InvariantCultureIgnoreCase);
+            using (var client = clientManager.GetClient())
+            {
+                return client
+                    .Custom(new object[] {
+                        Commands.Set,
+                        lockId.Resource,
+                        lockId.SessionId,
+                        "NX",
+                        "PX",
+                        lockId.ExpirationTimeMillis
+                    })
+                    .GetResult()
+                    .Equals("OK", StringComparison.InvariantCultureIgnoreCase);
+            }
         }
 
-        static string ConfirmTheLockOnNode(IRedisClient client, LockId lockId)
+        static string ConfirmTheLockOnNode(IRedisClientsManager clientManager, LockId lockId)
         {
-            return client
-                .ExecLuaAsString(
-                    lockId.GetConfirmScript(),
-                    new [] { lockId.Resource },
-                    new [] { lockId.SessionId.ToString(), lockId.ExpirationTimeMillis.ToString() }
-                );
+            using (var client = clientManager.GetClient())
+            {
+                return client
+                    .ExecLuaAsString(
+                        lockId.GetConfirmScript(),
+                        new [] { lockId.Resource },
+                        new [] { lockId.SessionId.ToString(), lockId.ExpirationTimeMillis.ToString() }
+                    );
+            }
         }
 
-        static string ReleaseTheLockOnNode(IRedisClient client, LockId lockId)
+        static string ReleaseTheLockOnNode(IRedisClientsManager clientManager, LockId lockId)
         {
-            return client
-                .ExecLuaAsString(
-                    lockId.GetReleaseScript(),
-                    new [] { lockId.Resource },
-                    new [] { lockId.SessionId.ToString() }
-                );
+            using (var client = clientManager.GetClient())
+            {
+                return client
+                    .ExecLuaAsString(
+                        lockId.GetReleaseScript(),
+                        new [] { lockId.Resource },
+                        new [] { lockId.SessionId.ToString() }
+                    );
+            }
         }
 
         static double GetRemainingValidityTime(DateTime acquisitionStartTime, DateTime acquisitionEndTime, LockId lockId)
@@ -209,16 +218,11 @@ namespace Varekai.Locker
             if (!_lockAcquisitionCancellation.IsCancellationRequested)
                 _lockAcquisitionCancellation.Cancel();
 
-            if (_redisClients == null)
+            if (_redisClientManagers == null)
                 return;
             
-            foreach (var connection in _redisClients)
-            {
-                connection.Dispose();
-            }
-
-            if(_redisClients.Any())
-                _redisClients.Clear();
+            if(_redisClientManagers.Any())
+                _redisClientManagers.Clear();
         }
     }
 }
