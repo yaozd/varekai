@@ -58,7 +58,7 @@ namespace Varekai.Locking.Adapter
 
                     _locker.ConnectNodes();
 
-                    holdingLock = _locker.TryAcquireLock(_lockId);
+                    holdingLock = await _locker.TryAcquireLock(_lockId);
 
                     if(holdingLock)
                     {

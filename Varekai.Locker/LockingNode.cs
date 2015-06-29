@@ -38,7 +38,12 @@
 
         public string GetServiceStackConnectionString()
         {
-            return string.Format("redis://{0}:{1}?ConnectTimeout={2}&SyncTimeout={3}", Host, Port, ConnectTimeoutMillis, SyncOperationsTimeoutMillis);
+            return string.Format(
+                "redis://{0}:{1}?ConnectTimeout={2}&SendTimeout={3}&ReceiveTimeout={3}",
+                Host,
+                Port,
+                ConnectTimeoutMillis,
+                SyncOperationsTimeoutMillis);
         }
     }
 }

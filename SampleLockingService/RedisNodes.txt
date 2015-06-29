@@ -23,5 +23,15 @@
 		address: 'localhost',
 		port: 7005
 
+	},
+	{
+		address: 'localhost',
+		port: 7006
+
+	},
+	{
+		address: 'localhost',
+		port: 7007
+
 	}
 ]

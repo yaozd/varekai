@@ -41,11 +41,11 @@ namespace Varekai.Locker
                     .ToList();
         }
 
-        public bool TryAcquireLock(LockId lockId)
+        public async Task<bool> TryAcquireLock(LockId lockId)
         {
             var startTime = _timeProvider();
 
-            var lockAcquired = TryAcquireLockOnAllNodes(lockId);
+            var lockAcquired = await TryAcquireLockOnAllNodes(lockId);
 
             var finishTime = _timeProvider();
 
@@ -92,37 +92,36 @@ namespace Varekai.Locker
 
         bool IsLockStillUsable(DateTime acquisitionStartTime, DateTime acquisitionEndTime, LockId lockId)
         {
-            return 
+            return
                 GetRemainingValidityTime(acquisitionStartTime, acquisitionEndTime, lockId) 
-                <= 
+                >= 
                 (GetConfirmationIntervalMillis(lockId) + GetValidityTimeSafetyMargin(lockId));
         }
 
-        bool TryAcquireLockOnAllNodes(LockId lockId)
+        async Task<bool> TryAcquireLockOnAllNodes(LockId lockId)
         {
             if (_redisClientManagers.Count == 0)
                 return false;
             
+            var quorum = GetQuorum(_nodes);
             var sessions = new List<Task<bool>>();
 
-            foreach (var client in _redisClientManagers)
-            {   
-                sessions.Add(
-                    Task.Run(
-                        () => { return TryAcquireLockOnNode(client, lockId, _logger); }
-                        , _lockAcquisitionCancellation.Token)
-                );
-            }
-
-            var quorum = GetQuorum(_nodes);
+            sessions.AddRange(
+                _redisClientManagers
+                .Select(
+                    cli => Task.Run(
+                        () => { return TryAcquireLockOnNode(cli, lockId, _logger); }
+                        , _lockAcquisitionCancellation.Token))
+                .ToArray());
+            
             var acquired = 0;
             var completed = 0;
 
             while (acquired < quorum && completed < _nodes.Count())
             {
-                var completedTry = Task.WhenAny(sessions);
+                var completedTry = await Task.WhenAny(sessions);
 
-                if (completedTry.IsCompleted && completedTry.Unwrap().Result)
+                if (completedTry.IsCompleted && completedTry.Result)
                     acquired++;
 
                 completed++;
@@ -159,7 +158,7 @@ namespace Varekai.Locker
             {
                 using (var client = clientManager.GetClient())
                 {
-                    return client
+                    var result = client
                         .Custom(new object[] {
                             Commands.Set,
                             lockId.Resource,
@@ -168,7 +167,10 @@ namespace Varekai.Locker
                             "PX",
                             lockId.ExpirationTimeMillis
                         })
-                        .GetResult()
+                        .GetResult();
+                    
+                    return 
+                        result
                         .Equals("OK", StringComparison.InvariantCultureIgnoreCase);
                 }
             }
