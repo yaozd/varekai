@@ -51,7 +51,7 @@ namespace Varekai.Locker
 
             if (!IsLockStillUsable(startTime, finishTime, lockId))
             {
-                ReleaseTheLockOnAllNodes(_redisClientManagers, lockId, _lockAcquisitionCancellation);
+                ReleaseTheLockOnAllNodes(_redisClientManagers, lockId, _lockAcquisitionCancellation, _logger);
                 return false;
             }
 
@@ -66,7 +66,7 @@ namespace Varekai.Locker
             {   
                 sessions.Add(
                     Task.Run(
-                        () => { return ReleaseTheLockOnNode(manager, lockId); }
+                        () => { return ReleaseTheLockOnNode(manager, lockId, _logger); }
                         , _lockAcquisitionCancellation.Token)
                 );
             }
@@ -82,7 +82,7 @@ namespace Varekai.Locker
                 || _redisClientManagers.Count == 0)
                 return;
             
-            ReleaseTheLockOnAllNodes(_redisClientManagers, lockId, _lockAcquisitionCancellation);
+            ReleaseTheLockOnAllNodes(_redisClientManagers, lockId, _lockAcquisitionCancellation, _logger);
         }
 
         public long GetConfirmationIntervalMillis(LockId lockId)
@@ -109,7 +109,7 @@ namespace Varekai.Locker
             {   
                 sessions.Add(
                     Task.Run(
-                        () => { return TryAcquireLockOnNode(client, lockId); }
+                        () => { return TryAcquireLockOnNode(client, lockId, _logger); }
                         , _lockAcquisitionCancellation.Token)
                 );
             }
@@ -118,7 +118,7 @@ namespace Varekai.Locker
             var acquired = 0;
             var completed = 0;
 
-            while (acquired < quorum || completed < _nodes.Count())
+            while (acquired < quorum && completed < _nodes.Count())
             {
                 var completedTry = Task.WhenAny(sessions);
 
@@ -131,7 +131,11 @@ namespace Varekai.Locker
             return acquired >= quorum;
         }
 
-        static bool ReleaseTheLockOnAllNodes(IEnumerable<BasicRedisClientManager> connections, LockId lockId, CancellationTokenSource cancellation)
+        static bool ReleaseTheLockOnAllNodes(
+            IEnumerable<BasicRedisClientManager> connections,
+            LockId lockId,
+            CancellationTokenSource cancellation,
+            ILogger logger)
         {
             var sessions = new List<Task<string>>();
 
@@ -139,7 +143,7 @@ namespace Varekai.Locker
             {   
                 sessions.Add(
                     Task.Run(
-                        () => { return ReleaseTheLockOnNode(connection, lockId); }
+                        () => { return ReleaseTheLockOnNode(connection, lockId, logger); }
                         , cancellation.Token)
                 );
             }
@@ -149,47 +153,71 @@ namespace Varekai.Locker
             return release.IsCompleted;
         }
 
-        static bool TryAcquireLockOnNode(IRedisClientsManager clientManager, LockId lockId)
+        static bool TryAcquireLockOnNode(IRedisClientsManager clientManager, LockId lockId, ILogger logger)
         {
-            using (var client = clientManager.GetClient())
+            try
             {
-                return client
-                    .Custom(new object[] {
-                        Commands.Set,
-                        lockId.Resource,
-                        lockId.SessionId,
-                        "NX",
-                        "PX",
-                        lockId.ExpirationTimeMillis
-                    })
-                    .GetResult()
-                    .Equals("OK", StringComparison.InvariantCultureIgnoreCase);
+                using (var client = clientManager.GetClient())
+                {
+                    return client
+                        .Custom(new object[] {
+                            Commands.Set,
+                            lockId.Resource,
+                            lockId.SessionId,
+                            "NX",
+                            "PX",
+                            lockId.ExpirationTimeMillis
+                        })
+                        .GetResult()
+                        .Equals("OK", StringComparison.InvariantCultureIgnoreCase);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.ToErrorLog(ex);
+                return false;
             }
         }
 
-        static string ConfirmTheLockOnNode(IRedisClientsManager clientManager, LockId lockId)
+        static string ConfirmTheLockOnNode(IRedisClientsManager clientManager, LockId lockId, ILogger logger)
         {
-            using (var client = clientManager.GetClient())
+            try
             {
-                return client
-                    .ExecLuaAsString(
-                        lockId.GetConfirmScript(),
-                        new [] { lockId.Resource },
-                        new [] { lockId.SessionId.ToString(), lockId.ExpirationTimeMillis.ToString() }
-                    );
+                using (var client = clientManager.GetClient())
+                {
+                    return client
+                        .ExecLuaAsString(
+                            lockId.GetConfirmScript(),
+                            new [] { lockId.Resource },
+                            new [] { lockId.SessionId.ToString(), lockId.ExpirationTimeMillis.ToString() }
+                        );
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.ToErrorLog(ex);
+                return ex.Message;
             }
         }
 
-        static string ReleaseTheLockOnNode(IRedisClientsManager clientManager, LockId lockId)
+        static string ReleaseTheLockOnNode(IRedisClientsManager clientManager, LockId lockId, ILogger logger)
         {
-            using (var client = clientManager.GetClient())
+            try
             {
-                return client
-                    .ExecLuaAsString(
-                        lockId.GetReleaseScript(),
-                        new [] { lockId.Resource },
-                        new [] { lockId.SessionId.ToString() }
-                    );
+                using (var client = clientManager.GetClient())
+                {
+                    return client
+                        .ExecLuaAsString(
+                            lockId.GetReleaseScript(),
+                            new [] { lockId.Resource },
+                            new [] { lockId.SessionId.ToString() }
+                        );
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.ToErrorLog(ex);
+                return ex.Message;
             }
         }
 
