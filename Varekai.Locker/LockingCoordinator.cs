@@ -88,7 +88,7 @@ namespace Varekai.Locker
                 _redisClientManagers
                 .Select(
                     cliManager => Task.Run(
-                        () => { return ReleaseTheLockOnNode(cliManager, lockId, _logger); }
+                        () => { return ConfirmTheLockOnNode(cliManager, lockId, _logger); }
                         , _lockAcquisitionCancellation.Token))
                 .ToArray());
 
