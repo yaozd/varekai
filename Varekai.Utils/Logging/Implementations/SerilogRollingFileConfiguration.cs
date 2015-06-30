@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Varekai.Utils.Logging.Implementations
+﻿namespace Varekai.Utils.Logging.Implementations
 {
     public struct SerilogRollingFileConfiguration
     {

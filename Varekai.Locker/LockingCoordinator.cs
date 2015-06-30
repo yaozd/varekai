@@ -73,21 +73,10 @@ namespace Varekai.Locker
                         () => { return TryAcquireLockOnNode(cliManager, lockId, _logger); }
                         , _lockAcquisitionCancellation.Token))
                 .ToArray());
-            
-            var acquired = 0;
-            var completed = 0;
 
-            while (acquired < quorum && completed < _nodes.Count())
-            {
-                var completedTry = await Task.WhenAny(sessions);
+            var completedTry = await Task.WhenAll(sessions);
 
-                if (completedTry.IsCompleted && completedTry.Result)
-                    acquired++;
-
-                completed++;
-            }
-
-            return acquired >= quorum;
+            return completedTry.Count(res => res) >= quorum;
         }
 
         public async Task<bool> ConfirmTheLock(LockId lockId)

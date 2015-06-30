@@ -13,7 +13,7 @@ namespace Varekai.Utils.Logging.Implementations
                 .MinimumLevel
                     .Verbose()
                 .WriteTo
-                    .ColoredConsole()
+                    .ColoredConsole(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] {Message}{NewLine}{Exception}")
                 .WriteTo
                     .RollingFile(
                         fileConfiguration.FilePath,

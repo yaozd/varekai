@@ -1,29 +1,30 @@
-﻿using System;
-using Varekai.Locking.Adapter;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using System.Threading;
+using Varekai.Locking.Adapter;
 using Varekai.Utils.Logging;
 
 namespace SampleLockingService
 {
     public class SampleServiceImplementation : IServiceExecution
     {
-        readonly CancellationTokenSource _cancellation;
         readonly ILogger _logger;
+
+        CancellationTokenSource _cancellation;
 
         public SampleServiceImplementation(ILogger logger)
         {
             _logger = logger;
-            _cancellation = new CancellationTokenSource();
         }
         
         #region IServiceExecution implementation
 
         public async Task Start()
         {
+            _cancellation = new CancellationTokenSource();
+
             while (!_cancellation.IsCancellationRequested)
             {
-                _logger.ToDebugLog("Varekai sample service running");
+                _logger.ToDebugLog("Varekai sample service running...");
                 
                 await Task.Delay(2000, _cancellation.Token);
             }
