@@ -51,51 +51,11 @@ namespace Varekai.Locker
 
             if (!IsLockStillUsable(startTime, finishTime, lockId))
             {
-                ReleaseTheLockOnAllNodes(_redisClientManagers, lockId, _lockAcquisitionCancellation, _logger);
+                ReleaseTheLockOnAllNodes(lockId);
                 return false;
             }
 
             return lockAcquired;
-        }
-
-        public bool ConfirmTheLock(LockId lockId)
-        {
-            var sessions = new List<Task<string>>();
-
-            foreach (var manager in _redisClientManagers)
-            {   
-                sessions.Add(
-                    Task.Run(
-                        () => { return ReleaseTheLockOnNode(manager, lockId, _logger); }
-                        , _lockAcquisitionCancellation.Token)
-                );
-            }
-
-            var confirm = Task.WhenAll<string>(sessions);
-
-            return confirm.IsCompleted;
-        }
-
-        public void ReleaseTheLock(LockId lockId)
-        {
-            if (_redisClientManagers == null
-                || _redisClientManagers.Count == 0)
-                return;
-            
-            ReleaseTheLockOnAllNodes(_redisClientManagers, lockId, _lockAcquisitionCancellation, _logger);
-        }
-
-        public long GetConfirmationIntervalMillis(LockId lockId)
-        {
-            return lockId.ExpirationTimeMillis / 3;
-        }
-
-        bool IsLockStillUsable(DateTime acquisitionStartTime, DateTime acquisitionEndTime, LockId lockId)
-        {
-            return
-                GetRemainingValidityTime(acquisitionStartTime, acquisitionEndTime, lockId) 
-                >= 
-                (GetConfirmationIntervalMillis(lockId) + GetValidityTimeSafetyMargin(lockId));
         }
 
         async Task<bool> TryAcquireLockOnAllNodes(LockId lockId)
@@ -109,8 +69,8 @@ namespace Varekai.Locker
             sessions.AddRange(
                 _redisClientManagers
                 .Select(
-                    cli => Task.Run(
-                        () => { return TryAcquireLockOnNode(cli, lockId, _logger); }
+                    cliManager => Task.Run(
+                        () => { return TryAcquireLockOnNode(cliManager, lockId, _logger); }
                         , _lockAcquisitionCancellation.Token))
                 .ToArray());
             
@@ -130,26 +90,49 @@ namespace Varekai.Locker
             return acquired >= quorum;
         }
 
-        static bool ReleaseTheLockOnAllNodes(
-            IEnumerable<BasicRedisClientManager> connections,
-            LockId lockId,
-            CancellationTokenSource cancellation,
-            ILogger logger)
+        public async Task<bool> ConfirmTheLock(LockId lockId)
         {
-            var sessions = new List<Task<string>>();
+            var sessions = new List<Task<bool>>();
+            var quorum = GetQuorum(_nodes);
 
-            foreach (var connection in connections)
-            {   
-                sessions.Add(
-                    Task.Run(
-                        () => { return ReleaseTheLockOnNode(connection, lockId, logger); }
-                        , cancellation.Token)
-                );
-            }
+            sessions.AddRange(
+                _redisClientManagers
+                .Select(
+                    cliManager => Task.Run(
+                        () => { return ReleaseTheLockOnNode(cliManager, lockId, _logger); }
+                        , _lockAcquisitionCancellation.Token))
+                .ToArray());
 
-            var release = Task.WhenAll<string>(sessions);
+            var confirm = await Task.WhenAll<bool>(sessions);
 
-            return release.IsCompleted;
+            return confirm.Count(val => val) >= quorum;
+        }
+
+        public void ReleaseTheLock(LockId lockId)
+        {
+            if (_redisClientManagers == null
+                || _redisClientManagers.Count == 0)
+                return;
+
+            ReleaseTheLockOnAllNodes(lockId);
+        }
+
+        async Task<bool> ReleaseTheLockOnAllNodes(LockId lockId)
+        {
+            var sessions = new List<Task<bool>>();
+            var quorum = GetQuorum(_nodes);
+
+            sessions.AddRange(
+                _redisClientManagers
+                .Select(
+                    cliManager => Task.Run(
+                        () => { return ReleaseTheLockOnNode(cliManager, lockId, _logger); }
+                        , _lockAcquisitionCancellation.Token))
+                .ToArray());
+
+            var released = await Task.WhenAll<bool>(sessions);
+
+            return released.Count(val => val) >= quorum;
         }
 
         static bool TryAcquireLockOnNode(IRedisClientsManager clientManager, LockId lockId, ILogger logger)
@@ -169,9 +152,10 @@ namespace Varekai.Locker
                         })
                         .GetResult();
                     
-                    return 
-                        result
-                        .Equals("OK", StringComparison.InvariantCultureIgnoreCase);
+                    return
+                        result != null
+                        &&
+                        result.Equals("OK", StringComparison.InvariantCultureIgnoreCase);
                 }
             }
             catch (Exception ex)
@@ -181,46 +165,67 @@ namespace Varekai.Locker
             }
         }
 
-        static string ConfirmTheLockOnNode(IRedisClientsManager clientManager, LockId lockId, ILogger logger)
+        static bool ConfirmTheLockOnNode(IRedisClientsManager clientManager, LockId lockId, ILogger logger)
         {
             try
             {
                 using (var client = clientManager.GetClient())
                 {
-                    return client
+                    var result =  client
                         .ExecLuaAsString(
                             lockId.GetConfirmScript(),
                             new [] { lockId.Resource },
                             new [] { lockId.SessionId.ToString(), lockId.ExpirationTimeMillis.ToString() }
                         );
+                    
+                    return 
+                        result
+                        .Equals("1", StringComparison.InvariantCultureIgnoreCase);
                 }
             }
             catch (Exception ex)
             {
                 logger.ToErrorLog(ex);
-                return ex.Message;
+                return false;
             }
         }
 
-        static string ReleaseTheLockOnNode(IRedisClientsManager clientManager, LockId lockId, ILogger logger)
+        static bool ReleaseTheLockOnNode(IRedisClientsManager clientManager, LockId lockId, ILogger logger)
         {
             try
             {
                 using (var client = clientManager.GetClient())
                 {
-                    return client
+                    var result =  client
                         .ExecLuaAsString(
                             lockId.GetReleaseScript(),
                             new [] { lockId.Resource },
                             new [] { lockId.SessionId.ToString() }
                         );
+
+                    return 
+                        result
+                        .Equals("1", StringComparison.InvariantCultureIgnoreCase);
                 }
             }
             catch (Exception ex)
             {
                 logger.ToErrorLog(ex);
-                return ex.Message;
+                return false;
             }
+        }
+
+        public long GetConfirmationIntervalMillis(LockId lockId)
+        {
+            return lockId.ExpirationTimeMillis / 3;
+        }
+
+        bool IsLockStillUsable(DateTime acquisitionStartTime, DateTime acquisitionEndTime, LockId lockId)
+        {
+            return
+                GetRemainingValidityTime(acquisitionStartTime, acquisitionEndTime, lockId) 
+                >= 
+                (GetConfirmationIntervalMillis(lockId) + GetValidityTimeSafetyMargin(lockId));
         }
 
         static double GetRemainingValidityTime(DateTime acquisitionStartTime, DateTime acquisitionEndTime, LockId lockId)

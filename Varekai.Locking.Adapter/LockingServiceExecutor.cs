@@ -66,7 +66,7 @@ namespace Varekai.Locking.Adapter
 
                         while(holdingLock && !serviceStartingTask.IsFaulted && !serviceStartingTask.IsCanceled)
                         {
-                            holdingLock = _locker.ConfirmTheLock(_lockId);
+                            holdingLock = await _locker.ConfirmTheLock(_lockId);
 
                             await Task.Delay((int)confirmationInterval, _globalCancellationSource.Token);
                         }
