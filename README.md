@@ -10,5 +10,5 @@ Modules
 
 * __Locker__: the locking library, it implements the locking algorithm
 * __Locking Adapter__: a service adapter that blocks the adaptee services until the lock is not acquired
-* __Sample Service__: a sample Topshelf service that demostrate the adapter and simply prints on the output when it can run
+* __Sample Service__: a sample Topshelf service that demonstrate the adapter and simply prints to the output
 * __Utility__: a set of usefull functions
