@@ -1,6 +1,6 @@
 #Varekai#
 
-Varekai is an experiment. It is a test implementation of the RedLock distributed locking algorithm (see this for more info on RedLock http://redis.io/topics/distlock).
+Varekai is an experiment. It is a test implementation of the RedLock distributed locking algorithm (see this for more info about RedLock http://redis.io/topics/distlock).
 
 Varekai is written in C# on Mono using Xamarin Studio. I develop and run it on Mac OS X but I cannot see any reasons for it not to run also on the MS .NET Framework.
 
