@@ -68,7 +68,11 @@ namespace Varekai.Locking.Adapter
                         {
                             holdingLock = await _locker.ConfirmTheLock(_lockId);
 
-                            await Task.Delay((int)confirmationInterval, _globalCancellationSource.Token);
+                            try
+                            {
+                                await Task.Delay((int)confirmationInterval, _globalCancellationSource.Token);
+                            }
+                            catch{}
                         }
 
                         _logger.ToDebugLog("Stopping the service for missed confirmation of a previously acquired lock...");
