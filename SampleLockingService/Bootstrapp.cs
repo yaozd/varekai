@@ -73,9 +73,7 @@ namespace SampleLockingService
 
             builder
                 .Register(
-                    ctx => LockId.CreateNewFor(
-                        string.Format("{0}-{1}",
-                        ApplicationPrefix, Guid.NewGuid())))
+                    ctx => LockId.CreateNewFor(ApplicationPrefix))
                 .AsSelf();
 
             return builder;
