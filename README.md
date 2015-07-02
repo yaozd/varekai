@@ -52,6 +52,6 @@ To tell to Varekai where to find the Redis servers you have to edit the file Red
 ```
 
 
-###How To Extend It###
+###How To Use It###
 
-The Sample Service is only one possible way to use and test Varekai. I plan to add more and try to explore different use cases for the RedLock algorithm, but I use my spare time for this so I really don't know how it will be able to proceed. In case you want to extend it yourself or simply play with it, all the dependencies of the Locking Adapter are injected using Autofac so it shouldn't be a problem to start from the Sample service and implement your own logic over it.
+The Sample Service is only one possible way to use and test Varekai. I plan to add more and try to explore different use cases for the RedLock algorithm, but I use my spare time for this so I really don't know how much it will be able to proceed. In case you want to extend it yourself or simply play with it, all the dependencies of the Locking Adapter are injected using Autofac so it shouldn't be a problem to start from the Sample service and implement your own logic over it.
