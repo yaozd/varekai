@@ -11,6 +11,7 @@ Varekai is written in C# on Mono using Xamarin Studio. I develop and run it on M
 * __Sample Service__: a sample Topshelf service that demonstrate the adapter and simply prints to the output
 * __Utility__: a set of usefull functions
 
+
 ###How To Run It###
 
 To run Varekai you need access to a number of instances of Redis server. As all the other quorum based strategies you need an uneven number of Redis servers to guarantee that only one competing service hold the lock at a certain point in time. If you need info on how to configure Redis this is a good place to start http://redis.io/documentation.
@@ -48,3 +49,8 @@ To tell to Varekai where to find the Redis servers you have to edit the file Red
 	}
 ]
 ```
+
+
+###How To Extend It###
+
+The Sample Service is only one possible way to use and test Varekai. I plan to add more and try to explore different use cases for the RedLock algorithm, but I use my spare time for this so I really don't know how it will be able to proceed. In case you want to extend it yourself or simply play with it, all the dependencies of the Locking Adapter are injected using Autofac so it shouldn't be a problem to start from the Sample service and implement your own logic over it.
