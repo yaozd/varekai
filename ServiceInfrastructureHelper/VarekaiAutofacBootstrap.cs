@@ -7,7 +7,7 @@ using Varekai.Utils.Logging.Implementations;
 
 namespace ServiceInfrastructureHelper
 {
-    public static class VarekaAutofacBootstrap
+    public static class VarekaiAutofacBootstrap
     {
         public static IContainer SetupVarekaiContainer(
             string applicationName,

@@ -14,7 +14,7 @@ namespace SampleLockingService
         public static void Main(string[] args)
         {
             var container = 
-                VarekaAutofacBootstrap.SetupVarekaiContainer(
+                VarekaiAutofacBootstrap.SetupVarekaiContainer(
                     ApplicationPrefix,
                     ctx => new HelloWorldService(ctx.Resolve<ILogger>()),
                     PhisicalNodesConfigFile,
