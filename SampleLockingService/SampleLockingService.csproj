@@ -38,12 +38,6 @@
     <Reference Include="Topshelf.Autofac">
       <HintPath>..\packages\Topshelf.Autofac.1.0.0\lib\net40\Topshelf.Autofac.dll</HintPath>
     </Reference>
-    <Reference Include="Serilog">
-      <HintPath>..\packages\Serilog.1.5.5\lib\net45\Serilog.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.FullNetFx">
-      <HintPath>..\packages\Serilog.1.5.5\lib\net45\Serilog.FullNetFx.dll</HintPath>
-    </Reference>
     <Reference Include="Topshelf.Serilog">
       <HintPath>..\packages\Topshelf.Serilog.3.2.0\lib\net40-full\Topshelf.Serilog.dll</HintPath>
     </Reference>
@@ -58,6 +52,12 @@
     </Reference>
     <Reference Include="Topshelf.Linux">
       <HintPath>..\packages\Topshelf.Linux.1.0.11.10\lib\Topshelf.Linux.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog">
+      <HintPath>..\packages\Serilog.1.5.7\lib\net45\Serilog.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.FullNetFx">
+      <HintPath>..\packages\Serilog.1.5.7\lib\net45\Serilog.FullNetFx.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
