@@ -8,7 +8,8 @@ Varekai is written in C# on Mono using Xamarin Studio. I develop and run it on M
 
 * __Locker__: the locking library, it implements the locking algorithm
 * __Locking Adapter__: a service adapter that blocks the adapted service until the lock is acquired
-* __Sample Service__: a sample Topshelf service that demonstrate the adapter and simply prints to the output
+* __Sample Services__: sample Topshelf services that demonstrate the adapter in some use cases
+* __Infrastructure Helpers__: some helper functions to speed up the services creation
 * __Utility__: a set of useful functions
 
 
@@ -54,4 +55,4 @@ To tell to Varekai where to find the Redis servers you have to edit the file Red
 
 ###How To Use It###
 
-The Sample Service is only one possible way to use and test Varekai. I plan to add more and try to explore different use cases for the RedLock algorithm, but I use my spare time for this so I really don't know how much it will be able to proceed. In case you want to extend it yourself or simply play with it, all the dependencies of the Locking Adapter are injected using Autofac so it shouldn't be a problem to start from the Sample service and implement your own logic over it.
+The sample services are only some possible ways to use and experimet Varekai. I plan to add more of them and try to explore different use cases for the RedLock algorithm, but I use my spare time to do this, so I really don't know how much it will be able to proceed. In case you want to play with it, all the dependencies of the Locking Adapter are injected using Autofac so it shouldn't be a problem to start from the Hello World service and implement your own logic over it.
