@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{61D0BD6A-B9BC-4433-B486-84B61478BC25}</ProjectGuid>
+    <ProjectGuid>{42476624-8DC9-4F91-8819-C2350D3ED12B}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Varekai.Locking.Adapter</RootNamespace>
-    <AssemblyName>Varekai.Locking.Adapter</AssemblyName>
+    <RootNamespace>SampleShardingLockingService.Tests</RootNamespace>
+    <AssemblyName>SampleShardingLockingService.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -29,32 +29,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="Autofac">
-      <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="IServiceExecution.cs" />
-    <Compile Include="ILockingServiceExecution.cs" />
-    <Compile Include="LockingServiceExecutor.cs" />
-    <Compile Include="BootstrapHelpers\LockingExecutorBootstrapp.cs" />
+    <Compile Include="Test.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Varekai.Locker\Varekai.Locker.csproj">
-      <Project>{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}</Project>
-      <Name>Varekai.Locker</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Varekai.Utils\Varekai.Utils.csproj">
-      <Project>{B0545B8D-EA20-46B2-8C99-1FEB3F2D2095}</Project>
-      <Name>Varekai.Utils</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="BootstrapHelpers\" />
   </ItemGroup>
 </Project>

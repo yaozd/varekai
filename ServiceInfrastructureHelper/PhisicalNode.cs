@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace SampleLockingService
+namespace ServiceInfrastructureHelper
 {
-    public struct RedisNode
+    public struct PhisicalNode
     {
         [JsonProperty("address")]
         public readonly string Address;
@@ -10,7 +10,7 @@ namespace SampleLockingService
         [JsonProperty("port")]
         public readonly int Port;
 
-        public RedisNode(string address, int port) : this()
+        public PhisicalNode(string address, int port) : this()
         {
             Address = address;
             Port = port;

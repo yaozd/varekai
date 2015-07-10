@@ -1,10 +1,11 @@
 ﻿using System;
 using Autofac;
+using Moq;
 using NUnit.Framework;
 using Varekai.Locking.Adapter;
 using Varekai.Utils.Logging;
 
-namespace SampleLockingService.Tests
+namespace ServiceInfrastructureHelper.Tests
 {
     [TestFixture]
     public class AutofacIntegrationTests
@@ -43,11 +44,13 @@ namespace SampleLockingService.Tests
 
         static IContainer SetupContainer()
         {
-            return Bootstrapp
-                .WithContainerBuilder()
-                .RegisterAllServiceDependencies()
-                .CreateContainer();
+            return VarekaAutofacBootstrap
+                .SetupVarekaiContainer(
+                    "TestSetup",
+                    _ => Mock.Of<IServiceExecution>(),
+                    "TestNodesPath",
+                    "TestLogsPath"
+                );
         }
     }
 }
-

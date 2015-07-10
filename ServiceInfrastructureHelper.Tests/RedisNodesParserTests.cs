@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using System.Linq;
 
-namespace SampleLockingService.Tests
+namespace ServiceInfrastructureHelper.Tests
 {
     [TestFixture]
     public class RedisNodesParserTests
