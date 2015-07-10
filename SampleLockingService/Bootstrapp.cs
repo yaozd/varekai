@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using Autofac;
-using Varekai.Locker;
 using Varekai.Locking.Adapter;
+using Varekai.Locking.Adapter.BootstrapHelpers;
 using Varekai.Utils;
-using Varekai.Utils.Logging;
 using Varekai.Utils.Logging.Implementations;
 
 namespace SampleLockingService
@@ -23,7 +21,14 @@ namespace SampleLockingService
             return builder
                 .RegisterService()
                 .RegisterSerilogConfiguration()
-                .RegisterLockingAdapterDependencies();
+                .RegisterSingleLockAdapterDependencies(
+                    ctx => new SerilogLogger(ctx.Resolve<SerilogRollingFileConfiguration>()),
+                    () => DateTime.Now,
+                    () => 
+                        JsonFileReadEx
+                        .ReadJsonFromFile("../../RedisNodes.txt")
+                        .GenerateLockingNodes(),
+                    () => ApplicationPrefix);
         }
 
         public static ContainerBuilder RegisterService(this ContainerBuilder builder)
@@ -52,37 +57,9 @@ namespace SampleLockingService
             return builder;
         }
 
-        public static ContainerBuilder RegisterLockingAdapterDependencies(this ContainerBuilder builder)
-        {
-            builder
-                .Register<Func<DateTime>>(ctx => () => DateTime.Now)
-                .AsSelf();
-
-            builder
-                .Register(ctx => new SerilogLogger(ctx.Resolve<SerilogRollingFileConfiguration>()))
-                .As<ILogger>();
-
-            builder
-                .Register(
-                    ctx => 
-                        JsonFileReadEx
-                        .ReadJsonFromFile("../../RedisNodes.txt")
-                        .GenerateLockingNodes())
-                .As<IEnumerable<LockingNode>>()
-                .SingleInstance();
-
-            builder
-                .Register(
-                    ctx => LockId.CreateNewFor(ApplicationPrefix))
-                .AsSelf();
-
-            return builder;
-        }
-
         public static IContainer CreateContainer(this ContainerBuilder builder)
         {
             return builder.Build();
         }
     }
 }
-

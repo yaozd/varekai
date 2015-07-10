@@ -3,6 +3,7 @@ using Serilog;
 using Topshelf;
 using Topshelf.Autofac;
 using Varekai.Locking.Adapter;
+using Varekai.Locking.Adapter.BootstrapHelpers;
 
 namespace SampleLockingService
 {
