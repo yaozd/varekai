@@ -1,8 +1,6 @@
 ﻿using Autofac;
-using Serilog;
+using ServiceInfrastructureHelper;
 using Topshelf;
-using Topshelf.Autofac;
-using Varekai.Locking.Adapter;
 using Varekai.Locking.Adapter.BootstrapHelpers;
 
 namespace SampleLockingService
@@ -17,28 +15,7 @@ namespace SampleLockingService
                 .RegisterLockingExecution()
                 .CreateContainer();
             
-            HostFactory.Run(ctx =>
-                {
-                    ctx.UseLinuxIfAvailable();
-                    ctx.UseSerilog(container.Resolve<LoggerConfiguration>());
-                    ctx.UseAutofacContainer(container);
-
-                    ctx.Service<ILockingServiceExecution>(s =>
-                        {
-                            s.ConstructUsingAutofacContainer();
-
-                            s.WhenStarted(async lckService => await lckService.LockedStart());
-                            s.WhenStopped(lckService => lckService.ReleasedStop());
-                        });
-                    
-                    ctx.RunAsLocalService();
-
-                    ctx.SetDescription("Sample Locking Service");
-                    ctx.SetDisplayName("Sample Locking Service");
-                    ctx.SetServiceName("SampleLockingService");
-
-                    ctx.EnableServiceRecovery(rc => rc.RestartService(0));
-                });
+            HostFactory.Run(ctx => ctx.SetupLockingService("HelloWorldVarekaiService", "Hello World Varekai Service", container));
         }
     }
 }

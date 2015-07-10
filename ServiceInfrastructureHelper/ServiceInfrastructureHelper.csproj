@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FA80446E-03BE-4DDC-BCA1-9522C24FC4C0}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>SampleLockingService</RootNamespace>
-    <AssemblyName>SampleLockingService</AssemblyName>
+    <ProjectGuid>{C2933B9D-5EAB-4E31-92D7-07764DE9A7B2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ServiceInfrastructureHelper</RootNamespace>
+    <AssemblyName>ServiceInfrastructureHelper</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -17,7 +17,7 @@
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Externalconsole>true</Externalconsole>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -25,7 +25,7 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Externalconsole>true</Externalconsole>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -38,6 +38,9 @@
     <Reference Include="Topshelf.Autofac">
       <HintPath>..\packages\Topshelf.Autofac.1.0.0\lib\net40\Topshelf.Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="Topshelf.Linux">
+      <HintPath>..\packages\Topshelf.Linux.1.0.11.10\lib\Topshelf.Linux.dll</HintPath>
+    </Reference>
     <Reference Include="Serilog">
       <HintPath>..\packages\Serilog.1.5.5\lib\net45\Serilog.dll</HintPath>
     </Reference>
@@ -47,48 +50,19 @@
     <Reference Include="Topshelf.Serilog">
       <HintPath>..\packages\Topshelf.Serilog.3.2.0\lib\net40-full\Topshelf.Serilog.dll</HintPath>
     </Reference>
-    <Reference Include="log4net">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Topshelf.Log4Net">
-      <HintPath>..\packages\Topshelf.Log4Net.3.2.0\lib\net40-full\Topshelf.Log4Net.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Topshelf.Linux">
-      <HintPath>..\packages\Topshelf.Linux.1.0.11.10\lib\Topshelf.Linux.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SampleServiceImplementation.cs" />
-    <Compile Include="Bootstrapp.cs" />
-    <Compile Include="RedisNode.cs" />
-    <Compile Include="RedisNodesParser.cs" />
+    <Compile Include="ServiceHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="RedisNodes.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Varekai.Utils\Varekai.Utils.csproj">
-      <Project>{B0545B8D-EA20-46B2-8C99-1FEB3F2D2095}</Project>
-      <Name>Varekai.Utils</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Varekai.Locking.Adapter\Varekai.Locking.Adapter.csproj">
       <Project>{61D0BD6A-B9BC-4433-B486-84B61478BC25}</Project>
       <Name>Varekai.Locking.Adapter</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Varekai.Locker\Varekai.Locker.csproj">
-      <Project>{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}</Project>
-      <Name>Varekai.Locker</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ServiceInfrastructureHelper\ServiceInfrastructureHelper.csproj">
-      <Project>{C2933B9D-5EAB-4E31-92D7-07764DE9A7B2}</Project>
-      <Name>ServiceInfrastructureHelper</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
