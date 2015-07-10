@@ -50,10 +50,16 @@
     <Reference Include="Topshelf.Serilog">
       <HintPath>..\packages\Topshelf.Serilog.3.2.0\lib\net40-full\Topshelf.Serilog.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceHelper.cs" />
+    <Compile Include="NodesConfiguration.cs" />
+    <Compile Include="VarekaiService.cs" />
+    <Compile Include="VarekaiAutofacBootstrap.cs" />
+    <Compile Include="LockingNode.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -63,6 +69,14 @@
     <ProjectReference Include="..\Varekai.Locking.Adapter\Varekai.Locking.Adapter.csproj">
       <Project>{61D0BD6A-B9BC-4433-B486-84B61478BC25}</Project>
       <Name>Varekai.Locking.Adapter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Varekai.Utils\Varekai.Utils.csproj">
+      <Project>{B0545B8D-EA20-46B2-8C99-1FEB3F2D2095}</Project>
+      <Name>Varekai.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Varekai.Locker\Varekai.Locker.csproj">
+      <Project>{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}</Project>
+      <Name>Varekai.Locker</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

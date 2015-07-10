@@ -13,13 +13,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Varekai.Locking.Adapter", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Varekai.Utils.Tests", "Varekai.Utils.Tests\Varekai.Utils.Tests.csproj", "{0249D7FB-9D88-4BA3-9331-C520266412FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleLockingService.Tests", "SampleLockingService.Tests\SampleLockingService.Tests.csproj", "{103BFEED-8F53-4DFF-9D00-20494A469083}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleShardingLockingService", "SampleShardingLockingService\SampleShardingLockingService.csproj", "{EE4313BC-7010-48D1-BBF0-5DCC3AA463C2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleShardingLockingService.Tests", "SampleShardingLockingService.Tests\SampleShardingLockingService.Tests.csproj", "{42476624-8DC9-4F91-8819-C2350D3ED12B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceInfrastructureHelper", "ServiceInfrastructureHelper\ServiceInfrastructureHelper.csproj", "{C2933B9D-5EAB-4E31-92D7-07764DE9A7B2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleServices", "SampleServices", "{AD891BD0-E1E3-44D1-B95E-F8FEAE035A6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceInfrastructureHelper.Tests", "ServiceInfrastructureHelper.Tests\ServiceInfrastructureHelper.Tests.csproj", "{9258FB66-6A72-4746-94D2-87D71F101585}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +33,6 @@ Global
 		{0249D7FB-9D88-4BA3-9331-C520266412FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0249D7FB-9D88-4BA3-9331-C520266412FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0249D7FB-9D88-4BA3-9331-C520266412FA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{103BFEED-8F53-4DFF-9D00-20494A469083}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{103BFEED-8F53-4DFF-9D00-20494A469083}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{103BFEED-8F53-4DFF-9D00-20494A469083}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{103BFEED-8F53-4DFF-9D00-20494A469083}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3DE65FA1-E28F-43A5-A4A1-7230F1AF14FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3DE65FA1-E28F-43A5-A4A1-7230F1AF14FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DE65FA1-E28F-43A5-A4A1-7230F1AF14FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -51,6 +49,10 @@ Global
 		{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9258FB66-6A72-4746-94D2-87D71F101585}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9258FB66-6A72-4746-94D2-87D71F101585}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9258FB66-6A72-4746-94D2-87D71F101585}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9258FB66-6A72-4746-94D2-87D71F101585}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B0545B8D-EA20-46B2-8C99-1FEB3F2D2095}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B0545B8D-EA20-46B2-8C99-1FEB3F2D2095}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0545B8D-EA20-46B2-8C99-1FEB3F2D2095}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -83,5 +85,7 @@ Global
 		{CB44CF17-39DD-4A44-ADA3-4BEA14EA85EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB44CF17-39DD-4A44-ADA3-4BEA14EA85EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB44CF17-39DD-4A44-ADA3-4BEA14EA85EB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 EndGlobal

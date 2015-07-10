@@ -3,14 +3,14 @@ using System.Linq;
 using Newtonsoft.Json;
 using Varekai.Locker;
 
-namespace SampleLockingService
+namespace ServiceInfrastructureHelper
 {
-    public static class RedisNodesParser
+    public static class NodesConfiguration
     {
         public static IEnumerable<LockingNode> GenerateLockingNodes(this string jsonNodesList)
         {
             return JsonConvert
-                .DeserializeObject<List<RedisNode>>(jsonNodesList)
+                .DeserializeObject<List<PhisicalNode>>(jsonNodesList)
                 .Select(node => LockingNode.CreateNew(node.Address, node.Port));
         }
     }

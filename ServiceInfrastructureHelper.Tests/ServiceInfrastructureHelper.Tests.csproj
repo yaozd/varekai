@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{103BFEED-8F53-4DFF-9D00-20494A469083}</ProjectGuid>
+    <ProjectGuid>{9258FB66-6A72-4746-94D2-87D71F101585}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SampleLockingService.Tests</RootNamespace>
-    <AssemblyName>SampleLockingService.Tests</AssemblyName>
+    <RootNamespace>ServiceInfrastructureHelper.Tests</RootNamespace>
+    <AssemblyName>ServiceInfrastructureHelper.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -41,6 +41,9 @@
     <Reference Include="Serilog.FullNetFx">
       <HintPath>..\packages\Serilog.1.5.5\lib\net45\Serilog.FullNetFx.dll</HintPath>
     </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutofacIntegrationTests.cs" />
@@ -51,9 +54,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SampleLockingService\SampleLockingService.csproj">
-      <Project>{FA80446E-03BE-4DDC-BCA1-9522C24FC4C0}</Project>
-      <Name>SampleLockingService</Name>
+    <ProjectReference Include="..\ServiceInfrastructureHelper\ServiceInfrastructureHelper.csproj">
+      <Project>{C2933B9D-5EAB-4E31-92D7-07764DE9A7B2}</Project>
+      <Name>ServiceInfrastructureHelper</Name>
     </ProjectReference>
     <ProjectReference Include="..\Varekai.Locking.Adapter\Varekai.Locking.Adapter.csproj">
       <Project>{61D0BD6A-B9BC-4433-B486-84B61478BC25}</Project>

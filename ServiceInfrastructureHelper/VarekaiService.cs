@@ -7,7 +7,7 @@ using Varekai.Locking.Adapter;
 
 namespace ServiceInfrastructureHelper
 {
-    public static class ServiceHelper
+    public static class VarekaiService
     {
         public static void SetupLockingService(
             this HostConfigurator configurator,

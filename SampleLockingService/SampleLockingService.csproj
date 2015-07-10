@@ -64,9 +64,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleServiceImplementation.cs" />
-    <Compile Include="Bootstrapp.cs" />
-    <Compile Include="RedisNode.cs" />
-    <Compile Include="RedisNodesParser.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
