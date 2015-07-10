@@ -9,16 +9,20 @@ namespace ServiceInfrastructureHelper
 {
     public static class VarekaAutofacBootstrap
     {
-        public static IContainer SetupVarekaiContainer(string applicationName, Func<IComponentContext, IServiceExecution> serviceFactory)
+        public static IContainer SetupVarekaiContainer(
+            string applicationName,
+            Func<IComponentContext, IServiceExecution> serviceFactory,
+            string nodesConfigFilePath,
+            string logsPath)
         {
             return WithContainerBuilder()
-                .RegisterSerilogConfiguration(applicationName)
+                .RegisterSerilogConfiguration(applicationName, logsPath)
                 .RegisterSingleLockAdapterDependencies(
                     ctx => new SerilogLogger(ctx.Resolve<SerilogRollingFileConfiguration>()),
                     () => DateTime.Now,
                     () => 
                         JsonFileReadEx
-                        .ReadJsonFromFile("../../RedisNodes.txt")
+                        .ReadJsonFromFile(nodesConfigFilePath)
                         .GenerateLockingNodes(),
                     () => applicationName)
                 .RegisterLockingExecution()
@@ -36,13 +40,13 @@ namespace ServiceInfrastructureHelper
             return builder.Build();
         }
 
-        static ContainerBuilder RegisterSerilogConfiguration(this ContainerBuilder builder, string applicationName)
+        static ContainerBuilder RegisterSerilogConfiguration(this ContainerBuilder builder, string applicationName, string logsPath)
         {
             builder
                 .Register<SerilogRollingFileConfiguration>(
-                    ctx => new SerilogRollingFileConfiguration("" +
-                        "../../../../Logs/" + applicationName + "-{Date}.txt",
-                        filesToKeep:50))
+                    ctx => new SerilogRollingFileConfiguration(
+                        logsPath + applicationName + "-{Date}.txt",
+                        filesToKeep: 50))
                 .AsSelf();
 
             builder
@@ -63,4 +67,3 @@ namespace ServiceInfrastructureHelper
         }
     }
 }
-

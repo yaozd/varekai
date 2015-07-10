@@ -59,7 +59,7 @@
     <Compile Include="NodesConfiguration.cs" />
     <Compile Include="VarekaiService.cs" />
     <Compile Include="VarekaiAutofacBootstrap.cs" />
-    <Compile Include="LockingNode.cs" />
+    <Compile Include="PhisicalNode.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

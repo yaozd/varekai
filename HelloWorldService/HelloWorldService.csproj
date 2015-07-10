@@ -6,7 +6,7 @@
     <ProjectGuid>{FA80446E-03BE-4DDC-BCA1-9522C24FC4C0}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>SampleLockingService</RootNamespace>
-    <AssemblyName>SampleLockingService</AssemblyName>
+    <AssemblyName>HelloWorldService</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -63,7 +63,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SampleServiceImplementation.cs" />
+    <Compile Include="HelloWorldService.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

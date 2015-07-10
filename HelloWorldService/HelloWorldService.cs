@@ -5,13 +5,13 @@ using Varekai.Utils.Logging;
 
 namespace SampleLockingService
 {
-    public class SampleServiceImplementation : IServiceExecution
+    public class HelloWorldService : IServiceExecution
     {
         readonly ILogger _logger;
 
         CancellationTokenSource _cancellation;
 
-        public SampleServiceImplementation(ILogger logger)
+        public HelloWorldService(ILogger logger)
         {
             _logger = logger;
         }
@@ -24,7 +24,7 @@ namespace SampleLockingService
 
             while (!_cancellation.IsCancellationRequested)
             {
-                _logger.ToDebugLog("Varekai sample service running...");
+                _logger.ToDebugLog("Hello World Varekai service running...");
                 
                 await Task.Delay(2000, _cancellation.Token);
             }
@@ -34,7 +34,7 @@ namespace SampleLockingService
         {
             _cancellation.Cancel();
 
-            _logger.ToDebugLog("Varekai sample service stopped");
+            _logger.ToDebugLog("Hello World Varekai service stopped");
         }
 
         #endregion

@@ -45,7 +45,12 @@ namespace ServiceInfrastructureHelper.Tests
         static IContainer SetupContainer()
         {
             return VarekaAutofacBootstrap
-                .SetupVarekaiContainer("TestSetup", _ => Mock.Of<IServiceExecution>());
+                .SetupVarekaiContainer(
+                    "TestSetup",
+                    _ => Mock.Of<IServiceExecution>(),
+                    "TestNodesPath",
+                    "TestLogsPath"
+                );
         }
     }
 }
