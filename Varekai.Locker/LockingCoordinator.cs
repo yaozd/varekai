@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ServiceStack.Redis;
 using Varekai.Utils.Logging;
 
 namespace Varekai.Locker
@@ -17,7 +16,7 @@ namespace Varekai.Locker
         readonly ReadOnlyCollection<LockingNode> _nodes;
         readonly Func<DateTime> _timeProvider;
 
-        List<BasicRedisClientManager> _redisClientManagers;
+        List<IRedisClient> _redisClientManagers;
 
         LockingCoordinator(IEnumerable<LockingNode> nodes, Func<DateTime> timeProvider, ILogger logger)
         {
@@ -25,6 +24,11 @@ namespace Varekai.Locker
             _nodes = new ReadOnlyCollection<LockingNode>(nodes.ToArray());
             _timeProvider = timeProvider;
             _lockAcquisitionCancellation = new CancellationTokenSource();
+        }
+
+        static Func<LockingNode, IRedisClient> WithClientFactory()
+        {
+            return nd => new StackExchangeClient(nd);
         }
 
         public static LockingCoordinator CreateNewForNodes(IEnumerable<LockingNode> nodes, Func<DateTime> timeProvider, ILogger logger)
@@ -36,8 +40,7 @@ namespace Varekai.Locker
         {
             _redisClientManagers = 
                 _nodes
-                    .Select(
-                        nd => new BasicRedisClientManager(nd.GetServiceStackConnectionString()))
+                    .Select(WithClientFactory())
                     .ToList();
         }
 
@@ -124,28 +127,16 @@ namespace Varekai.Locker
             return released.Count(val => val) >= quorum;
         }
 
-        static bool TryAcquireLockOnNode(IRedisClientsManager clientManager, LockId lockId, ILogger logger)
+        static bool TryAcquireLockOnNode(IRedisClient client, LockId lockId, ILogger logger)
         {
             try
             {
-                using (var client = clientManager.GetClient())
-                {
-                    var result = client
-                        .Custom(new object[] {
-                            Commands.Set,
-                            lockId.Resource,
-                            lockId.SessionId,
-                            "NX",
-                            "PX",
-                            lockId.ExpirationTimeMillis
-                        })
-                        .GetResult();
-                    
-                    return
-                        result != null
-                        &&
-                        result.Equals("OK", StringComparison.InvariantCultureIgnoreCase);
-                }
+                var result = client.Set(lockId);
+                
+                return
+                    result != null
+                    &&
+                    result.Equals("OK", StringComparison.InvariantCultureIgnoreCase);
             }
             catch (Exception ex)
             {
@@ -154,23 +145,15 @@ namespace Varekai.Locker
             }
         }
 
-        static bool ConfirmTheLockOnNode(IRedisClientsManager clientManager, LockId lockId, ILogger logger)
+        static bool ConfirmTheLockOnNode(IRedisClient client, LockId lockId, ILogger logger)
         {
             try
             {
-                using (var client = clientManager.GetClient())
-                {
-                    var result =  client
-                        .ExecLuaAsString(
-                            lockId.GetConfirmScript(),
-                            new [] { lockId.Resource },
-                            new [] { lockId.SessionId.ToString(), lockId.ExpirationTimeMillis.ToString() }
-                        );
-                    
-                    return 
-                        result
-                        .Equals("1", StringComparison.InvariantCultureIgnoreCase);
-                }
+                var result = client.Confirm(lockId);
+                
+                return 
+                    result
+                    .Equals("1", StringComparison.InvariantCultureIgnoreCase);
             }
             catch (Exception ex)
             {
@@ -179,23 +162,15 @@ namespace Varekai.Locker
             }
         }
 
-        static bool ReleaseTheLockOnNode(IRedisClientsManager clientManager, LockId lockId, ILogger logger)
+        static bool ReleaseTheLockOnNode(IRedisClient client, LockId lockId, ILogger logger)
         {
             try
             {
-                using (var client = clientManager.GetClient())
-                {
-                    var result =  client
-                        .ExecLuaAsString(
-                            lockId.GetReleaseScript(),
-                            new [] { lockId.Resource },
-                            new [] { lockId.SessionId.ToString() }
-                        );
+                var result =  client.Release(lockId);
 
-                    return 
-                        result
-                        .Equals("1", StringComparison.InvariantCultureIgnoreCase);
-                }
+                return 
+                    result
+                    .Equals("1", StringComparison.InvariantCultureIgnoreCase);
             }
             catch (Exception ex)
             {

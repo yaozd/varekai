@@ -33,15 +33,50 @@ namespace Varekai.Locker
             return new LockId(Resource, newSessionId, ExpirationTimeMillis);
         }
 
-        public string GetSetCommandText()
+        public object[] GetSetCommand()
         {
-            return string.Format(@"SET {0} {1} NX PX {2}", Resource, SessionId, ExpirationTimeMillis);
+            return new object[]
+            {
+                "SET",
+                Resource,
+                SessionId,
+                "NX",
+                "PX",
+                ExpirationTimeMillis
+            };
+        }
+
+        public object[] GetConfirmScriptCommand()
+        {
+            return  new object[]
+            {
+                "EVAL",
+                GetConfirmScript(),
+                Resource,
+                SessionId,
+                ExpirationTimeMillis
+            };
+        }
+
+        public object[] GetReleaseScriptCommand()
+        {
+            return  new object[]
+            {
+                "EVAL",
+                GetReleaseScript(),
+                Resource,
+                SessionId
+            };
+        }
+
+        public string GetSetScript()
+        {
+            return @"return redis.call(""SET"",KEYS[1],ARGV[1], NX, PX, ARGV[2])";
         }
 
         public string GetConfirmScript()
         {
-            return 
-                @"if redis.call(""GET"",KEYS[1]) == ARGV[1] then
+            return @"if redis.call(""GET"",KEYS[1]) == ARGV[1] then
                     return redis.call(""EXPIRE"",KEYS[1],ARGV[2])
                 else
                     return 0
@@ -50,8 +85,7 @@ namespace Varekai.Locker
 
         public string GetReleaseScript()
         {
-            return 
-                @"if redis.call(""GET"",KEYS[1]) == ARGV[1] then
+            return @"if redis.call(""GET"",KEYS[1]) == ARGV[1] then
                     return redis.call(""DEL"",KEYS[1])
                 else
                     return 0

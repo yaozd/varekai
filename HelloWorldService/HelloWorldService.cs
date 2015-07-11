@@ -32,7 +32,8 @@ namespace SampleLockingService
 
         public void Stop()
         {
-            _cancellation.Cancel();
+            if(_cancellation != null)
+                _cancellation.Cancel();
 
             _logger.ToDebugLog("Hello World Varekai service stopped");
         }
