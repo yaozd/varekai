@@ -1,6 +1,6 @@
 #Varekai#
 
-Varekai is an experiment. It is a test implementation of the RedLock distributed locking algorithm (see this for more info about RedLock http://redis.io/topics/distlock).
+Varekai is an experiment. It is a test implementation of the RedLock distributed locking algorithm (see [this](http://redis.io/topics/distlock) for details about [RedLock](http://redis.io/topics/distlock)).
 
 Varekai is written in C# on Mono using Xamarin Studio. I develop and run it on Mac OS X but I cannot see any reasons for it not to run also on the MS .NET Framework.
 
@@ -15,7 +15,7 @@ Varekai is written in C# on Mono using Xamarin Studio. I develop and run it on M
 
 ###How To Run It###
 
-To run Varekai you need access to a number of instances of Redis server. As all the other quorum based strategies you need an uneven number of Redis servers to guarantee that only one competing service hold the lock at a certain point in time. If you need info on how to configure Redis this is a good place to start http://redis.io/documentation. 
+To run Varekai you need access to a number of instances of Redis server. As all the other quorum based strategies you need an uneven number of Redis servers to guarantee that only one competing service hold the lock at a certain point in time. If you need info on how to configure Redis the official [documentation](http://redis.io/documentation) is a good place to start. Also you might find useful tips [here](https://barambani.wordpress.com/2015/04/02/redis-cluster) if you are runnin Redis on MacOS X.
 
 To tell to Varekai where to find the Redis servers you have to edit the file RedisNodes.txt of the SampleLockingService project. The version in this repository assumes you have 7 Redis nodes running locally (localhost) listening on the ports from 7001 to 7007
 
