@@ -17,7 +17,7 @@ namespace Varekai.Locking.Adapter.BootstrapHelpers
             return builder;
         }
 
-        public static ContainerBuilder RegisterSingleLockAdapterDependencies(
+        public static ContainerBuilder RegisterLockingAdapterDependencies(
             this ContainerBuilder builder,
             Func<IComponentContext, ILogger> loggerProvider,
             Func<DateTime> timeProvider,

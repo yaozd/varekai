@@ -57,7 +57,7 @@ namespace Varekai.Locker
                 && LockingAlgorithm.IsTimeLeftEnoughToUseTheLock(startTime, finishTime, lockId))
                     return lockAcquired;
             
-            await TryInParallelOnAllClients(TryReleaseTheLockOnNode, lockId);
+            await TryReleaseTheLock(lockId);
             return false;
         }
 
@@ -66,47 +66,18 @@ namespace Varekai.Locker
             return 
                 _redisClients.Count != 0 
                 &&
-                await TryInParallelOnAllClients(TryAcquireLockOnNode, lockId);
-        }
-
-        static bool TryAcquireLockOnNode(IRedisClient client, LockId lockId, ILogger logger)
-        {
-            try
-            {
-                var result = client.Set(lockId);
-
-                return
-                    result != null
-                    &&
-                    result.Equals("OK", StringComparison.InvariantCultureIgnoreCase);
-            }
-            catch (Exception ex)
-            {
-                logger.ToErrorLog(ex);
-                return false;
-            }
+                await TryInParallelOnAllClients(
+                    (cli, lId) => cli.Set(lockId),
+                    lockId,
+                    "OK");
         }
 
         public async Task<bool> TryConfirmTheLock(LockId lockId)
         {
-            return await TryInParallelOnAllClients(TryConfirmTheLockOnNode, lockId);
-        }
-
-        static bool TryConfirmTheLockOnNode(IRedisClient client, LockId lockId, ILogger logger)
-        {
-            try
-            {
-                var result = client.Confirm(lockId);
-
-                return 
-                    result
-                        .Equals("1", StringComparison.InvariantCultureIgnoreCase);
-            }
-            catch (Exception ex)
-            {
-                logger.ToErrorLog(ex);
-                return false;
-            }
+            return await TryInParallelOnAllClients(
+                (cli, lId) => cli.Confirm(lockId),
+                lockId,
+                "1");
         }
 
         public async Task TryReleaseTheLock(LockId lockId)
@@ -115,36 +86,21 @@ namespace Varekai.Locker
                 || _redisClients.Count == 0)
                 return;
 
-            await TryInParallelOnAllClients(TryReleaseTheLockOnNode, lockId);
+            await TryInParallelOnAllClients(
+                (cli, lId) => cli.Release(lockId),
+                lockId,
+                "1");
         }
 
-        static bool TryReleaseTheLockOnNode(IRedisClient client, LockId lockId, ILogger logger)
-        {
-            try
-            {
-                var result =  client.Release(lockId);
-
-                return 
-                    result
-                    .Equals("1", StringComparison.InvariantCultureIgnoreCase);
-            }
-            catch (Exception ex)
-            {
-                logger.ToErrorLog(ex);
-                return false;
-            }
-        }
-
-        async Task<bool> TryInParallelOnAllClients(Func<IRedisClient, LockId, ILogger, bool> operationOnClient, LockId lockId)
+        async Task<bool> TryInParallelOnAllClients(Func<IRedisClient, LockId, string> operationOnClient, LockId lockId, string successfulResult)
         {
             var quorum = _nodes.CalculateQuorum();
 
             var sessions = 
                 _redisClients
                     .Select(
-                        cli => 
-                        Task.Run(
-                            () => {return operationOnClient(cli, lockId, _logger);}
+                        cli => Task.Run(
+                            () => { return TryOnClient(operationOnClient, cli, lockId, successfulResult, _logger); }
                             , _lockAcquisitionCancellation.Token));
 
             var succeded = await Task.WhenAll(sessions);
@@ -153,6 +109,31 @@ namespace Varekai.Locker
                 succeded.Count(res => res)
                 >=
                 quorum;
+        }
+
+        static bool TryOnClient(
+            Func<IRedisClient, LockId, string> operationOnClient,
+            IRedisClient client,
+            LockId lockId,
+            string successfulResult,
+            ILogger logger)
+        {
+            try
+            {
+                var result = operationOnClient(client, lockId);
+
+                return 
+                    result != null
+                    &&
+                    result.Equals(
+                        successfulResult,
+                        StringComparison.InvariantCultureIgnoreCase);
+            }
+            catch (Exception ex)
+            {
+                logger.ToErrorLog(ex);
+                return false;
+            }
         }
 
         public long GetConfirmationIntervalMillis(LockId lockId)

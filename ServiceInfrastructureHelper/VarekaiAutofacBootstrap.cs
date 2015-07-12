@@ -17,7 +17,7 @@ namespace ServiceInfrastructureHelper
         {
             return WithContainerBuilder()
                 .RegisterSerilogConfiguration(applicationName, logsPath)
-                .RegisterSingleLockAdapterDependencies(
+                .RegisterLockingAdapterDependencies(
                     ctx => new SerilogLogger(ctx.Resolve<SerilogRollingFileConfiguration>()),
                     () => DateTime.Now,
                     () => 
