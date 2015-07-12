@@ -67,7 +67,7 @@ namespace Varekai.Locker
                 _redisClients.Count != 0 
                 &&
                 await TryInParallelOnAllClients(
-                    (cli, lId) => cli.Set(lockId),
+                    (cli, lId) => cli.Set(lId),
                     lockId,
                     "OK");
         }
@@ -75,7 +75,7 @@ namespace Varekai.Locker
         public async Task<bool> TryConfirmTheLock(LockId lockId)
         {
             return await TryInParallelOnAllClients(
-                (cli, lId) => cli.Confirm(lockId),
+                (cli, lId) => cli.Confirm(lId),
                 lockId,
                 "1");
         }
@@ -87,7 +87,7 @@ namespace Varekai.Locker
                 return;
 
             await TryInParallelOnAllClients(
-                (cli, lId) => cli.Release(lockId),
+                (cli, lId) => cli.Release(lId),
                 lockId,
                 "1");
         }
