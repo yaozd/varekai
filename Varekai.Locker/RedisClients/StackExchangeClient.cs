@@ -1,6 +1,6 @@
 ﻿using StackExchange.Redis;
 
-namespace Varekai.Locker
+namespace Varekai.Locker.RedisClients
 {
     public class StackExchangeClient : IRedisClient
     {

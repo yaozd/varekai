@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Varekai.Locker.RedisClients;
 using Varekai.Utils.Logging;
 
 namespace Varekai.Locker
@@ -16,7 +17,7 @@ namespace Varekai.Locker
         readonly ReadOnlyCollection<LockingNode> _nodes;
         readonly Func<DateTime> _timeProvider;
 
-        List<IRedisClient> _redisClientManagers;
+        List<IRedisClient> _redisClients;
 
         LockingCoordinator(IEnumerable<LockingNode> nodes, Func<DateTime> timeProvider, ILogger logger)
         {
@@ -38,7 +39,7 @@ namespace Varekai.Locker
 
         public void ConnectNodes()
         {
-            _redisClientManagers = 
+            _redisClients = 
                 _nodes
                     .Select(WithClientFactory())
                     .ToList();
@@ -52,79 +53,20 @@ namespace Varekai.Locker
 
             var finishTime = _timeProvider();
 
-            if (!IsLockStillUsable(startTime, finishTime, lockId))
-            {
-                ReleaseTheLockOnAllNodes(lockId);
-                return false;
-            }
-
-            return lockAcquired;
+            if (lockAcquired 
+                && LockingAlgorithm.IsTimeLeftEnoughToUseTheLock(startTime, finishTime, lockId))
+                    return lockAcquired;
+            
+            await TryInParallelOnAllClients(TryReleaseTheLockOnNode, lockId);
+            return false;
         }
 
         async Task<bool> TryAcquireLockOnAllNodes(LockId lockId)
         {
-            if (_redisClientManagers.Count == 0)
-                return false;
-            
-            var quorum = GetQuorum(_nodes);
-            var sessions = new List<Task<bool>>();
-
-            sessions.AddRange(
-                _redisClientManagers
-                .Select(
-                    cliManager => Task.Run(
-                        () => { return TryAcquireLockOnNode(cliManager, lockId, _logger); }
-                        , _lockAcquisitionCancellation.Token))
-                .ToArray());
-
-            var completedTry = await Task.WhenAll(sessions);
-
-            return completedTry.Count(res => res) >= quorum;
-        }
-
-        public async Task<bool> ConfirmTheLock(LockId lockId)
-        {
-            var sessions = new List<Task<bool>>();
-            var quorum = GetQuorum(_nodes);
-
-            sessions.AddRange(
-                _redisClientManagers
-                .Select(
-                    cliManager => Task.Run(
-                        () => { return ConfirmTheLockOnNode(cliManager, lockId, _logger); }
-                        , _lockAcquisitionCancellation.Token))
-                .ToArray());
-
-            var confirm = await Task.WhenAll<bool>(sessions);
-
-            return confirm.Count(val => val) >= quorum;
-        }
-
-        public void ReleaseTheLock(LockId lockId)
-        {
-            if (_redisClientManagers == null
-                || _redisClientManagers.Count == 0)
-                return;
-
-            ReleaseTheLockOnAllNodes(lockId);
-        }
-
-        async Task<bool> ReleaseTheLockOnAllNodes(LockId lockId)
-        {
-            var sessions = new List<Task<bool>>();
-            var quorum = GetQuorum(_nodes);
-
-            sessions.AddRange(
-                _redisClientManagers
-                .Select(
-                    cliManager => Task.Run(
-                        () => { return ReleaseTheLockOnNode(cliManager, lockId, _logger); }
-                        , _lockAcquisitionCancellation.Token))
-                .ToArray());
-
-            var released = await Task.WhenAll<bool>(sessions);
-
-            return released.Count(val => val) >= quorum;
+            return 
+                _redisClients.Count != 0 
+                &&
+                await TryInParallelOnAllClients(TryAcquireLockOnNode, lockId);
         }
 
         static bool TryAcquireLockOnNode(IRedisClient client, LockId lockId, ILogger logger)
@@ -132,7 +74,7 @@ namespace Varekai.Locker
             try
             {
                 var result = client.Set(lockId);
-                
+
                 return
                     result != null
                     &&
@@ -145,15 +87,20 @@ namespace Varekai.Locker
             }
         }
 
-        static bool ConfirmTheLockOnNode(IRedisClient client, LockId lockId, ILogger logger)
+        public async Task<bool> TryConfirmTheLock(LockId lockId)
+        {
+            return await TryInParallelOnAllClients(TryConfirmTheLockOnNode, lockId);
+        }
+
+        static bool TryConfirmTheLockOnNode(IRedisClient client, LockId lockId, ILogger logger)
         {
             try
             {
                 var result = client.Confirm(lockId);
-                
+
                 return 
                     result
-                    .Equals("1", StringComparison.InvariantCultureIgnoreCase);
+                        .Equals("1", StringComparison.InvariantCultureIgnoreCase);
             }
             catch (Exception ex)
             {
@@ -162,7 +109,16 @@ namespace Varekai.Locker
             }
         }
 
-        static bool ReleaseTheLockOnNode(IRedisClient client, LockId lockId, ILogger logger)
+        public async Task TryReleaseTheLock(LockId lockId)
+        {
+            if (_redisClients == null
+                || _redisClients.Count == 0)
+                return;
+
+            await TryInParallelOnAllClients(TryReleaseTheLockOnNode, lockId);
+        }
+
+        static bool TryReleaseTheLockOnNode(IRedisClient client, LockId lockId, ILogger logger)
         {
             try
             {
@@ -179,37 +135,29 @@ namespace Varekai.Locker
             }
         }
 
+        async Task<bool> TryInParallelOnAllClients(Func<IRedisClient, LockId, ILogger, bool> operationOnClient, LockId lockId)
+        {
+            var quorum = _nodes.CalculateQuorum();
+
+            var sessions = 
+                _redisClients
+                    .Select(
+                        cli => 
+                        Task.Run(
+                            () => {return operationOnClient(cli, lockId, _logger);}
+                            , _lockAcquisitionCancellation.Token));
+
+            var succeded = await Task.WhenAll(sessions);
+
+            return 
+                succeded.Count(res => res)
+                >=
+                quorum;
+        }
+
         public long GetConfirmationIntervalMillis(LockId lockId)
         {
-            return lockId.ExpirationTimeMillis / 3;
-        }
-
-        bool IsLockStillUsable(DateTime acquisitionStartTime, DateTime acquisitionEndTime, LockId lockId)
-        {
-            return
-                GetRemainingValidityTime(acquisitionStartTime, acquisitionEndTime, lockId) 
-                >= 
-                (GetConfirmationIntervalMillis(lockId) + GetValidityTimeSafetyMargin(lockId));
-        }
-
-        static double GetRemainingValidityTime(DateTime acquisitionStartTime, DateTime acquisitionEndTime, LockId lockId)
-        {
-            return lockId.ExpirationTimeMillis - acquisitionEndTime.Subtract(acquisitionStartTime).TotalMilliseconds;
-        }
-
-        static int GetQuorum(IEnumerable<LockingNode> nodes)
-        {
-            return (int)(Math.Floor((double)nodes.Count() / 2)) + 1;
-        }
-
-        static long GetValidityTimeSafetyMargin(LockId lockId)
-        {
-            return lockId.ExpirationTimeMillis / 100;
-        }
-
-        static long GetAcquisitionTimeout(LockId lockId)
-        {
-            return lockId.ExpirationTimeMillis / 200;
+            return lockId.CalculateConfirmationIntervalMillis();
         }
 
         public void Dispose()
@@ -217,11 +165,11 @@ namespace Varekai.Locker
             if (!_lockAcquisitionCancellation.IsCancellationRequested)
                 _lockAcquisitionCancellation.Cancel();
 
-            if (_redisClientManagers == null)
+            if (_redisClients == null)
                 return;
             
-            if(_redisClientManagers.Any())
-                _redisClientManagers.Clear();
+            if(_redisClients.Any())
+                _redisClients.Clear();
         }
     }
 }

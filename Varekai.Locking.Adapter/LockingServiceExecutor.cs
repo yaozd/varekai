@@ -66,7 +66,7 @@ namespace Varekai.Locking.Adapter
 
                         while(holdingLock && !serviceStartingTask.IsFaulted && !serviceStartingTask.IsCanceled)
                         {
-                            holdingLock = await _locker.ConfirmTheLock(_lockId);
+                            holdingLock = await _locker.TryConfirmTheLock(_lockId);
 
                             try
                             {
@@ -96,7 +96,7 @@ namespace Varekai.Locking.Adapter
                 finally
                 {
                     if(_locker != null)
-                        _locker.ReleaseTheLock(_lockId);
+                        _locker.TryReleaseTheLock(_lockId);
                 }
             }
         }
@@ -110,7 +110,7 @@ namespace Varekai.Locking.Adapter
                 _logger.ToDebugLog("Releasing the lock before shutting the service down...");
 
                 if(_locker != null)
-                    _locker.ReleaseTheLock(_lockId);
+                    _locker.TryReleaseTheLock(_lockId);
 
                 _logger.ToDebugLog("The service is stopping...");
 

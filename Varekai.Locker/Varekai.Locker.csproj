@@ -39,7 +39,8 @@
     <Compile Include="LockingNode.cs" />
     <Compile Include="LockingCoordinator.cs" />
     <Compile Include="IRedisClient.cs" />
-    <Compile Include="NhiredisClient.cs" />
+    <Compile Include="RedisClients\StackExchangeClient.cs" />
+    <Compile Include="LockingAlgorithm.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -50,5 +51,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="RedisClients\" />
   </ItemGroup>
 </Project>
