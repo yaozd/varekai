@@ -43,5 +43,26 @@ namespace Varekai.Locker.Tests.Unit
                 nodes.CalculateQuorum()
             );
         }
+
+        [Test]
+        [TestCase(3000, 2000, false)]
+        [TestCase(3000, 1000, true)]
+        [TestCase(3000, 3000, false)]
+        [TestCase(3000, 1970, true)]
+        [TestCase(3000, 1971, false)]
+        public void IsTimeLeftEnoughToUseTheLockTests(long expirationTimeMillis, long durationMillis, bool expectedTimeValidity)
+        {
+            var lid = LockId.CreateNew("Test Resource", Guid.NewGuid(), expirationTimeMillis);
+
+            var timeStart = DateTime.UtcNow;
+
+            Assert.AreEqual(
+                expectedTimeValidity,
+                LockingAlgorithm.IsTimeLeftEnoughToUseTheLock(
+                    timeStart,
+                    timeStart.Add(TimeSpan.FromMilliseconds(durationMillis)),
+                    lid)
+            );
+        }
     }
 }
