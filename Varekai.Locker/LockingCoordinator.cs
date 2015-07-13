@@ -67,16 +67,14 @@ namespace Varekai.Locker
                 _redisClients.Count != 0 
                 &&
                 await TryInParallelOnAllClients(
-                    (cli, lId) => cli.Set(lId),
-                    lockId,
+                    cli => cli.Set(lockId),
                     "OK");
         }
 
         public async Task<bool> TryConfirmTheLock(LockId lockId)
         {
             return await TryInParallelOnAllClients(
-                (cli, lId) => cli.Confirm(lId),
-                lockId,
+                cli => cli.Confirm(lockId),
                 "1");
         }
 
@@ -87,12 +85,11 @@ namespace Varekai.Locker
                 return;
 
             await TryInParallelOnAllClients(
-                (cli, lId) => cli.Release(lId),
-                lockId,
+                cli => cli.Release(lockId),
                 "1");
         }
 
-        async Task<bool> TryInParallelOnAllClients(Func<IRedisClient, LockId, string> operationOnClient, LockId lockId, string successfulResult)
+        async Task<bool> TryInParallelOnAllClients(Func<IRedisClient, string> operationOnClient, string successfulResult)
         {
             var quorum = _nodes.CalculateQuorum();
 
@@ -100,8 +97,12 @@ namespace Varekai.Locker
                 _redisClients
                     .Select(
                         cli => Task.Run(
-                            () => { return TryOnClient(operationOnClient, cli, lockId, successfulResult, _logger); }
-                            , _lockAcquisitionCancellation.Token));
+                            () => {
+                                return TryOnClient(
+                                    () => operationOnClient(cli),
+                                    successfulResult,
+                                    _logger); },
+                            _lockAcquisitionCancellation.Token));
 
             var succeded = await Task.WhenAll(sessions);
 
@@ -112,15 +113,13 @@ namespace Varekai.Locker
         }
 
         static bool TryOnClient(
-            Func<IRedisClient, LockId, string> operationOnClient,
-            IRedisClient client,
-            LockId lockId,
+            Func<string> operationOnClient,
             string successfulResult,
             ILogger logger)
         {
             try
             {
-                var result = operationOnClient(client, lockId);
+                var result = operationOnClient();
 
                 return 
                     result != null
