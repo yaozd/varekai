@@ -1,9 +1,9 @@
 ﻿using System;
-using Varekai.Locker;
-using Varekai.Utils.Logging;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Varekai.Locker;
+using Varekai.Utils.Logging;
 
 namespace Varekai.Locking.Adapter
 {
@@ -55,8 +55,6 @@ namespace Varekai.Locking.Adapter
                             _logger);
 
                     var confirmationInterval = _locker.GetConfirmationIntervalMillis(_lockId);
-
-                    _locker.ConnectNodes();
 
                     holdingLock = await _locker.TryAcquireLock(_lockId);
 

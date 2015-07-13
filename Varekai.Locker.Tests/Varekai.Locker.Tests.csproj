@@ -32,9 +32,13 @@
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Unit\LockingAlgorithmTests.cs" />
+    <Compile Include="Unit\LockingCoordinatorTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -49,6 +53,10 @@
     <ProjectReference Include="..\Varekai.Locker\Varekai.Locker.csproj">
       <Project>{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}</Project>
       <Name>Varekai.Locker</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Varekai.Utils\Varekai.Utils.csproj">
+      <Project>{B0545B8D-EA20-46B2-8C99-1FEB3F2D2095}</Project>
+      <Name>Varekai.Utils</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

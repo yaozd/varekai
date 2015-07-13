@@ -11,38 +11,58 @@ namespace Varekai.Locker
 {
     public class LockingCoordinator : IDisposable
     {
+        const string SuccessResult = "OK";
+        const string FailResult = "FAIL";
+        
         readonly CancellationTokenSource _lockAcquisitionCancellation;
 
         readonly ILogger _logger;
         readonly ReadOnlyCollection<LockingNode> _nodes;
         readonly Func<DateTime> _timeProvider;
+        readonly Func<LockingNode, IRedisClient> _redisClientFactory;
+        readonly List<IRedisClient> _redisClients;
 
-        List<IRedisClient> _redisClients;
-
-        LockingCoordinator(IEnumerable<LockingNode> nodes, Func<DateTime> timeProvider, ILogger logger)
+        LockingCoordinator(
+            IEnumerable<LockingNode> nodes,
+            Func<DateTime> timeProvider,
+            Func<LockingNode, IRedisClient> redisClientFactory,
+            ILogger logger)
         {
             _logger = logger;
             _nodes = new ReadOnlyCollection<LockingNode>(nodes.ToArray());
             _timeProvider = timeProvider;
+            _redisClientFactory = redisClientFactory;
             _lockAcquisitionCancellation = new CancellationTokenSource();
-        }
 
-        static Func<LockingNode, IRedisClient> WithClientFactory()
-        {
-            return nd => new StackExchangeClient(nd);
-        }
-
-        public static LockingCoordinator CreateNewForNodes(IEnumerable<LockingNode> nodes, Func<DateTime> timeProvider, ILogger logger)
-        {
-            return new LockingCoordinator(nodes, timeProvider, logger);
-        }
-
-        public void ConnectNodes()
-        {
             _redisClients = 
                 _nodes
-                    .Select(WithClientFactory())
+                    .Select(_redisClientFactory)
                     .ToList();
+        }
+
+        public static LockingCoordinator CreateNewForNodes(
+            IEnumerable<LockingNode> nodes, 
+            Func<DateTime> timeProvider,
+            ILogger logger)
+        {
+            return new LockingCoordinator(
+                nodes,
+                timeProvider,
+                nd => new StackExchangeClient(nd, () => SuccessResult, () => FailResult),
+                logger);
+        }
+
+        public static LockingCoordinator CreateNewForNodesWithClient(
+            IEnumerable<LockingNode> nodes, 
+            Func<DateTime> timeProvider,
+            Func<LockingNode, IRedisClient> redisClientFactory,
+            ILogger logger)
+        {
+            return new LockingCoordinator(
+                nodes,
+                timeProvider,
+                redisClientFactory,
+                logger);
         }
 
         public async Task<bool> TryAcquireLock(LockId lockId)
@@ -66,43 +86,35 @@ namespace Varekai.Locker
             return 
                 _redisClients.Count != 0 
                 &&
-                await TryInParallelOnAllClients(
-                    cli => cli.Set(lockId),
-                    "OK");
+                await TryInParallelOnAllClients(cli => cli.Set(lockId));
         }
 
         public async Task<bool> TryConfirmTheLock(LockId lockId)
         {
-            return await TryInParallelOnAllClients(
-                cli => cli.Confirm(lockId),
-                "1");
+            return await TryInParallelOnAllClients(cli => cli.Confirm(lockId));
         }
 
-        public async Task TryReleaseTheLock(LockId lockId)
+        public async Task<bool> TryReleaseTheLock(LockId lockId)
         {
             if (_redisClients == null
                 || _redisClients.Count == 0)
-                return;
+                return false;
 
-            await TryInParallelOnAllClients(
-                cli => cli.Release(lockId),
-                "1");
+            return await TryInParallelOnAllClients(cli => cli.Release(lockId));
         }
 
-        async Task<bool> TryInParallelOnAllClients(Func<IRedisClient, string> operationOnClient, string successfulResult)
+        async Task<bool> TryInParallelOnAllClients(Func<IRedisClient, string> operationOnClient)
         {
             var quorum = _nodes.CalculateQuorum();
 
             var sessions = 
                 _redisClients
                     .Select(
-                        cli => Task.Run(
-                            () => {
-                                return TryOnClient(
-                                    () => operationOnClient(cli),
-                                    successfulResult,
-                                    _logger); },
-                            _lockAcquisitionCancellation.Token));
+                        cli => Task.Run(() => {
+                            return TryOnClient(
+                                () => operationOnClient(cli),
+                                _logger); },
+                        _lockAcquisitionCancellation.Token));
 
             var succeded = await Task.WhenAll(sessions);
 
@@ -114,7 +126,6 @@ namespace Varekai.Locker
 
         static bool TryOnClient(
             Func<string> operationOnClient,
-            string successfulResult,
             ILogger logger)
         {
             try
@@ -125,7 +136,7 @@ namespace Varekai.Locker
                     result != null
                     &&
                     result.Equals(
-                        successfulResult,
+                        SuccessResult,
                         StringComparison.InvariantCultureIgnoreCase);
             }
             catch (Exception ex)
