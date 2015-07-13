@@ -34,10 +34,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Test.cs" />
+    <Compile Include="Unit\LockingAlgorithmTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="EndToEnd\" />
+    <Folder Include="Unit\" />
+    <Folder Include="Integration\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Varekai.Locker\Varekai.Locker.csproj">
+      <Project>{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}</Project>
+      <Name>Varekai.Locker</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

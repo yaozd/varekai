@@ -50,9 +50,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Folder Include="RedisClients\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="RedisClients\" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

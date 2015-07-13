@@ -149,8 +149,13 @@ namespace Varekai.Locker
             if (_redisClients == null)
                 return;
             
-            if(_redisClients.Any())
+            if (_redisClients.Any())
+            {
+                foreach (var client in _redisClients)
+                    client.Dispose();
+
                 _redisClients.Clear();
+            }
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Varekai.Locker
 {
-    static class LockingAlgorithm
+    public static class LockingAlgorithm
     {
         public static double CalculateRemainingValidityTime(this LockId lockId, DateTime acquisitionStartTime, DateTime acquisitionEndTime)
         {
@@ -13,7 +13,11 @@ namespace Varekai.Locker
 
         public static int CalculateQuorum(this IEnumerable<LockingNode> nodes)
         {
-            return (int)(Math.Floor((double)nodes.Count() / 2)) + 1;
+            var nodesHalf = (double)nodes.Count() / 2;
+            
+            return nodesHalf > 0
+                ? (int)Math.Floor(nodesHalf) + 1
+                : 0;
         }
 
         public static long CalculateValidityTimeSafetyMargin(this LockId lockId)

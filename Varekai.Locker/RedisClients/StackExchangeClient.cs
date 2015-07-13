@@ -9,9 +9,8 @@ namespace Varekai.Locker.RedisClients
         public StackExchangeClient(LockingNode node)
         {
             _stackExchangeClient = 
-                ConnectionMultiplexer
-                    .Connect(
-                        node.GetStackExchangeConnectionString());
+                ConnectionMultiplexer.Connect(
+                    node.GetStackExchangeConnectionString());
         }
 
         #region IRedisClient implementation
@@ -50,6 +49,13 @@ namespace Varekai.Locker.RedisClients
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            if(_stackExchangeClient != null)
+                _stackExchangeClient.Close();
+
+            _stackExchangeClient.Dispose();
+        }
     }
 }
-
