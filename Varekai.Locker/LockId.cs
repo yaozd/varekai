@@ -71,13 +71,13 @@ namespace Varekai.Locker
 
         public string GetSetScript()
         {
-            return @"return redis.call(""SET"",KEYS[1],ARGV[1], NX, PX, ARGV[2])";
+            return @"return redis.call('SET',KEYS[1],ARGV[1], 'NX', 'PX', ARGV[2])";
         }
 
         public string GetConfirmScript()
         {
-            return @"if redis.call(""GET"",KEYS[1]) == ARGV[1] then
-                    return redis.call(""EXPIRE"",KEYS[1],ARGV[2])
+            return @"if redis.call('GET',KEYS[1]) == ARGV[1] then
+                    return redis.call('EXPIRE',KEYS[1],ARGV[2])
                 else
                     return 0
                 end";
@@ -85,7 +85,7 @@ namespace Varekai.Locker
 
         public string GetReleaseScript()
         {
-            return @"if redis.call(""GET"",KEYS[1]) == ARGV[1] then
+            return @"if redis.call('GET',KEYS[1]) == ARGV[1] then
                     return redis.call(""DEL"",KEYS[1])
                 else
                     return 0
