@@ -48,7 +48,7 @@ namespace Varekai.Locker
             return new LockingCoordinator(
                 nodes,
                 timeProvider,
-                nd => new StackExchangeClient(nd, () => SuccessResult, () => FailResult),
+                nd => new StackExchangeClient(nd, () => SuccessResult, () => FailResult, logger),
                 logger);
         }
 
@@ -67,6 +67,8 @@ namespace Varekai.Locker
 
         public async Task<bool> TryAcquireLock(LockId lockId)
         {
+            _logger.ToDebugLog("Trying to acquire the lock...");
+
             var startTime = _timeProvider();
 
             var lockAcquired = await TryAcquireLockOnAllNodes(lockId);
@@ -96,6 +98,8 @@ namespace Varekai.Locker
 
         public async Task<bool> TryReleaseTheLock(LockId lockId)
         {
+            _logger.ToDebugLog("Releasing the lock...");
+
             if (_redisClients == null
                 || _redisClients.Count == 0)
                 return false;

@@ -21,7 +21,7 @@ namespace ServiceInfrastructureHelper
                     ctx => new SerilogLogger(ctx.Resolve<SerilogRollingFileConfiguration>()),
                     () => DateTime.Now,
                     () => 
-                        JsonFileReadEx
+                        JsonFileReadUtil
                         .ReadJsonFromFile(nodesConfigFilePath)
                         .GenerateLockingNodes(),
                     () => applicationName)

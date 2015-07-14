@@ -55,10 +55,11 @@
     <Compile Include="ActionUtil.cs" />
     <Compile Include="Logging\LoggingUtil.cs" />
     <Compile Include="ParametersCheckEx.cs" />
-    <Compile Include="JsonFileReadEx.cs" />
     <Compile Include="Logging\Implementations\SerilogLogger.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\Implementations\SerilogRollingFileConfiguration.cs" />
+    <Compile Include="JsonFileReadUtil.cs" />
+    <Compile Include="TaskUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

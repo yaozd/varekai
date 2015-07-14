@@ -2,7 +2,7 @@
 
 namespace Varekai.Utils
 {
-    public static class JsonFileReadEx
+    public static class JsonFileReadUtil
     {
         public static string ReadJsonFromFile(string path)
         {

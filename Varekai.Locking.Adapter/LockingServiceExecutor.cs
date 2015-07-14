@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Varekai.Locker;
 using Varekai.Utils.Logging;
+using Varekai.Utils;
 
 namespace Varekai.Locking.Adapter
 {
@@ -46,13 +47,16 @@ namespace Varekai.Locking.Adapter
             {
                 try
                 {
-                    _logger.ToDebugLog("Connecting to the locking nodes");
+                    if(_locker == null)
+                    {
+                        _logger.ToDebugLog("Creating the locking nodes...");
 
-                    _locker = LockingCoordinator
-                        .CreateNewForNodes(
-                            _lockingNodes,
-                            _timeProvider,
-                            _logger);
+                        _locker = LockingCoordinator
+                            .CreateNewForNodes(
+                                _lockingNodes,
+                                _timeProvider,
+                                _logger);
+                    }
 
                     var confirmationInterval = _locker.GetConfirmationIntervalMillis(_lockId);
 
@@ -66,11 +70,7 @@ namespace Varekai.Locking.Adapter
                         {
                             holdingLock = await _locker.TryConfirmTheLock(_lockId);
 
-                            try
-                            {
-                                await Task.Delay((int)confirmationInterval, _globalCancellationSource.Token);
-                            }
-                            catch{}
+                            await TaskUtils.SilentlyCanceledDelay((int)confirmationInterval, _globalCancellationSource.Token);
                         }
 
                         _logger.ToDebugLog("Stopping the service for missed confirmation of a previously acquired lock...");
@@ -84,7 +84,7 @@ namespace Varekai.Locking.Adapter
                         _logger.ToDebugLog("Unable to acquire the lock, retrying...");
 
                         // TODO: add random interval to the retry
-                        await Task.Delay(1000, _globalCancellationSource.Token);
+                        await TaskUtils.SilentlyCanceledDelay(1000, _globalCancellationSource.Token);
                     }
                 }
                 catch (Exception ex)
@@ -99,7 +99,7 @@ namespace Varekai.Locking.Adapter
             }
         }
 
-        public void ReleasedStop()
+        public async Task ReleasedStop()
         {
             try
             {
@@ -108,7 +108,7 @@ namespace Varekai.Locking.Adapter
                 _logger.ToDebugLog("Releasing the lock before shutting the service down...");
 
                 if(_locker != null)
-                    _locker.TryReleaseTheLock(_lockId);
+                    await _locker.TryReleaseTheLock(_lockId);
 
                 _logger.ToDebugLog("The service is stopping...");
 

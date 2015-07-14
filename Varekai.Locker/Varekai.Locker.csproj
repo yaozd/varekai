@@ -30,7 +30,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="StackExchange.Redis">
-      <HintPath>..\packages\StackExchange.Redis.1.0.450\lib\net45\StackExchange.Redis.dll</HintPath>
+      <HintPath>..\..\StackExchange.Redis\StackExchange.Redis\bin\mono\StackExchange.Redis.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -51,8 +51,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="RedisClients\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>

@@ -24,7 +24,7 @@ namespace ServiceInfrastructureHelper
                     s.ConstructUsingAutofacContainer();
 
                     s.WhenStarted(async lckService => await lckService.LockedStart());
-                    s.WhenStopped(lckService => lckService.ReleasedStop());
+                    s.WhenStopped(async lckService => await lckService.ReleasedStop());
                 });
 
             configurator.RunAsLocalService();
