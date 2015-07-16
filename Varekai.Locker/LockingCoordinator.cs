@@ -88,12 +88,12 @@ namespace Varekai.Locker
             return 
                 _redisClients.Count != 0 
                 &&
-                await TryInParallelOnAllClients(cli => cli.Set(lockId));
+                await TryInParallelOnAllClients(async cli => await cli.Set(lockId));
         }
 
         public async Task<bool> TryConfirmTheLock(LockId lockId)
         {
-            return await TryInParallelOnAllClients(cli => cli.Confirm(lockId));
+            return await TryInParallelOnAllClients(async cli => await cli.Confirm(lockId));
         }
 
         public async Task<bool> TryReleaseTheLock(LockId lockId)
@@ -104,20 +104,24 @@ namespace Varekai.Locker
                 || _redisClients.Count == 0)
                 return false;
 
-            return await TryInParallelOnAllClients(cli => cli.Release(lockId));
+            return await TryInParallelOnAllClients(async cli => await cli.Release(lockId));
         }
 
-        async Task<bool> TryInParallelOnAllClients(Func<IRedisClient, string> operationOnClient)
+        async Task<bool> TryInParallelOnAllClients(Func<IRedisClient, Task<string>> operationOnClient)
         {
             var quorum = _nodes.CalculateQuorum();
 
             var sessions = 
                 _redisClients
+                    .AsParallel()
                     .Select(
-                        cli => Task.Run(() => {
-                            return TryOnClient(
-                                () => operationOnClient(cli),
-                                _logger); },
+                        cli => Task.Run(
+                            async () => 
+                                {
+                                    return await TryOnClient(
+                                        () => operationOnClient(cli),
+                                        _logger);
+                                },
                         _lockAcquisitionCancellation.Token));
 
             var succeded = await Task.WhenAll(sessions);
@@ -128,13 +132,14 @@ namespace Varekai.Locker
                 quorum;
         }
 
-        static bool TryOnClient(
-            Func<string> operationOnClient,
+
+        static async Task<bool> TryOnClient(
+            Func<Task<string>> operationOnClient,
             ILogger logger)
         {
             try
             {
-                var result = operationOnClient();
+                var result = await operationOnClient();
 
                 return 
                     result != null

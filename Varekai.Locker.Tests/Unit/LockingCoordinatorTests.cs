@@ -21,9 +21,9 @@ namespace Varekai.Locker.Tests.Unit
                 CreateNodes(),
                 () => DateTime.Now,
                 CreateClientFactory(
-                    lockId => acquireRsult,
-                    lockId => "OK",
-                    lockId => "OK"
+                    lockId => Task.FromResult(acquireRsult),
+                    lockId => Task.FromResult("OK"),
+                    lockId => Task.FromResult("OK")
                 ),
                 Mock.Of<ILogger>());
 
@@ -43,9 +43,9 @@ namespace Varekai.Locker.Tests.Unit
                 CreateNodes(),
                 () => DateTime.Now,
                 CreateClientFactory(
-                    lockId => "OK",
-                    lockId => "OK",
-                    lockId => confirmRsult
+                    lockId => Task.FromResult("OK"),
+                    lockId => Task.FromResult("OK"),
+                    lockId => Task.FromResult(confirmRsult)
                 ),
                 Mock.Of<ILogger>());
 
@@ -65,9 +65,9 @@ namespace Varekai.Locker.Tests.Unit
                 CreateNodes(),
                 () => DateTime.Now,
                 CreateClientFactory(
-                    lockId => "OK",
-                    lockId => releaseRsult,
-                    lockId => "OK"
+                    lockId => Task.FromResult("OK"),
+                    lockId => Task.FromResult(releaseRsult),
+                    lockId => Task.FromResult("OK")
                 ),
                 Mock.Of<ILogger>());
 
@@ -77,9 +77,9 @@ namespace Varekai.Locker.Tests.Unit
         }
 
         static Func<LockingNode, IRedisClient> CreateClientFactory(
-            Func<LockId, string> setCalback,
-            Func<LockId, string> releaseCalback,
-            Func<LockId, string> confirmCalback)
+            Func<LockId, Task<string>> setCalback,
+            Func<LockId, Task<string>> releaseCalback,
+            Func<LockId, Task<string>> confirmCalback)
         {
             var mockClient = new Mock<IRedisClient>();
 

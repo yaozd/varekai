@@ -31,19 +31,9 @@
             return new LockingNode(Host, port);
         }
 
-        public string GetStackExchangeConnectionString()
+        public string GetNodeName()
         {
-            return string.Format("{0}:{1},connectTimeout={2},syncTimeout={3}", Host, Port, ConnectTimeoutMillis, SyncOperationsTimeoutMillis);
-        }
-
-        public string GetServiceStackConnectionString()
-        {
-            return string.Format(
-                "redis://{0}:{1}?ConnectTimeout={2}&SendTimeout={3}&ReceiveTimeout={3}",
-                Host,
-                Port,
-                ConnectTimeoutMillis,
-                SyncOperationsTimeoutMillis);
+            return string.Format("{0}:{1}", Host, Port);
         }
     }
 }

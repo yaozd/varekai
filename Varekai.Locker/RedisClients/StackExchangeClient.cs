@@ -1,6 +1,7 @@
 ﻿using System;
 using StackExchange.Redis;
 using Varekai.Utils.Logging;
+using System.Threading.Tasks;
 
 namespace Varekai.Locker.RedisClients
 {
@@ -27,10 +28,10 @@ namespace Varekai.Locker.RedisClients
 
         #region IRedisClient implementation
 
-        public string Set(LockId lockId)
+        public async Task<string> Set(LockId lockId)
         {
             if (!IsConnected(_stackExchangeClient))
-                _stackExchangeClient = ConnectClient(_node);
+                _stackExchangeClient = await ConnectClient(_node);
             
             var database = _stackExchangeClient.GetDatabase();
 
@@ -45,10 +46,10 @@ namespace Varekai.Locker.RedisClients
                 : _failureResult();
         }
 
-        public string Confirm(LockId lockId)
+        public async Task<string> Confirm(LockId lockId)
         {
             if (!IsConnected(_stackExchangeClient))
-                _stackExchangeClient = ConnectClient(_node);
+                _stackExchangeClient = await ConnectClient(_node);
             
             var database = _stackExchangeClient.GetDatabase();
 
@@ -63,10 +64,10 @@ namespace Varekai.Locker.RedisClients
                 : _failureResult();
         }
 
-        public string Release(LockId lockId)
+        public async Task<string> Release(LockId lockId)
         {
             if (!IsConnected(_stackExchangeClient))
-                _stackExchangeClient = ConnectClient(_node);
+                _stackExchangeClient = await ConnectClient(_node);
             
             var database = _stackExchangeClient.GetDatabase();
 
@@ -83,15 +84,26 @@ namespace Varekai.Locker.RedisClients
 
         #endregion
 
-        ConnectionMultiplexer ConnectClient(LockingNode node)
+        async Task<ConnectionMultiplexer> ConnectClient(LockingNode node)
         {
             _logger.ToDebugLog(string.Format("Connecting to the locking node {0}:{1}...", node.Host, node.Port));
 
-            var connection = ConnectionMultiplexer.Connect(node.GetStackExchangeConnectionString());
+            var connection = await ConnectionMultiplexer.ConnectAsync(GetConnectionString(node));
 
             _logger.ToDebugLog(string.Format("Connected to the locking node {0}:{1}", node.Host, node.Port));
 
             return connection;
+        }
+
+        static string GetConnectionString(LockingNode node)
+        {
+            return string.Format(
+                @"{0}:{1},connectTimeout={2},syncTimeout={3},name={4},abortConnect=true,configChannel="",tiebreaker=""",
+                node.Host,
+                node.Port,
+                node.ConnectTimeoutMillis,
+                node.SyncOperationsTimeoutMillis,
+                node.GetNodeName());
         }
 
         static bool IsConnected(ConnectionMultiplexer connectionMultiplexer)
