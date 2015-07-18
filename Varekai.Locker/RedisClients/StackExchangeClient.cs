@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 using StackExchange.Redis;
 using Varekai.Utils.Logging;
-using System.Threading.Tasks;
 
 namespace Varekai.Locker.RedisClients
 {
@@ -35,11 +35,12 @@ namespace Varekai.Locker.RedisClients
             
             var database = _stackExchangeClient.GetDatabase();
 
-            var result = database.ScriptEvaluate(
-                lockId.GetSetScript(),
-                new RedisKey[]{ lockId.Resource },
-                new RedisValue[]{ lockId.SessionId.ToString() })
-            .ToString();
+            var result = database
+                .ScriptEvaluate(
+                    lockId.GetSetScript(),
+                    new RedisKey[]{ lockId.Resource },
+                    new RedisValue[]{ lockId.SessionId.ToString() })
+                .ToString();
 
             return result.Equals("OK")
                 ? _successResult()
@@ -53,11 +54,12 @@ namespace Varekai.Locker.RedisClients
             
             var database = _stackExchangeClient.GetDatabase();
 
-            var result = database.ScriptEvaluate(
-                lockId.GetConfirmScript(),
-                new RedisKey[]{ lockId.Resource },
-                new RedisValue[]{ lockId.SessionId.ToString(), (int)lockId.ExpirationTimeMillis })
-            .ToString();
+            var result = database
+                .ScriptEvaluate(
+                    lockId.GetConfirmScript(),
+                    new RedisKey[]{ lockId.Resource },
+                    new RedisValue[]{ lockId.SessionId.ToString(), (int)lockId.ExpirationTimeMillis })
+                .ToString();
 
             return result.Equals("1")
                 ? _successResult()
@@ -71,11 +73,12 @@ namespace Varekai.Locker.RedisClients
             
             var database = _stackExchangeClient.GetDatabase();
 
-            var result = database.ScriptEvaluate(
-                lockId.GetReleaseScript(),
-                new RedisKey[]{ lockId.Resource },
-                new RedisValue[]{ lockId.SessionId.ToString() })
-            .ToString();
+            var result = database
+                .ScriptEvaluate(
+                    lockId.GetReleaseScript(),
+                    new RedisKey[]{ lockId.Resource },
+                    new RedisValue[]{ lockId.SessionId.ToString() })
+                .ToString();
 
             return result.Equals("1")
                 ? _successResult()

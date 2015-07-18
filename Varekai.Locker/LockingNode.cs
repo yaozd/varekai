@@ -13,7 +13,7 @@
             Host = host;
             Port = port;
             ConnectTimeoutMillis = 500;
-            SyncOperationsTimeoutMillis = 50;
+            SyncOperationsTimeoutMillis = 500;
         }
 
         public static LockingNode CreateNew(string host, long port)

@@ -21,9 +21,9 @@ namespace Varekai.Locker.Tests.Unit
                 CreateNodes(),
                 () => DateTime.Now,
                 CreateClientFactory(
-                    lockId => Task.FromResult(acquireRsult),
-                    lockId => Task.FromResult("OK"),
-                    lockId => Task.FromResult("OK")
+                    _ => Task.FromResult(acquireRsult),
+                    _ => Task.FromResult("OK"),
+                    _ => Task.FromResult("OK")
                 ),
                 Mock.Of<ILogger>());
 
@@ -43,9 +43,9 @@ namespace Varekai.Locker.Tests.Unit
                 CreateNodes(),
                 () => DateTime.Now,
                 CreateClientFactory(
-                    lockId => Task.FromResult("OK"),
-                    lockId => Task.FromResult("OK"),
-                    lockId => Task.FromResult(confirmRsult)
+                    _ => Task.FromResult("OK"),
+                    _ => Task.FromResult("OK"),
+                    _ => Task.FromResult(confirmRsult)
                 ),
                 Mock.Of<ILogger>());
 
@@ -65,15 +65,45 @@ namespace Varekai.Locker.Tests.Unit
                 CreateNodes(),
                 () => DateTime.Now,
                 CreateClientFactory(
-                    lockId => Task.FromResult("OK"),
-                    lockId => Task.FromResult(releaseRsult),
-                    lockId => Task.FromResult("OK")
+                    _ => Task.FromResult("OK"),
+                    _ => Task.FromResult(releaseRsult),
+                    _ => Task.FromResult("OK")
                 ),
                 Mock.Of<ILogger>());
 
             var id = LockId.CreateNewFor("resource");
 
             Assert.AreEqual(expectedResult, await coordinator.TryReleaseTheLock(id));
+        }
+
+        [Test]
+        [TestCase(5000)]
+        [TestCase(500)]
+        [TestCase(50)]
+        [TestCase(5)]
+        [Description(
+            "GIVEN a lock coordinator" +
+            "WHEN the time to set the lock in the redis client is bigger than the lock expiration" +
+            "THEN the lock is not acquired")]
+        public async Task Timeout(int lockExpirationTime)
+        {
+            var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
+                CreateNodes(),
+                () => DateTime.Now,
+                CreateClientFactory(
+                    async lockId => 
+                    {
+                        await Task.Delay((int)lockId.ExpirationTimeMillis + 1);
+                        return "OK";
+                    },
+                    _ => Task.FromResult("OK"),
+                    _ => Task.FromResult("OK")
+                ),
+                Mock.Of<ILogger>());
+
+            var id = LockId.CreateNew("resource", Guid.NewGuid(), lockExpirationTime);
+
+            Assert.AreEqual(false, await coordinator.TryAcquireLock(id));
         }
 
         static Func<LockingNode, IRedisClient> CreateClientFactory(
