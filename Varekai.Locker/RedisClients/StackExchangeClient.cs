@@ -39,7 +39,7 @@ namespace Varekai.Locker.RedisClients
                 .ScriptEvaluate(
                     lockId.GetSetScript(),
                     new RedisKey[]{ lockId.Resource },
-                    new RedisValue[]{ lockId.SessionId.ToString() })
+                    new RedisValue[]{ lockId.SessionId.ToString(), lockId.ExpirationTimeMillis.ToString() })
                 .ToString();
 
             return result.Equals("OK")

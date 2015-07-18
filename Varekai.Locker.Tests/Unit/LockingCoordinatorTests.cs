@@ -77,10 +77,10 @@ namespace Varekai.Locker.Tests.Unit
         }
 
         [Test]
-        [TestCase(5000)]
-        [TestCase(500)]
-        [TestCase(50)]
-        [TestCase(5)]
+        [TestCase(1000)]
+        [TestCase(100)]
+        [TestCase(10)]
+        [TestCase(1)]
         [Description(
             "GIVEN a lock coordinator" +
             "WHEN the time to set the lock in the redis client is bigger than the lock expiration" +

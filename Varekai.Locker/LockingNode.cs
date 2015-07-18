@@ -8,17 +8,26 @@
         public readonly long ConnectTimeoutMillis;
         public readonly long SyncOperationsTimeoutMillis;
 
-        LockingNode(string host, long port) : this()
+        LockingNode(
+            string host,
+            long port,
+            long operationTimeoutMillis = 50,
+            long connectTimeoutMillis = 500) : this()
         {
             Host = host;
             Port = port;
-            ConnectTimeoutMillis = 500;
-            SyncOperationsTimeoutMillis = 500;
+            ConnectTimeoutMillis = connectTimeoutMillis;
+            SyncOperationsTimeoutMillis = operationTimeoutMillis;
         }
 
         public static LockingNode CreateNew(string host, long port)
         {
             return new LockingNode(host, port);
+        }
+
+        public static LockingNode CreateNewWithOperationTimeout(string host, long port, long operationTimeoutMillis)
+        {
+            return new LockingNode(host, port, operationTimeoutMillis);
         }
 
         public LockingNode ChangeHost(string host)

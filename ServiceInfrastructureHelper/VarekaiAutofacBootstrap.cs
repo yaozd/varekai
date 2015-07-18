@@ -23,7 +23,7 @@ namespace ServiceInfrastructureHelper
                     () => 
                         JsonFileReadUtil
                         .ReadJsonFromFile(nodesConfigFilePath)
-                        .GenerateLockingNodes(),
+                        .GenerateLockingNodes(operationTimeoutMillis:3000),
                     () => applicationName)
                 .RegisterLockingExecution()
                 .RegisterService(serviceFactory)
