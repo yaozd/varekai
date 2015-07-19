@@ -94,6 +94,11 @@ namespace Varekai.Locker.RedisClients
                 : _failureResult();
         }
 
+        public bool IsConnected()
+        {
+            return IsConnected(_stackExchangeClient);
+        }
+
         #endregion
 
         async Task<ConnectionMultiplexer> ConnectClient(LockingNode node)

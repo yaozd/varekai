@@ -9,5 +9,6 @@ namespace Varekai.Locker
         Task<string> Set(LockId lockId);
         Task<string> Confirm(LockId lockId);
         Task<string> Release(LockId lockId);
+        bool IsConnected();
     }
 }
