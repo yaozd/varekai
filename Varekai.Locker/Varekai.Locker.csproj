@@ -30,7 +30,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="StackExchange.Redis">
-      <HintPath>..\..\StackExchange.Redis\StackExchange.Redis\bin\mono\StackExchange.Redis.dll</HintPath>
+      <HintPath>RedisClients\Library\StackExchange.Redis.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

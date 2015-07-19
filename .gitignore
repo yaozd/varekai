@@ -48,6 +48,7 @@ x64/
 *.com
 *.class
 *.dll
+!StackExchange.Redis.dll
 *.exe
 *.o
 *.so
