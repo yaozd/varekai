@@ -12,7 +12,7 @@ namespace Varekai.Locker.RedisClients
         readonly Func<string> _failureResult;
         readonly LockingNode _node;
 
-        BasicRedisClientManager _clientManager;
+        ServiceStack.Redis.IRedisClient _client;
 
         public ServiceStackClient(
             LockingNode node,
@@ -30,12 +30,12 @@ namespace Varekai.Locker.RedisClients
 
         public async Task TryConnect()
         {
-            _clientManager = await ConnectClient(_node);
+            _client = await ConnectClient(_node);
         }
 
         public async Task<string> Set(LockId lockId)
         {
-            if (!IsConnected(_clientManager))
+            if (!IsConnected(_client))
                 await TryConnect();
 
             _logger.ToDebugLog(string.Format("Trying to set the lock on {0}:{1}...", _node.Host, _node.Port));
@@ -47,7 +47,7 @@ namespace Varekai.Locker.RedisClients
 
         public async Task<string> Confirm(LockId lockId)
         {
-            if (!IsConnected(_clientManager))
+            if (!IsConnected(_client))
                 await TryConnect();
             
             return await ExecScript(
@@ -59,7 +59,7 @@ namespace Varekai.Locker.RedisClients
 
         public async Task<string> Release(LockId lockId)
         {
-            if (!IsConnected(_clientManager))
+            if (!IsConnected(_client))
                 await TryConnect();
 
             _logger.ToDebugLog(string.Format("Trying to release the lock on {0}:{1}...", _node.Host, _node.Port));
@@ -73,16 +73,13 @@ namespace Varekai.Locker.RedisClients
 
         async Task<string> ExecCommand(Func<object[]> command, Func<string, bool> testResultCorrectness)
         {
-            using (var client = _clientManager.GetClient())
-            {
-                var result = client
-                    .Custom(command())
-                    .GetResult();
+            var result = _client
+                .Custom(command())
+                .GetResult();
 
-                return testResultCorrectness(result)
-                    ? _successResult()
-                    : _failureResult();
-            }
+            return testResultCorrectness(result)
+                ? _successResult()
+                : _failureResult();
         }
 
         async Task<string> ExecScript(
@@ -91,32 +88,29 @@ namespace Varekai.Locker.RedisClients
             Func<string[]> args,
             Func<string, bool> testResultCorrectness)
         {
-            using (var client = _clientManager.GetClient())
-            {
-                var result = client
-                    .ExecLuaAsString(
-                        script(),
-                        keys(),
-                        args());
+            var result = _client
+                .ExecLuaAsString(
+                    script(),
+                    keys(),
+                    args());
 
-                return testResultCorrectness(result)
-                    ? _successResult()
-                    : _failureResult();
-            }
+            return testResultCorrectness(result)
+                ? _successResult()
+                : _failureResult();
         }
 
         public bool IsConnected()
         {
-            return IsConnected(_clientManager);
+            return IsConnected(_client);
         }
 
         #endregion
 
-        async Task<BasicRedisClientManager> ConnectClient(LockingNode node)
+        async Task<ServiceStack.Redis.IRedisClient> ConnectClient(LockingNode node)
         {
             _logger.ToDebugLog(string.Format("Connecting to the locking node {0}:{1}...", node.Host, node.Port));
 
-            var connection = new BasicRedisClientManager(GetConnectionString(node));
+            var connection = new BasicRedisClientManager(GetConnectionString(node)).GetClient();
 
             _logger.ToDebugLog(string.Format("Connected to the locking node {0}:{1}", node.Host, node.Port));
 
@@ -134,15 +128,15 @@ namespace Varekai.Locker.RedisClients
                 node.GetNodeName());
         }
 
-        static bool IsConnected(BasicRedisClientManager clientManager)
+        static bool IsConnected(ServiceStack.Redis.IRedisClient client)
         {
-            return clientManager != null;
+            return client != null;
         }
 
         public void Dispose()
         {
-            if(_clientManager != null)
-                _clientManager.Dispose();
+            if(_client != null)
+                _client.Dispose();
         }
     }
 }
