@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -20,7 +21,7 @@ namespace Varekai.Locker.Tests.Unit
             var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
                 CreateNodes(),
                 () => DateTime.Now,
-                CreateClientFactory(
+                CreateMockRedisClient(
                     _ => Task.FromResult(acquireRsult),
                     _ => Task.FromResult("OK"),
                     _ => Task.FromResult("OK")
@@ -42,7 +43,7 @@ namespace Varekai.Locker.Tests.Unit
             var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
                 CreateNodes(),
                 () => DateTime.Now,
-                CreateClientFactory(
+                CreateMockRedisClient(
                     _ => Task.FromResult("OK"),
                     _ => Task.FromResult("OK"),
                     _ => Task.FromResult(confirmRsult)
@@ -64,7 +65,7 @@ namespace Varekai.Locker.Tests.Unit
             var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
                 CreateNodes(),
                 () => DateTime.Now,
-                CreateClientFactory(
+                CreateMockRedisClient(
                     _ => Task.FromResult("OK"),
                     _ => Task.FromResult(releaseRsult),
                     _ => Task.FromResult("OK")
@@ -85,12 +86,12 @@ namespace Varekai.Locker.Tests.Unit
             "GIVEN a lock coordinator" +
             "WHEN the time to set the lock in the redis client is bigger than the lock expiration" +
             "THEN the lock is not acquired")]
-        public async Task Timeout(int lockExpirationTime)
+        public async Task LockAcquireTimeTest(int lockExpirationTime)
         {
             var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
                 CreateNodes(),
                 () => DateTime.Now,
-                CreateClientFactory(
+                CreateMockRedisClient(
                     async lockId => 
                     {
                         await Task.Delay((int)lockId.ExpirationTimeMillis + 1);
@@ -106,7 +107,26 @@ namespace Varekai.Locker.Tests.Unit
             Assert.AreEqual(false, await coordinator.TryAcquireLock(id));
         }
 
-        static Func<LockingNode, IRedisClient> CreateClientFactory(
+        [Test]
+        [Description(
+            "GIVEN a lock coordinator" +
+            "WHEN it is created using a static constructor" +
+            "THEN all the redis clients of the cohordinator are connected")]
+        public async Task CoordinatorConnectedAtCreation()
+        {
+            var connectCount = 0;
+            var nodes = CreateNodes();
+
+            var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
+                nodes,
+                () => DateTime.Now,
+                CreateMockRedisConnectingClient(() => Task.FromResult(connectCount++)),
+                Mock.Of<ILogger>());
+            
+            Assert.AreEqual(connectCount, nodes.Count());
+        }
+
+        static Func<LockingNode, IRedisClient> CreateMockRedisClient(
             Func<LockId, Task<string>> setCalback,
             Func<LockId, Task<string>> releaseCalback,
             Func<LockId, Task<string>> confirmCalback)
@@ -124,6 +144,17 @@ namespace Varekai.Locker.Tests.Unit
             mockClient
                 .Setup(cli => cli.Confirm(It.IsAny<LockId>()))
                 .Returns<LockId>(confirmCalback);
+            
+            return node => mockClient.Object;
+        }
+
+        static Func<LockingNode, IRedisClient> CreateMockRedisConnectingClient(Func<Task> connectCallback)
+        {
+            var mockClient = new Mock<IRedisClient>();
+
+            mockClient
+                .Setup(cli => cli.TryConnect())
+                .Returns(connectCallback);
             
             return node => mockClient.Object;
         }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Varekai.Locker.RedisClients;
+using Varekai.Utils;
 using Varekai.Utils.Logging;
 
 namespace Varekai.Locker
@@ -45,11 +46,15 @@ namespace Varekai.Locker
             Func<DateTime> timeProvider,
             ILogger logger)
         {
-            return new LockingCoordinator(
+            var coordinator = new LockingCoordinator(
                 nodes,
                 timeProvider,
                 nd => new StackExchangeClient(nd, () => SuccessResult, () => FailResult, logger),
                 logger);
+
+            TryConnectClients(coordinator);
+
+            return coordinator;
         }
 
         public static LockingCoordinator CreateNewForNodesWithClient(
@@ -58,11 +63,26 @@ namespace Varekai.Locker
             Func<LockingNode, IRedisClient> redisClientFactory,
             ILogger logger)
         {
-            return new LockingCoordinator(
+            var coordinator = new LockingCoordinator(
                 nodes,
                 timeProvider,
                 redisClientFactory,
                 logger);
+
+            TryConnectClients(coordinator);
+
+            return coordinator;
+        }
+
+        static void TryConnectClients(LockingCoordinator coordinator)
+        {
+            var connectActions = coordinator
+                ._redisClients
+                .Select(async cli => await cli.TryConnect());
+
+            TaskUtils
+                .SilentlyCanceledWhenAll(connectActions)
+                .Wait();
         }
 
         public async Task<bool> TryAcquireLock(LockId lockId)
@@ -78,7 +98,12 @@ namespace Varekai.Locker
             if (lockAcquired 
                 && LockingAlgorithm.IsTimeLeftEnoughToUseTheLock(startTime, finishTime, lockId))
                     return lockAcquired;
-            
+
+            if (!lockAcquired)
+                _logger.ToDebugLog("Unable to acquire the lock. Releasing all...");
+            else
+                _logger.ToDebugLog("Lock correctly acquired but the time left to use it is not enough. Releasing all...");
+
             await TryReleaseTheLock(lockId);
             return false;
         }
@@ -119,12 +144,12 @@ namespace Varekai.Locker
                             async () => 
                                 {
                                     return await TryOnClient(
-                                        () => operationOnClient(cli),
+                                        async () => await operationOnClient(cli),
                                         _logger);
                                 },
-                        _lockAcquisitionCancellation.Token));
+                            _lockAcquisitionCancellation.Token));
 
-            var succeded = await Task.WhenAll(sessions);
+            var succeded = await TaskUtils.SilentlyCanceledWhenAll(sessions);
 
             return 
                 succeded.Count(res => res)

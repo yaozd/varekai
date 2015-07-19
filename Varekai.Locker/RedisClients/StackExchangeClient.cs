@@ -28,10 +28,17 @@ namespace Varekai.Locker.RedisClients
 
         #region IRedisClient implementation
 
+        public async Task TryConnect()
+        {
+            _stackExchangeClient = await ConnectClient(_node);
+        }
+
         public async Task<string> Set(LockId lockId)
         {
             if (!IsConnected(_stackExchangeClient))
-                _stackExchangeClient = await ConnectClient(_node);
+                await TryConnect();
+
+            _logger.ToDebugLog(string.Format("Trying to set the lock on {0}:{1}...", _node.Host, _node.Port));
             
             var database = _stackExchangeClient.GetDatabase();
 
@@ -42,7 +49,7 @@ namespace Varekai.Locker.RedisClients
                     new RedisValue[]{ lockId.SessionId.ToString(), lockId.ExpirationTimeMillis.ToString() })
                 .ToString();
 
-            return result.Equals("OK")
+            return result!= null && result.Equals("OK")
                 ? _successResult()
                 : _failureResult();
         }
@@ -50,7 +57,7 @@ namespace Varekai.Locker.RedisClients
         public async Task<string> Confirm(LockId lockId)
         {
             if (!IsConnected(_stackExchangeClient))
-                _stackExchangeClient = await ConnectClient(_node);
+                await TryConnect();
             
             var database = _stackExchangeClient.GetDatabase();
 
@@ -61,7 +68,7 @@ namespace Varekai.Locker.RedisClients
                     new RedisValue[]{ lockId.SessionId.ToString(), (int)lockId.ExpirationTimeMillis })
                 .ToString();
 
-            return result.Equals("1")
+            return result!= null && result.Equals("1")
                 ? _successResult()
                 : _failureResult();
         }
@@ -69,7 +76,9 @@ namespace Varekai.Locker.RedisClients
         public async Task<string> Release(LockId lockId)
         {
             if (!IsConnected(_stackExchangeClient))
-                _stackExchangeClient = await ConnectClient(_node);
+                await TryConnect();
+
+            _logger.ToDebugLog(string.Format("Trying to release the lock on {0}:{1}...", _node.Host, _node.Port));
             
             var database = _stackExchangeClient.GetDatabase();
 
@@ -80,7 +89,7 @@ namespace Varekai.Locker.RedisClients
                     new RedisValue[]{ lockId.SessionId.ToString() })
                 .ToString();
 
-            return result.Equals("1")
+            return result!= null && result.Equals("1")
                 ? _successResult()
                 : _failureResult();
         }
