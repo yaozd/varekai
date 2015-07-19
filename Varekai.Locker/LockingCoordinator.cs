@@ -46,15 +46,11 @@ namespace Varekai.Locker
             Func<DateTime> timeProvider,
             ILogger logger)
         {
-            var coordinator = new LockingCoordinator(
+            return CreateNewForNodesWithClient(
                 nodes,
                 timeProvider,
-                nd => new StackExchangeClient(nd, () => SuccessResult, () => FailResult, logger),
+                nd => new NhiredisClient(nd, () => SuccessResult, () => FailResult, logger),
                 logger);
-
-            TryConnectClients(coordinator);
-
-            return coordinator;
         }
 
         public static LockingCoordinator CreateNewForNodesWithClient(

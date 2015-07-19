@@ -46,7 +46,7 @@ namespace Varekai.Locker
             };
         }
 
-        public object[] GetConfirmScriptCommand()
+        public object[] GetConfirmCommand()
         {
             return  new object[]
             {
@@ -58,7 +58,7 @@ namespace Varekai.Locker
             };
         }
 
-        public object[] GetReleaseScriptCommand()
+        public object[] GetReleaseCommand()
         {
             return  new object[]
             {

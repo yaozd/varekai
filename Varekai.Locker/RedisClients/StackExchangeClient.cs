@@ -49,7 +49,7 @@ namespace Varekai.Locker.RedisClients
                     new RedisValue[]{ lockId.SessionId.ToString(), lockId.ExpirationTimeMillis.ToString() })
                 .ToString();
 
-            return result!= null && result.Equals("OK")
+            return result != null && result.Equals("OK")
                 ? _successResult()
                 : _failureResult();
         }
@@ -68,7 +68,7 @@ namespace Varekai.Locker.RedisClients
                     new RedisValue[]{ lockId.SessionId.ToString(), (int)lockId.ExpirationTimeMillis })
                 .ToString();
 
-            return result!= null && result.Equals("1")
+            return result != null && result.Equals("1")
                 ? _successResult()
                 : _failureResult();
         }
@@ -89,7 +89,7 @@ namespace Varekai.Locker.RedisClients
                     new RedisValue[]{ lockId.SessionId.ToString() })
                 .ToString();
 
-            return result!= null && result.Equals("1")
+            return result != null && result.Equals("1")
                 ? _successResult()
                 : _failureResult();
         }
@@ -130,10 +130,11 @@ namespace Varekai.Locker.RedisClients
 
         public void Dispose()
         {
-            if(_stackExchangeClient != null)
+            if (_stackExchangeClient != null)
+            {
                 _stackExchangeClient.Close();
-
-            _stackExchangeClient.Dispose();
+                _stackExchangeClient.Dispose();
+            }
         }
     }
 }
