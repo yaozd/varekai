@@ -32,8 +32,17 @@
     <Reference Include="StackExchange.Redis">
       <HintPath>RedisClients\Library\StackExchange.Redis.dll</HintPath>
     </Reference>
-    <Reference Include="Nhiredis">
-      <HintPath>..\packages\Nhiredis.0.9.2\lib\net40\Nhiredis.dll</HintPath>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\packages\ServiceStack.Interfaces.4.0.42\lib\portable-wp80+sl5+net40+win8+monotouch+monoandroid+xamarin.ios10\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\packages\ServiceStack.Text.4.0.42\lib\net40\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>..\packages\ServiceStack.Common.4.0.42\lib\net40\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Redis">
+      <HintPath>..\packages\ServiceStack.Redis.4.0.42\lib\net40\ServiceStack.Redis.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -44,7 +53,7 @@
     <Compile Include="IRedisClient.cs" />
     <Compile Include="RedisClients\StackExchangeClient.cs" />
     <Compile Include="LockingAlgorithm.cs" />
-    <Compile Include="RedisClients\NhiredisClient.cs" />
+    <Compile Include="RedisClients\ServiceStackClient.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -57,10 +66,6 @@
     <Folder Include="RedisClients\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="x64\hiredisx.dll" />
-    <None Include="x64\libhiredisx.so" />
-    <None Include="x86\hiredisx.dll" />
-    <None Include="x86\libhiredisx.so" />
     <None Include="packages.config" />
   </ItemGroup>
 </Project>
