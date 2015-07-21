@@ -32,17 +32,11 @@
     <Reference Include="StackExchange.Redis">
       <HintPath>RedisClients\Library\StackExchange.Redis.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Interfaces">
-      <HintPath>..\packages\ServiceStack.Interfaces.4.0.42\lib\portable-wp80+sl5+net40+win8+monotouch+monoandroid+xamarin.ios10\ServiceStack.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Text">
-      <HintPath>..\packages\ServiceStack.Text.4.0.42\lib\net40\ServiceStack.Text.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Common">
-      <HintPath>..\packages\ServiceStack.Common.4.0.42\lib\net40\ServiceStack.Common.dll</HintPath>
-    </Reference>
     <Reference Include="ServiceStack.Redis">
-      <HintPath>..\packages\ServiceStack.Redis.4.0.42\lib\net40\ServiceStack.Redis.dll</HintPath>
+      <HintPath>RedisClients\Library\ServiceStack.Redis.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>RedisClients\Library\ServiceStack.Interfaces.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -64,8 +58,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="RedisClients\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>

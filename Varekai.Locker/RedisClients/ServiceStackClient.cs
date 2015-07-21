@@ -12,7 +12,7 @@ namespace Varekai.Locker.RedisClients
         readonly Func<string> _failureResult;
         readonly LockingNode _node;
 
-        ServiceStack.Redis.IRedisClient _client;
+        RedisClient _client;
 
         public ServiceStackClient(
             LockingNode node,
@@ -30,7 +30,7 @@ namespace Varekai.Locker.RedisClients
 
         public async Task TryConnect()
         {
-            _client = await ConnectClient(_node);
+            _client = await ConnectClient();
         }
 
         public async Task<string> Set(LockId lockId)
@@ -40,8 +40,10 @@ namespace Varekai.Locker.RedisClients
 
             _logger.ToDebugLog(string.Format("Trying to set the lock on {0}:{1}...", _node.Host, _node.Port));
 
-            return await ExecCommand(
-                lockId.GetSetCommand,
+            return await ExecScript(
+                lockId.GetSetScript,
+                () => new [] { lockId.Resource },
+                () => new [] { lockId.SessionId.ToString(), lockId.ExpirationTimeMillis.ToString() },
                 res => res != null && res.Equals("OK", StringComparison.InvariantCultureIgnoreCase));
         }
 
@@ -71,17 +73,6 @@ namespace Varekai.Locker.RedisClients
                 res => res != null && res.Equals("1"));
         }
 
-        async Task<string> ExecCommand(Func<object[]> command, Func<string, bool> testResultCorrectness)
-        {
-            var result = _client
-                .Custom(command())
-                .GetResult();
-
-            return testResultCorrectness(result)
-                ? _successResult()
-                : _failureResult();
-        }
-
         async Task<string> ExecScript(
             Func<string> script,
             Func<string[]> keys,
@@ -106,29 +97,23 @@ namespace Varekai.Locker.RedisClients
 
         #endregion
 
-        async Task<ServiceStack.Redis.IRedisClient> ConnectClient(LockingNode node)
+        async Task<RedisClient> ConnectClient()
         {
-            _logger.ToDebugLog(string.Format("Connecting to the locking node {0}:{1}...", node.Host, node.Port));
+            _logger.ToDebugLog(string.Format("Connecting to the locking node {0}:{1}...", _node.Host, _node.Port));
 
-            var connection = new BasicRedisClientManager(GetConnectionString(node)).GetClient();
+            var connection = new RedisClient(_node.Host, (int)_node.Port)
+                {
+                    ConnectTimeout = (int)_node.ConnectTimeoutMillis,
+                    SendTimeout = (int)_node.SyncOperationsTimeoutMillis,
+                    ReceiveTimeout = (int)_node.SyncOperationsTimeoutMillis
+                };
 
-            _logger.ToDebugLog(string.Format("Connected to the locking node {0}:{1}", node.Host, node.Port));
+            _logger.ToDebugLog(string.Format("Connected to the locking node {0}:{1}", _node.Host, _node.Port));
 
             return connection;
         }
 
-        static string GetConnectionString(LockingNode node)
-        {
-            return string.Format(
-                @"redis://{0}:{1}?ConnectTimeout={2}&SendTimeout={3}&ReceiveTimeout={3}&Client={4}",
-                node.Host,
-                node.Port,
-                node.ConnectTimeoutMillis,
-                node.SyncOperationsTimeoutMillis,
-                node.GetNodeName());
-        }
-
-        static bool IsConnected(ServiceStack.Redis.IRedisClient client)
+        static bool IsConnected(RedisClient client)
         {
             return client != null;
         }
