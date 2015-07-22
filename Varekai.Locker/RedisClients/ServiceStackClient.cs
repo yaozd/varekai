@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using ServiceStack.Redis;
+using Varekai.Utils;
 using Varekai.Utils.Logging;
 
 namespace Varekai.Locker.RedisClients
@@ -73,7 +74,7 @@ namespace Varekai.Locker.RedisClients
                 res => res != null && res.Equals("1"));
         }
 
-        async Task<string> ExecScript(
+        Task<string> ExecScript(
             Func<string> script,
             Func<string[]> keys,
             Func<string[]> args,
@@ -86,8 +87,8 @@ namespace Varekai.Locker.RedisClients
                     args());
 
             return testResultCorrectness(result)
-                ? _successResult()
-                : _failureResult();
+                ? _successResult().FromResult()
+                : _failureResult().FromResult();
         }
 
         public bool IsConnected()
@@ -97,7 +98,7 @@ namespace Varekai.Locker.RedisClients
 
         #endregion
 
-        async Task<RedisClient> ConnectClient()
+        Task<RedisClient> ConnectClient()
         {
             _logger.ToDebugLog(string.Format("Connecting to the locking node {0}:{1}...", _node.Host, _node.Port));
 
@@ -110,7 +111,7 @@ namespace Varekai.Locker.RedisClients
 
             _logger.ToDebugLog(string.Format("Connected to the locking node {0}:{1}", _node.Host, _node.Port));
 
-            return connection;
+            return connection.FromResult();
         }
 
         static bool IsConnected(RedisClient client)

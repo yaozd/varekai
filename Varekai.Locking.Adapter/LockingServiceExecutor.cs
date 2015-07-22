@@ -94,7 +94,7 @@ namespace Varekai.Locking.Adapter
                 finally
                 {
                     if(_locker != null)
-                        _locker.TryReleaseTheLock(_lockId);
+                        await _locker.TryReleaseTheLock(_lockId);
                 }
             }
         }
@@ -140,12 +140,12 @@ namespace Varekai.Locking.Adapter
 
         #region IDisposable implementation
 
-        public void Dispose()
+        public async void Dispose()
         {
             try
             {
                 if(!_globalCancellationSource.IsCancellationRequested)
-                    ReleasedStop();
+                    await ReleasedStop();
                     
                 _locker.Dispose();
 

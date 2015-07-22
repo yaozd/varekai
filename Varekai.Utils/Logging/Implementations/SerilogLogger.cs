@@ -58,8 +58,6 @@ namespace Varekai.Utils.Logging.Implementations
         public void ToErrorLog(AggregateException ex)
         {
             //  TODO: write all the inner exceprions
-            var flat = ex.Flatten();
-
             _logger.Error(ex, ex.Message);
         }
 

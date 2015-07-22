@@ -34,5 +34,10 @@ namespace Varekai.Utils
             }
             catch (TaskCanceledException) { /*ignore*/ }
         }
+
+        public static Task<T> FromResult<T>(this T result)
+        {
+            return Task.FromResult<T>(result);
+        }
     }
 }

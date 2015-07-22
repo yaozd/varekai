@@ -112,12 +112,12 @@ namespace Varekai.Locker.Tests.Unit
             "GIVEN a lock coordinator" +
             "WHEN it is created using a static constructor" +
             "THEN all the redis clients of the cohordinator are connected")]
-        public async Task CoordinatorConnectedAtCreation()
+        public void CoordinatorConnectedAtCreation()
         {
             var connectCount = 0;
             var nodes = CreateNodes();
 
-            var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
+            LockingCoordinator.CreateNewForNodesWithClient(
                 nodes,
                 () => DateTime.Now,
                 CreateMockRedisConnectingClient(() => Task.FromResult(connectCount++)),
