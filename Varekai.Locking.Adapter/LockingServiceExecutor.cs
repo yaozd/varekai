@@ -117,7 +117,7 @@ namespace Varekai.Locking.Adapter
                 if(_locker != null)
                     await _locker.TryReleaseTheLock(_lockId);
 
-                _logger.ToInfoLog("DISTRIBUTED LCOK RELEASED");
+                _logger.ToInfoLog("DISTRIBUTED LOCK RELEASED");
             }
             catch (Exception ex)
             {
@@ -129,7 +129,7 @@ namespace Varekai.Locking.Adapter
 
         async Task StartServiceWhileHodlingLock()
         {
-            _logger.ToInfoLog("DISTRIBUTED LCOK ACQUIRED");
+            _logger.ToInfoLog("DISTRIBUTED LOCK ACQUIRED");
             _logger.ToInfoLog("Entering lock retaining mode");
 
             //  this guarantees that, in case of a partition of the locking nodes network, all
