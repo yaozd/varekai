@@ -24,7 +24,7 @@ namespace SampleLockingService
 
             while (!_cancellation.IsCancellationRequested)
             {
-                _logger.ToDebugLog("Hello World Varekai service running...");
+                _logger.ToInfoLog("Hello World Varekai service running...");
                 
                 await Task.Delay(2000, _cancellation.Token);
             }
@@ -35,7 +35,7 @@ namespace SampleLockingService
             if(_cancellation != null)
                 _cancellation.Cancel();
 
-            _logger.ToDebugLog("Hello World Varekai service stopped");
+            _logger.ToInfoLog("Hello World Varekai service stopped");
         }
 
         #endregion

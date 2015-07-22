@@ -4,6 +4,7 @@ using Varekai.Locking.Adapter;
 using Varekai.Locking.Adapter.BootstrapHelpers;
 using Varekai.Utils;
 using Varekai.Utils.Logging.Implementations;
+using Varekai.Utils.Logging;
 
 namespace ServiceInfrastructureHelper
 {
@@ -46,12 +47,14 @@ namespace ServiceInfrastructureHelper
                 .Register<SerilogRollingFileConfiguration>(
                     ctx => new SerilogRollingFileConfiguration(
                         logsPath + applicationName + "-{Date}.txt",
-                        filesToKeep: 50))
+                        filesToKeep: 50,
+                        logLevel: LogLevels.Information))
                 .AsSelf();
 
             builder
                 .Register<Serilog.LoggerConfiguration>(
-                    ctx => SerilogLogger.CreateDefaultConfiguration(ctx.Resolve<SerilogRollingFileConfiguration>()))
+                    ctx => SerilogLogger.CreateDefaultConfiguration(
+                        ctx.Resolve<SerilogRollingFileConfiguration>()))
                 .AsSelf();
 
             return builder;

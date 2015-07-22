@@ -49,7 +49,7 @@ namespace Varekai.Locking.Adapter
                 {
                     if(_locker == null)
                     {
-                        _logger.ToDebugLog("Creating the locking nodes...");
+                        _logger.ToInfoLog("Creating the locking nodes...");
 
                         _locker = LockingCoordinator
                             .CreateNewForNodes(
@@ -73,11 +73,14 @@ namespace Varekai.Locking.Adapter
                             await TaskUtils.SilentlyCanceledDelay((int)confirmationInterval, _globalCancellationSource.Token);
                         }
 
-                        _logger.ToDebugLog("Stopping the service for missed confirmation of a previously acquired lock...");
+                        if(!_globalCancellationSource.IsCancellationRequested)
+                        {
+                            _logger.ToDebugLog("Stopping the service for missed confirmation of a previously acquired lock...");
 
-                        _serviceExecution.Stop();
+                            _serviceExecution.Stop();
 
-                        _logger.ToDebugLog("Releasing the lock for missed confirmation of a previously acquired lock...");
+                            _logger.ToDebugLog("Releasing the lock for missed confirmation of a previously acquired lock...");
+                        }
                     }
                     else
                     {
@@ -105,14 +108,16 @@ namespace Varekai.Locking.Adapter
             {
                 _globalCancellationSource.Cancel();
 
-                _logger.ToDebugLog("Releasing the lock before shutting the service down...");
+                _logger.ToInfoLog("The service is stopping...");
+
+                _serviceExecution.Stop();
+
+                _logger.ToInfoLog("Releasing the lock before shutting the service down...");
 
                 if(_locker != null)
                     await _locker.TryReleaseTheLock(_lockId);
 
-                _logger.ToDebugLog("The service is stopping...");
-
-                _serviceExecution.Stop();
+                _logger.ToInfoLog("DISTRIBUTED LCOK RELEASED");
             }
             catch (Exception ex)
             {
@@ -124,8 +129,8 @@ namespace Varekai.Locking.Adapter
 
         async Task StartServiceWhileHodlingLock()
         {
-            _logger.ToDebugLog("DISTRIBUTED LCOK ACQUIRED");
-            _logger.ToDebugLog("Entering lock retaining mode");
+            _logger.ToInfoLog("DISTRIBUTED LCOK ACQUIRED");
+            _logger.ToInfoLog("Entering lock retaining mode");
 
             //  this guarantees that, in case of a partition of the locking nodes network, all
             // the other services that still believe they hold the lock, have time to fail in confirming it 
@@ -133,7 +138,7 @@ namespace Varekai.Locking.Adapter
                 (int)_locker.GetConfirmationIntervalMillis(_lockId),
                 _globalCancellationSource.Token);
 
-            _logger.ToDebugLog("Starting the service");
+            _logger.ToInfoLog("Starting the service");
 
             await _serviceExecution.Start();
         }

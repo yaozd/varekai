@@ -60,6 +60,7 @@
     <Compile Include="Logging\Implementations\SerilogRollingFileConfiguration.cs" />
     <Compile Include="JsonFileReadUtil.cs" />
     <Compile Include="TaskUtils.cs" />
+    <Compile Include="Logging\LogLevels.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

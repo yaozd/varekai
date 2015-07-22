@@ -11,7 +11,7 @@ namespace Varekai.Utils.Logging.Implementations
         {
             return new LoggerConfiguration()
                 .MinimumLevel
-                    .Verbose()
+                    .ControlledBy(fileConfiguration.GetLoggingLevelSwitch())
                 .WriteTo
                     .ColoredConsole(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] {Message}{NewLine}{Exception}")
                 .WriteTo
