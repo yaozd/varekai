@@ -49,6 +49,10 @@ x64/
 *.class
 *.dll
 !StackExchange.Redis.dll
+!ServiceStack.Redis.dll
+!ServiceStack.Common.dll
+!ServiceStack.Interfaces.dll
+!ServiceStack.Text.dll
 *.exe
 *.o
 *.so

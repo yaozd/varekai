@@ -29,14 +29,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="StackExchange.Redis">
-      <HintPath>RedisClients\Library\StackExchange.Redis.dll</HintPath>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>RedisClients\Library\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>RedisClients\Library\ServiceStack.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Redis">
       <HintPath>RedisClients\Library\ServiceStack.Redis.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Interfaces">
-      <HintPath>RedisClients\Library\ServiceStack.Interfaces.dll</HintPath>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>RedisClients\Library\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="StackExchange.Redis">
+      <HintPath>RedisClients\Library\StackExchange.Redis.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
