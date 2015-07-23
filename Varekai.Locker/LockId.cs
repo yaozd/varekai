@@ -33,6 +33,11 @@ namespace Varekai.Locker
             return new LockId(Resource, newSessionId, ExpirationTimeMillis);
         }
 
+        public long CalculateExpirationInSeconds()
+        {
+            return ExpirationTimeMillis / 1000;
+        }
+
         public object[] GetSetCommand()
         {
             return new object[]
@@ -54,7 +59,7 @@ namespace Varekai.Locker
                 GetConfirmScript(),
                 Resource,
                 SessionId,
-                ExpirationTimeMillis
+                CalculateExpirationInSeconds()
             };
         }
 

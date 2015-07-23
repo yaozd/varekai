@@ -13,7 +13,7 @@ namespace Varekai.Locker.RedisClients
         readonly Func<string> _failureResult;
         readonly LockingNode _node;
 
-        RedisClient _client;
+        IRedisNativeClient _client;
 
         public ServiceStackClient(
             LockingNode node,
@@ -41,10 +41,8 @@ namespace Varekai.Locker.RedisClients
 
             _logger.ToDebugLog(string.Format("Trying to set the lock on {0}:{1}...", _node.Host, _node.Port));
 
-            return await ExecScript(
-                lockId.GetSetScript,
-                () => new [] { lockId.Resource },
-                () => new [] { lockId.SessionId.ToString(), lockId.ExpirationTimeMillis.ToString() },
+            return await ExecCommand(
+                lockId.GetSetCommand,
                 res => res != null && res.Equals("OK", StringComparison.InvariantCultureIgnoreCase));
         }
 
@@ -53,10 +51,8 @@ namespace Varekai.Locker.RedisClients
             if (!IsConnected(_client))
                 await TryConnect();
             
-            return await ExecScript(
-                lockId.GetConfirmScript,
-                () => new [] { lockId.Resource },
-                () => new [] { lockId.SessionId.ToString(), lockId.ExpirationTimeMillis.ToString() },
+            return await ExecCommand(
+                lockId.GetConfirmCommand,
                 res => res != null && res.Equals("1"));
         }
 
@@ -67,24 +63,19 @@ namespace Varekai.Locker.RedisClients
 
             _logger.ToDebugLog(string.Format("Trying to release the lock on {0}:{1}...", _node.Host, _node.Port));
 
-            return await ExecScript(
-                lockId.GetReleaseScript,
-                () => new [] { lockId.Resource },
-                () => new [] { lockId.SessionId.ToString() },
+            return await ExecCommand(
+                lockId.GetReleaseCommand,
                 res => res != null && res.Equals("1"));
         }
 
-        Task<string> ExecScript(
-            Func<string> script,
-            Func<string[]> keys,
-            Func<string[]> args,
+        Task<string> ExecCommand(
+            Func<object> command,
             Func<string, bool> testResultCorrectness)
         {
-            var result = _client
-                .ExecLuaAsString(
-                    script(),
-                    keys(),
-                    args());
+            var result = 
+                _client
+                .RawCommand(command())
+                .ToString();
 
             return testResultCorrectness(result)
                 ? _successResult().FromResult()
@@ -98,11 +89,11 @@ namespace Varekai.Locker.RedisClients
 
         #endregion
 
-        Task<RedisClient> ConnectClient()
+        Task<IRedisNativeClient> ConnectClient()
         {
             _logger.ToDebugLog(string.Format("Connecting to the locking node {0}:{1}...", _node.Host, _node.Port));
 
-            var connection = new RedisClient(_node.Host, (int)_node.Port)
+            var connection = new RedisNativeClient(_node.Host, (int)_node.Port)
                 {
                     ConnectTimeout = (int)_node.ConnectTimeoutMillis,
                     SendTimeout = (int)_node.SyncOperationsTimeoutMillis,
@@ -111,12 +102,12 @@ namespace Varekai.Locker.RedisClients
 
             _logger.ToDebugLog(string.Format("Connected to the locking node {0}:{1}", _node.Host, _node.Port));
 
-            return connection.FromResult();
+            return connection.FromResult<IRedisNativeClient>();
         }
 
-        static bool IsConnected(RedisClient client)
+        static bool IsConnected(IRedisNativeClient client)
         {
-            return client != null;
+            return client != null ;
         }
 
         public void Dispose()
