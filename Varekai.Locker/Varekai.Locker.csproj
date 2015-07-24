@@ -54,6 +54,7 @@
     <Compile Include="RedisClients\StackExchangeClient.cs" />
     <Compile Include="LockingAlgorithm.cs" />
     <Compile Include="RedisClients\ServiceStackClient.cs" />
+    <Compile Include="RedisClients\StackExchangeClientHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

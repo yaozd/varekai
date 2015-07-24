@@ -39,38 +39,22 @@ namespace Varekai.Locker.RedisClients
                 await TryConnect();
 
             _logger.ToDebugLog(string.Format("Trying to set the lock on {0}:{1}...", _node.Host, _node.Port));
-            
-            var database = _stackExchangeClient.GetDatabase();
 
-            var result = database
-                .ScriptEvaluate(
-                    lockId.GetSetScript(),
-                    new RedisKey[]{ lockId.Resource },
-                    new RedisValue[]{ lockId.SessionId.ToString(), lockId.ExpirationTimeMillis.ToString() })
-                .ToString();
-
-            return result != null && result.Equals("OK")
-                ? _successResult()
-                : _failureResult();
+            return ExecResultedSetScript(
+                lockId.GetSetScript,
+                lockId.GetSetScriptParameters
+            );
         }
 
         public async Task<string> Confirm(LockId lockId)
         {
             if (!IsConnected(_stackExchangeClient))
                 await TryConnect();
-            
-            var database = _stackExchangeClient.GetDatabase();
 
-            var result = database
-                .ScriptEvaluate(
-                    lockId.GetConfirmScript(),
-                    new RedisKey[]{ lockId.Resource },
-                    new RedisValue[]{ lockId.SessionId.ToString(), (int)lockId.ExpirationTimeMillis })
-                .ToString();
-
-            return result != null && result.Equals("1")
-                ? _successResult()
-                : _failureResult();
+            return ExecResultedConfirmOrReleaseScript(
+                lockId.GetConfirmScript,
+                lockId.GetConfirmScriptParameters
+            );
         }
 
         public async Task<string> Release(LockId lockId)
@@ -79,19 +63,11 @@ namespace Varekai.Locker.RedisClients
                 await TryConnect();
 
             _logger.ToDebugLog(string.Format("Trying to release the lock on {0}:{1}...", _node.Host, _node.Port));
-            
-            var database = _stackExchangeClient.GetDatabase();
 
-            var result = database
-                .ScriptEvaluate(
-                    lockId.GetReleaseScript(),
-                    new RedisKey[]{ lockId.Resource },
-                    new RedisValue[]{ lockId.SessionId.ToString() })
-                .ToString();
-
-            return result != null && result.Equals("1")
-                ? _successResult()
-                : _failureResult();
+            return ExecResultedConfirmOrReleaseScript(
+                lockId.GetReleaseScript,
+                lockId.GetReleaseScriptParameters
+            );
         }
 
         public bool IsConnected()
@@ -100,6 +76,32 @@ namespace Varekai.Locker.RedisClients
         }
 
         #endregion
+
+        string ExecResultedSetScript(
+            Func<string> script,
+            Func<object> parameters)
+        {
+            return StackExchangeClientHelper.ExecSetScript(
+                () =>_stackExchangeClient.GetDatabase(),
+                script,
+                parameters,
+                _successResult,
+                _failureResult
+            );
+        }
+
+        string ExecResultedConfirmOrReleaseScript(
+            Func<string> script,
+            Func<object> parameters)
+        {
+            return StackExchangeClientHelper.ExecReleaseOrConfirmScript(
+                () =>_stackExchangeClient.GetDatabase(),
+                script,
+                parameters,
+                _successResult,
+                _failureResult
+            );
+        }
 
         async Task<ConnectionMultiplexer> ConnectClient(LockingNode node)
         {

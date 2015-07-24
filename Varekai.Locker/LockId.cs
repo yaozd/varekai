@@ -1,4 +1,5 @@
 ﻿using System;
+using Varekai.Utils;
 
 namespace Varekai.Locker
 {
@@ -33,11 +34,6 @@ namespace Varekai.Locker
             return new LockId(Resource, newSessionId, ExpirationTimeMillis);
         }
 
-        public long CalculateExpirationInSeconds()
-        {
-            return ExpirationTimeMillis / 1000;
-        }
-
         public object[] GetSetCommand()
         {
             return new object[]
@@ -59,7 +55,7 @@ namespace Varekai.Locker
                 GetConfirmScript(),
                 Resource,
                 SessionId,
-                CalculateExpirationInSeconds()
+                ExpirationTimeMillis.ToCompleteSeconds()
             };
         }
 
@@ -76,25 +72,54 @@ namespace Varekai.Locker
 
         public string GetSetScript()
         {
-            return @"return redis.call(""SET"", KEYS[1], ARGV[1], ""NX"", ""PX"", ARGV[2])";
+            return @"return redis.call(""SET"", @resource, @session, ""NX"", ""PX"", @ttl)";
+        }
+
+        public object GetSetScriptParameters()
+        {
+            return new
+            { 
+                resource = Resource,
+                session = SessionId.ToString(),
+                ttl = ExpirationTimeMillis
+            };
         }
 
         public string GetConfirmScript()
         {
-            return @"if redis.call(""GET"",KEYS[1]) == ARGV[1] then
-                    return redis.call(""EXPIRE"", KEYS[1], ARGV[2])
+            return @"if redis.call(""GET"", @resource) == @session then
+                    return redis.call(""EXPIRE"", @resource, @ttl)
                 else
                     return 0
                 end";
         }
 
+        public object GetConfirmScriptParameters()
+        {
+            return new
+            { 
+                resource = Resource,
+                session = SessionId.ToString(),
+                ttl = ExpirationTimeMillis.ToCompleteSeconds()
+            };
+        }
+
         public string GetReleaseScript()
         {
-            return @"if redis.call(""GET"",KEYS[1]) == ARGV[1] then
-                    return redis.call(""DEL"", KEYS[1])
+            return @"if redis.call(""GET"", @resource) == @session then
+                    return redis.call(""DEL"", @resource)
                 else
                     return 0
                 end";
+        }
+
+        public object GetReleaseScriptParameters()
+        {
+            return new
+            { 
+                resource = Resource,
+                session = SessionId.ToString()
+            };
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Varekai.Locker.Tests.Unit
             var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
                 CreateNodes(),
                 () => DateTime.Now,
-                CreateMockRedisClient(
+                CreateRedisClientMock(
                     _ => Task.FromResult(acquireRsult),
                     _ => Task.FromResult("OK"),
                     _ => Task.FromResult("OK")
@@ -43,7 +43,7 @@ namespace Varekai.Locker.Tests.Unit
             var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
                 CreateNodes(),
                 () => DateTime.Now,
-                CreateMockRedisClient(
+                CreateRedisClientMock(
                     _ => Task.FromResult("OK"),
                     _ => Task.FromResult("OK"),
                     _ => Task.FromResult(confirmRsult)
@@ -65,7 +65,7 @@ namespace Varekai.Locker.Tests.Unit
             var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
                 CreateNodes(),
                 () => DateTime.Now,
-                CreateMockRedisClient(
+                CreateRedisClientMock(
                     _ => Task.FromResult("OK"),
                     _ => Task.FromResult(releaseRsult),
                     _ => Task.FromResult("OK")
@@ -91,7 +91,7 @@ namespace Varekai.Locker.Tests.Unit
             var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
                 CreateNodes(),
                 () => DateTime.Now,
-                CreateMockRedisClient(
+                CreateRedisClientMock(
                     async lockId => 
                     {
                         await Task.Delay((int)lockId.ExpirationTimeMillis + 1);
@@ -120,43 +120,43 @@ namespace Varekai.Locker.Tests.Unit
             LockingCoordinator.CreateNewForNodesWithClient(
                 nodes,
                 () => DateTime.Now,
-                CreateMockRedisConnectingClient(() => Task.FromResult(connectCount++)),
+                CreateRedisConnectingClientMock(() => Task.FromResult(connectCount++)),
                 Mock.Of<ILogger>());
             
             Assert.AreEqual(connectCount, nodes.Count());
         }
 
-        static Func<LockingNode, IRedisClient> CreateMockRedisClient(
+        static Func<LockingNode, IRedisClient> CreateRedisClientMock(
             Func<LockId, Task<string>> setCalback,
             Func<LockId, Task<string>> releaseCalback,
             Func<LockId, Task<string>> confirmCalback)
         {
-            var mockClient = new Mock<IRedisClient>();
+            var clientMock = new Mock<IRedisClient>();
 
-            mockClient
+            clientMock
                 .Setup(cli => cli.Set(It.IsAny<LockId>()))
                 .Returns<LockId>(setCalback);
 
-            mockClient
+            clientMock
                 .Setup(cli => cli.Release(It.IsAny<LockId>()))
                 .Returns<LockId>(releaseCalback);
 
-            mockClient
+            clientMock
                 .Setup(cli => cli.Confirm(It.IsAny<LockId>()))
                 .Returns<LockId>(confirmCalback);
             
-            return node => mockClient.Object;
+            return node => clientMock.Object;
         }
 
-        static Func<LockingNode, IRedisClient> CreateMockRedisConnectingClient(Func<Task> connectCallback)
+        static Func<LockingNode, IRedisClient> CreateRedisConnectingClientMock(Func<Task> connectCallback)
         {
-            var mockClient = new Mock<IRedisClient>();
+            var clientMock = new Mock<IRedisClient>();
 
-            mockClient
+            clientMock
                 .Setup(cli => cli.TryConnect())
                 .Returns(connectCallback);
             
-            return node => mockClient.Object;
+            return node => clientMock.Object;
         }
 
         static IEnumerable<LockingNode> CreateNodes()

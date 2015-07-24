@@ -35,10 +35,12 @@
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Unit\LockingAlgorithmTests.cs" />
     <Compile Include="Unit\LockingCoordinatorTests.cs" />
+    <Compile Include="Unit\LockIdTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
