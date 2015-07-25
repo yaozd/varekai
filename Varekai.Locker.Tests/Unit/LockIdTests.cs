@@ -15,13 +15,13 @@ namespace Varekai.Locker.Tests.Unit
         {
             var session = Guid.NewGuid();
 
-            dynamic parameters = LockId
+            var parameters = LockId
                 .CreateNew(resource, session, lockExpirationTimeMillis)
                 .GetSetScriptParameters();
             
-            Assert.AreEqual(resource, parameters.resource);
-            Assert.AreEqual(session.ToString(), parameters.session);
-            Assert.AreEqual(lockExpirationTimeMillis, parameters.ttl);
+            Assert.AreEqual(resource, parameters.ValueOf<string>("resource"));
+            Assert.AreEqual(session.ToString(), parameters.ValueOf<string>("session"));
+            Assert.AreEqual(lockExpirationTimeMillis, parameters.ValueOf<long>("ttl"));
         }
 
         [Test]
@@ -32,13 +32,13 @@ namespace Varekai.Locker.Tests.Unit
         {
             var session = Guid.NewGuid();
 
-            dynamic parameters = LockId
+            var parameters = LockId
                 .CreateNew(resource, session, lockExpirationTimeMillis)
                 .GetConfirmScriptParameters();
             
-            Assert.AreEqual(resource, parameters.resource);
-            Assert.AreEqual(session.ToString(), parameters.session);
-            Assert.AreEqual(lockExpirationTimeMillis.ToCompleteSeconds(), parameters.ttl);
+            Assert.AreEqual(resource, parameters.ValueOf<string>("resource"));
+            Assert.AreEqual(session.ToString(), parameters.ValueOf<string>("session"));
+            Assert.AreEqual(lockExpirationTimeMillis.ToCompleteSeconds(), parameters.ValueOf<long>("ttl"));
         }
 
         [Test]
@@ -49,12 +49,12 @@ namespace Varekai.Locker.Tests.Unit
         {
             var session = Guid.NewGuid();
 
-            dynamic parameters = LockId
+            var parameters = LockId
                 .CreateNew(resource, session, lockExpirationTimeMillis)
                 .GetReleaseScriptParameters();
             
-            Assert.AreEqual(resource, parameters.resource);
-            Assert.AreEqual(session.ToString(), parameters.session);
+            Assert.AreEqual(resource, parameters.ValueOf<string>("resource"));
+            Assert.AreEqual(session.ToString(), parameters.ValueOf<string>("session"));
         }
 
         [Test]

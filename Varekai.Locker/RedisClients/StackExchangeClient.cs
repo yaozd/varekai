@@ -125,7 +125,7 @@ namespace Varekai.Locker.RedisClients
                 node.GetNodeName());
         }
 
-        static bool IsConnected(ConnectionMultiplexer connectionMultiplexer)
+        static bool IsConnected(IConnectionMultiplexer connectionMultiplexer)
         {
             return connectionMultiplexer != null && connectionMultiplexer.IsConnected;
         }

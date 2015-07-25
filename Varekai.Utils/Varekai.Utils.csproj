@@ -62,6 +62,7 @@
     <Compile Include="TaskUtils.cs" />
     <Compile Include="Logging\LogLevels.cs" />
     <Compile Include="TimeUtils.cs" />
+    <Compile Include="AnonymousObjectsUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
