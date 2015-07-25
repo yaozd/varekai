@@ -52,7 +52,12 @@ namespace Varekai.Locker
             return  new object[]
             {
                 "EVAL",
-                GetConfirmScript(),
+                @"if redis.call(""GET"", KEYS[1]) == ARGV[1] then
+                    return redis.call(""EXPIRE"", KEYS[1], ARGV[2])
+                else
+                    return 0
+                end",
+                1,
                 Resource,
                 SessionId,
                 ExpirationTimeMillis.ToCompleteSeconds()
@@ -64,7 +69,12 @@ namespace Varekai.Locker
             return  new object[]
             {
                 "EVAL",
-                GetReleaseScript(),
+                @"if redis.call(""GET"", KEYS[1]) == ARGV[1] then
+                    return redis.call(""DEL"", KEYS[1])
+                else
+                    return 0
+                end",
+                1,
                 Resource,
                 SessionId
             };

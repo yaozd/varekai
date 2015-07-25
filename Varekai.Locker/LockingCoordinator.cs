@@ -49,7 +49,7 @@ namespace Varekai.Locker
             return CreateNewForNodesWithClient(
                 nodes,
                 timeProvider,
-                nd => new StackExchangeClient(nd, () => SuccessResult, () => FailResult, logger),
+                nd => new ServiceStackClient(nd, () => SuccessResult, () => FailResult, logger),
                 logger);
         }
 

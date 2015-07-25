@@ -64,7 +64,11 @@ namespace Varekai.Locking.Adapter
 
                     if(holdingLock)
                     {
+                        _logger.ToInfoLog(string.Format("DISTRIBUTED LOCK ACQUIRED for {0}", _lockId.Resource));
+
                         serviceStartingTask = Task.Run(StartServiceWhileHodlingLock);
+
+                        _logger.ToInfoLog(string.Format("Entering lock retaining mode for {0}", _lockId.Resource));
 
                         while(holdingLock && !serviceStartingTask.IsFaulted && !serviceStartingTask.IsCanceled)
                         {
@@ -112,12 +116,12 @@ namespace Varekai.Locking.Adapter
 
                 _serviceExecution.Stop();
 
-                _logger.ToInfoLog("Releasing the lock before shutting the service down...");
+                _logger.ToInfoLog(string.Format("Releasing the lock on {0} before shutting the service down...", _lockId.Resource));
 
                 if(_locker != null)
                     await _locker.TryReleaseTheLock(_lockId);
 
-                _logger.ToInfoLog("DISTRIBUTED LOCK RELEASED");
+                _logger.ToInfoLog(string.Format("DISTRIBUTED LOCK RELEASED for {0}", _lockId.Resource));
             }
             catch (Exception ex)
             {
@@ -129,9 +133,6 @@ namespace Varekai.Locking.Adapter
 
         async Task StartServiceWhileHodlingLock()
         {
-            _logger.ToInfoLog("DISTRIBUTED LOCK ACQUIRED");
-            _logger.ToInfoLog("Entering lock retaining mode");
-
             //  this guarantees that, in case of a partition of the locking nodes network, all
             // the other services that still believe they hold the lock, have time to fail in confirming it 
             await Task.Delay(

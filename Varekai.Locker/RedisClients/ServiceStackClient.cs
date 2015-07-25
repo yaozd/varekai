@@ -69,13 +69,16 @@ namespace Varekai.Locker.RedisClients
         }
 
         Task<string> ExecCommand(
-            Func<object> command,
+            Func<object[]> command,
             Func<string, bool> testResultCorrectness)
         {
             var result = 
                 _client
                 .RawCommand(command())
-                .ToString();
+                .ToRedisText()
+                .Text;
+
+            _logger.ToDebugLog(string.Format("Command {0} on {1}:{2} reulsted in {3}", command()[0], _node.Host, _node.Port, result));
 
             return testResultCorrectness(result)
                 ? _successResult().FromResult()
