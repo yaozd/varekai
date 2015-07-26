@@ -90,11 +90,12 @@ namespace Varekai.Locker.Tests.Unit
                 .CreateNew(resource, session, lockExpirationTimeMillis)
                 .GetConfirmCommand();
 
-            Assert.AreEqual(5, command.Length);
+            Assert.AreEqual(6, command.Length);
             Assert.AreEqual("EVAL", command[0]);
-            Assert.AreEqual(resource, command[2]);
-            Assert.AreEqual(session, command[3]);
-            Assert.AreEqual(lockExpirationTimeMillis.ToCompleteSeconds(), command[4]);
+            Assert.AreEqual(1, command[2]);
+            Assert.AreEqual(resource, command[3]);
+            Assert.AreEqual(session, command[4]);
+            Assert.AreEqual(lockExpirationTimeMillis.ToCompleteSeconds(), command[5]);
         }
 
         [Test]
@@ -109,10 +110,11 @@ namespace Varekai.Locker.Tests.Unit
                 .CreateNew(resource, session, lockExpirationTimeMillis)
                 .GetReleaseCommand();
 
-            Assert.AreEqual(4, command.Length);
+            Assert.AreEqual(5, command.Length);
             Assert.AreEqual("EVAL", command[0]);
-            Assert.AreEqual(resource, command[2]);
-            Assert.AreEqual(session, command[3]);
+            Assert.AreEqual(1, command[2]);
+            Assert.AreEqual(resource, command[3]);
+            Assert.AreEqual(session, command[4]);
         }
     }
 }
