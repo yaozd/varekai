@@ -38,7 +38,7 @@
     <Compile Include="IServiceExecution.cs" />
     <Compile Include="ILockingServiceExecution.cs" />
     <Compile Include="LockingServiceExecutor.cs" />
-    <Compile Include="BootstrapHelpers\LockingExecutorBootstrapp.cs" />
+    <Compile Include="BootstrapHelpers\LockingExecutorBootstrap.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

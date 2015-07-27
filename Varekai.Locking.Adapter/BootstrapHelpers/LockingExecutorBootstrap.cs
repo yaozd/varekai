@@ -6,7 +6,7 @@ using Varekai.Utils.Logging;
 
 namespace Varekai.Locking.Adapter.BootstrapHelpers
 {
-    public static class LockingExecutorBootstrapp
+    public static class LockingExecutorBootstrap
     {
         public static ContainerBuilder RegisterLockingExecution(this ContainerBuilder builder)
         {

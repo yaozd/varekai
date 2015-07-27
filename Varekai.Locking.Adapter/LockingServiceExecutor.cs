@@ -18,7 +18,7 @@ namespace Varekai.Locking.Adapter
         readonly IServiceExecution _serviceExecution;
         readonly LockId _lockId;
 
-        LockingCoordinator _locker;
+        LockingCoordinator _lockingCoordinator;
         
         public LockingServiceExecutor(
             IServiceExecution serviceExecution,
@@ -47,20 +47,15 @@ namespace Varekai.Locking.Adapter
             {
                 try
                 {
-                    if(_locker == null)
-                    {
-                        _logger.ToInfoLog("Creating the locking nodes...");
+                    if(_lockingCoordinator == null)
+                        _lockingCoordinator = InitCoordinator(
+                            _lockingNodes,
+                            _timeProvider,
+                            _logger);
 
-                        _locker = LockingCoordinator
-                            .CreateNewForNodes(
-                                _lockingNodes,
-                                _timeProvider,
-                                _logger);
-                    }
+                    var confirmationInterval = _lockingCoordinator.GetConfirmationIntervalMillis(_lockId);
 
-                    var confirmationInterval = _locker.GetConfirmationIntervalMillis(_lockId);
-
-                    holdingLock = await _locker.TryAcquireLock(_lockId);
+                    holdingLock = await _lockingCoordinator.TryAcquireLock(_lockId);
 
                     if(holdingLock)
                     {
@@ -72,7 +67,7 @@ namespace Varekai.Locking.Adapter
 
                         while(holdingLock && !serviceStartingTask.IsFaulted && !serviceStartingTask.IsCanceled)
                         {
-                            holdingLock = await _locker.TryConfirmTheLock(_lockId);
+                            holdingLock = await _lockingCoordinator.TryConfirmTheLock(_lockId);
 
                             await TaskUtils.SilentlyCanceledDelay((int)confirmationInterval, _globalCancellationSource.Token);
                         }
@@ -100,8 +95,8 @@ namespace Varekai.Locking.Adapter
                 }
                 finally
                 {
-                    if(_locker != null)
-                        await _locker.TryReleaseTheLock(_lockId);
+                    if(_lockingCoordinator != null)
+                        await _lockingCoordinator.TryReleaseTheLock(_lockId);
                 }
             }
         }
@@ -118,8 +113,8 @@ namespace Varekai.Locking.Adapter
 
                 _logger.ToInfoLog(string.Format("Releasing the lock on {0} before shutting the service down...", _lockId.Resource));
 
-                if(_locker != null)
-                    await _locker.TryReleaseTheLock(_lockId);
+                if(_lockingCoordinator != null)
+                    await _lockingCoordinator.TryReleaseTheLock(_lockId);
 
                 _logger.ToInfoLog(string.Format("DISTRIBUTED LOCK RELEASED for {0}", _lockId.Resource));
             }
@@ -131,12 +126,26 @@ namespace Varekai.Locking.Adapter
 
         #endregion
 
+        static LockingCoordinator InitCoordinator(
+            IEnumerable<LockingNode> nodes,
+            Func<DateTime> timeProvider,
+            ILogger logger)
+        {
+            logger.ToInfoLog("Creating the locking nodes...");
+
+            return LockingCoordinator
+                .CreateNewForNodes(
+                    nodes,
+                    timeProvider,
+                    logger);
+        }
+
         async Task StartServiceWhileHodlingLock()
         {
             //  this guarantees that, in case of a partition of the locking nodes network, all
             // the other services that still believe they hold the lock, have time to fail in confirming it 
             await Task.Delay(
-                (int)_locker.GetConfirmationIntervalMillis(_lockId),
+                (int)_lockingCoordinator.GetConfirmationIntervalMillis(_lockId),
                 _globalCancellationSource.Token);
 
             _logger.ToInfoLog("Starting the service");
@@ -153,7 +162,7 @@ namespace Varekai.Locking.Adapter
                 if(!_globalCancellationSource.IsCancellationRequested)
                     await ReleasedStop();
                     
-                _locker.Dispose();
+                _lockingCoordinator.Dispose();
 
                 _serviceExecution.Dispose();
             }
