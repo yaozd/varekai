@@ -1,5 +1,5 @@
-﻿using NUnit.Framework;
-using System.Linq;
+﻿using System.Linq;
+using NUnit.Framework;
 
 namespace ServiceInfrastructureHelper.Tests
 {
@@ -35,7 +35,11 @@ namespace ServiceInfrastructureHelper.Tests
         ]";
 
         [Test]
-        public void Given_a_json_list_of_nodes_when_parsed_then_the_correct_number_of_locking_nodes_is_created() 
+        [Description(
+            "GIVEN a json list of nodes as string" +
+            "WHEN parsed" +
+            "THEN the number of locking nodes created is correct")]
+        public void GenerateNodesFromJson() 
         {
             var list = JsonNodeList.GenerateLockingNodes();
 
@@ -43,16 +47,19 @@ namespace ServiceInfrastructureHelper.Tests
         }
 
         [Test]
+        [Description(
+            "GIVEN a json list of nodes as string" +
+            "WHEN parsed" +
+            "THEN the host and port of the parsed nodes are correct")]
         [TestCase(0, "localhost", 7001)]
         [TestCase(1, "localhost", 7002)]
         [TestCase(2, "localhost", 7003)]
         [TestCase(3, "localhost", 7004)]
         [TestCase(4, "localhost", 7005)]
-        public void Given_a_json_list_of_nodes_when_parsed_then_the_nodes_parsed_have_the_correct_host_and_port(
+        public void GenerateTheCorrectHostAndPortForTheParsedNodes(
             int index,
             string host,
-            int port
-        )
+            int port)
         {
             var list = JsonNodeList
                 .GenerateLockingNodes()

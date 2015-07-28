@@ -78,14 +78,14 @@ namespace Varekai.Locker.Tests.Unit
         }
 
         [Test]
-        [TestCase(1000)]
-        [TestCase(100)]
-        [TestCase(10)]
-        [TestCase(1)]
         [Description(
             "GIVEN a lock coordinator" +
             "WHEN the time to set the lock in the redis client is bigger than the lock expiration" +
             "THEN the lock is not acquired")]
+        [TestCase(1000)]
+        [TestCase(100)]
+        [TestCase(10)]
+        [TestCase(1)]
         public async Task LockAcquireTimeTest(int lockExpirationTime)
         {
             var coordinator = LockingCoordinator.CreateNewForNodesWithClient(

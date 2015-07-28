@@ -2,57 +2,88 @@
 using NUnit.Framework;
 using Varekai.Utils;
 
-namespace Varekai.Tests.Utils
+namespace Varekai.Utils.Tests
 {
 	[TestFixture]
 	public class ParametersCheckExTests
 	{
 		[Test]
-		public void ConvertToType_intCorrect ()
+        [Description(
+            "GIVEN a number as a string" +
+            "WHEN converted to int" +
+            "THEN succeeds")]
+		public void ConvertToTypeIntCorrect ()
 		{
-			Assert.AreEqual ((int)5672, "5672".ConvertToType<string, int> ());
+            Assert.AreEqual ((int)5672, "5672".CastFromTo<string, int> ());
 		}
 
 		[Test]
-		public void ConvertToType_boolCorrect ()
+        [Description(
+            "GIVEN a bool as a string" +
+            "WHEN converted to bool" +
+            "THEN succeeds")]
+		public void ConvertToTypeBoolCorrect ()
 		{
-			Assert.AreEqual (true, "true".ConvertToType<string, bool> ());
+            Assert.AreEqual (true, "true".CastFromTo<string, bool> ());
 		}
 
 		[Test]
-		public void ConvertToType_doubleCorrect ()
+        [Description(
+            "GIVEN a decimal number as a string" +
+            "WHEN converted to double" +
+            "THEN succeeds")]
+		public void ConvertToTypeDoubleCorrect ()
 		{
-			Assert.AreEqual ((double)5672, "5672".ConvertToType<string, double> ());
+            Assert.AreEqual ((double)5672, "5672".CastFromTo<string, double> ());
 		}
 
 		[Test]
-		[ExpectedException (typeof(ArgumentException))]
-		public void ConvertToType_intMalformed ()
+        [Description(
+            "GIVEN a text" +
+            "WHEN converted to int" +
+            "THEN throws an exception")]
+		public void ConvertToTypeIntMalformed ()
 		{
-			TestEx.AssertExceptionMessageEquals (() => "AAAA".ConvertToType<string, int> ("testParam")
-				, "The parameter testParam with value AAAA cannot be converted to the type System.Int32");
+            Assert.Throws<ArgumentException>(
+                () => "AAAA".CastFromTo<string, int> ("testParam"),
+                "The parameter testParam with value AAAA cannot be converted to the type System.Int32"
+            );
 		}
 
 		[Test]
-		[ExpectedException (typeof(ArgumentException))]
-		public void ConvertToType_boolMalformed ()
+        [Description(
+            "GIVEN a text" +
+            "WHEN converted to bool" +
+            "THEN throws an exception")]
+		public void ConvertToTypeBoolMalformed ()
 		{
-			TestEx.AssertExceptionMessageEquals (() => "AAAA".ConvertToType<string, bool> ("testParam")
-				, "The parameter testParam with value AAAA cannot be converted to the type System.Boolean");
+            Assert.Throws<ArgumentException>(
+                () => "AAAA".CastFromTo<string, bool> ("testParam"),
+                "The parameter testParam with value AAAA cannot be converted to the type System.Boolean"
+            );
 		}
 
 		[Test]
-		[ExpectedException (typeof(ArgumentNullException))]
-		public void EnsureIsNotNull_nullString ()
+        [Description(
+            "GIVEN a null string" +
+            "WHEN tested to make sure is not null" +
+            "THEN throws an exception")]
+		public void EnsureIsNotNullNullString ()
 		{
 			string underTest = null;
-
-			TestEx.AssertExceptionMessageEquals (() => underTest.EnsureIsNotNull ("testArgument")
-				, "Argument cannot be null.\nParameter name: testArgument");
+            
+            Assert.Throws<ArgumentNullException>(
+                () => underTest.EnsureIsNotNull ("testArgument"),
+                "Argument cannot be null.\nParameter name: testArgument"
+            );
 		}
 
 		[Test]
-		public void EnsureIsNotNull_notNullString ()
+        [Description(
+            "GIVEN a text" +
+            "WHEN tested to make sure is not null" +
+            "THEN succeeds")]
+		public void EnsureIsNotNullNotNullString ()
 		{
 			"stringNotNull".EnsureIsNotNull ("testArgument");
 
@@ -60,4 +91,3 @@ namespace Varekai.Tests.Utils
 		}
 	}
 }
-

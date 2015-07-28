@@ -8,7 +8,11 @@ namespace Varekai.Locker
     {
         public static double CalculateRemainingValidityTime(this LockId lockId, DateTime acquisitionStartTime, DateTime acquisitionEndTime)
         {
-            return lockId.ExpirationTimeMillis - acquisitionEndTime.Subtract(acquisitionStartTime).TotalMilliseconds;
+            var elapsedMilliseconds = acquisitionEndTime.Subtract(acquisitionStartTime).TotalMilliseconds;
+
+            return elapsedMilliseconds < lockId.ExpirationTimeMillis
+                ? lockId.ExpirationTimeMillis - elapsedMilliseconds
+                : 0;
         }
 
         public static int CalculateQuorum(this IEnumerable<LockingNode> nodes)
@@ -20,19 +24,19 @@ namespace Varekai.Locker
                 : 0;
         }
 
-        public static long CalculateValidityTimeSafetyMargin(this LockId lockId)
+        public static double CalculateValidityTimeSafetyMargin(this LockId lockId)
         {
-            return lockId.ExpirationTimeMillis / 100;
+            return (double)lockId.ExpirationTimeMillis / 100;
         }
 
-        public static long CalculateAcquisitionTimeout(this LockId lockId)
+        public static double CalculateAcquisitionTimeout(this LockId lockId)
         {
-            return lockId.ExpirationTimeMillis / 200;
+            return (double)lockId.ExpirationTimeMillis / 200;
         }
 
-        public static long CalculateConfirmationIntervalMillis(this LockId lockId)
+        public static double CalculateConfirmationIntervalMillis(this LockId lockId)
         {
-            return lockId.ExpirationTimeMillis / 3;
+            return (double)lockId.ExpirationTimeMillis / 3;
         }
 
         public static bool IsTimeLeftEnoughToUseTheLock(DateTime acquisitionStartTime, DateTime acquisitionEndTime, LockId lockId)

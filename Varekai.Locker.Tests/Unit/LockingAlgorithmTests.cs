@@ -1,26 +1,37 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using Varekai.Utils;
 
 namespace Varekai.Locker.Tests.Unit
 {
     [TestFixture]
-    class LockingAlgorithmTests
+    public class LockingAlgorithmTests
     {
         [Test]
+        [Description(
+            "GIVEN a lock expiration interval" +
+            "WHEN an amount of time has passed" +
+            "THEN the remaining validity of the lock is correct")]
         [TestCase(4000, 500, 3500)]
+        [TestCase(500, 499.05, 0.95)]
         [TestCase(500, 500, 0)]
         [TestCase(0, 0, 0)]
         [TestCase(4000, 0, 4000)]
-        public void CalculateRemainingValidityTimeTests(long expirationTimeMillis, long durationMillis, double expectedRemainingValidity)
+        [TestCase(400, 5000, 0)]
+        [TestCase(500, 500.05, 0)]
+        public void CalculateRemainingValidityTimeTests(long expirationTimeMillis, double durationMillis, double expectedRemainingValidity)
         {
             var lid = LockId.CreateNew("Test Resource", Guid.NewGuid(), expirationTimeMillis);
 
             var timeStart = DateTime.UtcNow;
 
+            var elapsed = durationMillis.WithMillisecondsCreateTimeSpan();
+
             Assert.AreEqual(
                 expectedRemainingValidity,
-                lid.CalculateRemainingValidityTime(timeStart, timeStart.Add(TimeSpan.FromMilliseconds(durationMillis)))
+                lid.CalculateRemainingValidityTime(timeStart, timeStart.Add(elapsed)),
+                0.000001
             );
         }
 
@@ -31,7 +42,7 @@ namespace Varekai.Locker.Tests.Unit
         [TestCase(6, 4)]
         [TestCase(5, 3)]
         [TestCase(7, 4)]
-        public void CalculateRemainingValidityTimeTests(int nodesNumber, int expectedQuorum)
+        public void CalculateQuorum(int nodesNumber, int expectedQuorum)
         {
             var nodes = new List<LockingNode>();
 
@@ -50,7 +61,8 @@ namespace Varekai.Locker.Tests.Unit
         [TestCase(3000, 3000, false)]
         [TestCase(3000, 1970, true)]
         [TestCase(3000, 1971, false)]
-        public void IsTimeLeftEnoughToUseTheLockTests(long expirationTimeMillis, long durationMillis, bool expectedTimeValidity)
+        [TestCase(3000, 3001, false)]
+        public void IsTimeLeftEnoughToUseTheLockTests(long expirationTimeMillis, double durationMillis, bool expectedTimeValidity)
         {
             var lid = LockId.CreateNew("Test Resource", Guid.NewGuid(), expirationTimeMillis);
 
@@ -60,7 +72,7 @@ namespace Varekai.Locker.Tests.Unit
                 expectedTimeValidity,
                 LockingAlgorithm.IsTimeLeftEnoughToUseTheLock(
                     timeStart,
-                    timeStart.Add(TimeSpan.FromMilliseconds(durationMillis)),
+                    timeStart.Add(durationMillis.WithMillisecondsCreateTimeSpan()),
                     lid)
             );
         }

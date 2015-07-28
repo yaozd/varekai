@@ -176,7 +176,7 @@ namespace Varekai.Locker
             }
         }
 
-        public long GetConfirmationIntervalMillis(LockId lockId)
+        public double GetConfirmationIntervalMillis(LockId lockId)
         {
             return lockId.CalculateConfirmationIntervalMillis();
         }
