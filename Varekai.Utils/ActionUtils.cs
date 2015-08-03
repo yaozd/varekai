@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Varekai.Utils
 {
-    public static class ActionUtil
+    public static class ActionUtils
     {
         public static void Retry(Action toRetry
 			, CancellationTokenSource cancellation

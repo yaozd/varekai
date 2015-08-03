@@ -5,7 +5,7 @@ using System.IO.Compression;
 
 namespace Varekai.Utils
 {
-    public static class SerializationUtil
+    public static class SerializationUtils
     {
         public static string GetJson(this byte[] binary)
         {

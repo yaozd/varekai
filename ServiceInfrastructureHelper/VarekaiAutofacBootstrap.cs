@@ -22,7 +22,7 @@ namespace ServiceInfrastructureHelper
                     ctx => new SerilogLogger(ctx.Resolve<SerilogRollingFileConfiguration>()),
                     TimeUtils.MonotonicTimeTicksProvider(),
                     () => 
-                        JsonFileReadUtil
+                        JsonFileUtils
                         .ReadJsonFromFile(nodesConfigFilePath)
                         .GenerateLockingNodes(operationTimeoutMillis:3000),
                     () => applicationName)

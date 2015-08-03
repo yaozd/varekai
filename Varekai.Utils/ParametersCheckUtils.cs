@@ -2,7 +2,7 @@
 
 namespace Varekai.Utils
 {
-    public static class ParametersCheckEx
+    public static class ParametersCheckUtils
     {
         public static void EnsureIsNotNull<T>(this T parameter, string paramName = "")
         {

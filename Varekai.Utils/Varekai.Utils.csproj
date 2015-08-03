@@ -51,19 +51,19 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Logging\Implementations\Log4NetLogger.cs" />
-    <Compile Include="SerializationUtil.cs" />
-    <Compile Include="ActionUtil.cs" />
     <Compile Include="Logging\LoggingUtil.cs" />
-    <Compile Include="ParametersCheckEx.cs" />
     <Compile Include="Logging\Implementations\SerilogLogger.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\Implementations\SerilogRollingFileConfiguration.cs" />
-    <Compile Include="JsonFileReadUtil.cs" />
     <Compile Include="TaskUtils.cs" />
     <Compile Include="Logging\LogLevels.cs" />
     <Compile Include="TimeUtils.cs" />
     <Compile Include="AnonymousObjectsUtils.cs" />
     <Compile Include="TypeUtils.cs" />
+    <Compile Include="ParametersCheckUtils.cs" />
+    <Compile Include="JsonFileUtils.cs" />
+    <Compile Include="SerializationUtils.cs" />
+    <Compile Include="ActionUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
