@@ -176,11 +176,6 @@ namespace Varekai.Locker
             }
         }
 
-        public double GetConfirmationIntervalMillis(LockId lockId)
-        {
-            return lockId.CalculateConfirmationIntervalMillis();
-        }
-
         public void Dispose()
         {
             if (!_lockAcquisitionCancellation.IsCancellationRequested)

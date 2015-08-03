@@ -55,12 +55,12 @@ namespace Varekai.Locker.Tests.Unit
         }
 
         [Test]
-        [TestCase(3000, 2000, false)]
-        [TestCase(3000, 1000, true)]
-        [TestCase(3000, 3000, false)]
-        [TestCase(3000, 1970, true)]
-        [TestCase(3000, 1971, false)]
-        [TestCase(3000, 3001, false)]
+        [TestCase(4000, 2000, false)]
+        [TestCase(4000, 500, true)]
+        [TestCase(4000, 3000, false)]
+        [TestCase(4000, 960, true)]
+        [TestCase(4000, 961, false)]
+        [TestCase(4000, 3001, false)]
         public void IsTimeLeftEnoughToUseTheLockTests(long expirationTimeMillis, double durationMillis, bool expectedTimeValidity)
         {
             var lid = LockId.CreateNew("Test Resource", Guid.NewGuid(), expirationTimeMillis);
@@ -72,6 +72,19 @@ namespace Varekai.Locker.Tests.Unit
                 expectedTimeValidity,
                 LockingAlgorithm.IsTimeLeftEnoughToUseTheLock(timeStart, timeEnd, lid)
             );
+        }
+
+        [Test]
+        [TestCase(4000, 3000, 6000)]
+        public void CalculateRetryInterval(
+            long expirationTimeMillis,
+            int expectedLow,
+            int expectedHigh)
+        {
+            var lid = LockId.CreateNew("Test Resource", Guid.NewGuid(), expirationTimeMillis);
+
+            Assert.AreEqual(expectedLow, lid.CalculateRetryInterval().Item1);
+            Assert.AreEqual(expectedHigh, lid.CalculateRetryInterval().Item2);
         }
     }
 }

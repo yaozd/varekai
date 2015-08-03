@@ -36,7 +36,14 @@ namespace Varekai.Locker
 
         public static double CalculateConfirmationIntervalMillis(this LockId lockId)
         {
-            return (double)lockId.ExpirationTimeMillis / 3;
+            return (double)lockId.ExpirationTimeMillis * 3 / 4;
+        }
+
+        public static Tuple<int, int> CalculateRetryInterval(this LockId lockId)
+        {
+            var confirmation = (int)lockId.CalculateConfirmationIntervalMillis();
+
+            return new Tuple<int, int>(confirmation, confirmation * 2);
         }
 
         public static bool IsTimeLeftEnoughToUseTheLock(long acquisitionStartTimeTicks, long acquisitionEndTimeTicks, LockId lockId)

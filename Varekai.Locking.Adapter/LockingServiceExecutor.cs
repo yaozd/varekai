@@ -18,6 +18,8 @@ namespace Varekai.Locking.Adapter
         readonly IServiceExecution _serviceExecution;
         readonly LockId _lockId;
 
+        readonly Random _numericGenerator;
+
         LockingCoordinator _lockingCoordinator;
         
         public LockingServiceExecutor(
@@ -34,6 +36,8 @@ namespace Varekai.Locking.Adapter
             _logger = logger;
             _lockId = lockId;
             _lockingNodes = lockingNodes;
+
+            _numericGenerator = new Random(Guid.NewGuid().GetHashCode());
         }
 
         #region ILockingServiceExecution implementation
@@ -53,7 +57,7 @@ namespace Varekai.Locking.Adapter
                             _timeProvider,
                             _logger);
 
-                    var confirmationInterval = _lockingCoordinator.GetConfirmationIntervalMillis(_lockId);
+                    var confirmationInterval = _lockId.CalculateConfirmationIntervalMillis();
 
                     holdingLock = await _lockingCoordinator.TryAcquireLock(_lockId);
 
@@ -85,8 +89,11 @@ namespace Varekai.Locking.Adapter
                     {
                         _logger.ToDebugLog("Unable to acquire the lock, retrying...");
 
-                        // TODO: add random interval to the retry
-                        await TaskUtils.SilentlyCanceledDelay(1000, _globalCancellationSource.Token);
+                        var retryInterval = _lockId.CalculateRetryInterval();
+
+                        await TaskUtils.SilentlyCanceledDelay(
+                            _numericGenerator.Next(retryInterval.Item1, retryInterval.Item2),
+                            _globalCancellationSource.Token);
                     }
                 }
                 catch (Exception ex)
@@ -145,13 +152,15 @@ namespace Varekai.Locking.Adapter
             //  this guarantees that, in case of a partition of the locking nodes network, all
             // the other services that still believe they hold the lock, have time to fail in confirming it 
             await Task.Delay(
-                (int)_lockingCoordinator.GetConfirmationIntervalMillis(_lockId),
+                (int)_lockId.CalculateConfirmationIntervalMillis(),
                 _globalCancellationSource.Token);
 
             _logger.ToInfoLog("Starting the service");
 
             await _serviceExecution.Start();
         }
+
+
 
         #region IDisposable implementation
 
