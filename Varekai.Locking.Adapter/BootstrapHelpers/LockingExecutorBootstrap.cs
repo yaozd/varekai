@@ -20,12 +20,12 @@ namespace Varekai.Locking.Adapter.BootstrapHelpers
         public static ContainerBuilder RegisterLockingAdapterDependencies(
             this ContainerBuilder builder,
             Func<IComponentContext, ILogger> loggerProvider,
-            Func<DateTime> timeProvider,
+            Func<long> timeProvider,
             Func<IEnumerable<LockingNode>> nodesProvider,
             Func<string> resourceToLockProvider)
         {
             builder
-                .Register<Func<DateTime>>(_ => () => timeProvider())
+                .Register<Func<long>>(_ => () => timeProvider())
                 .AsSelf();
 
             builder

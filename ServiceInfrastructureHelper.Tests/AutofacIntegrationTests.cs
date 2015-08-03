@@ -15,7 +15,7 @@ namespace ServiceInfrastructureHelper.Tests
         {
             var container = SetupContainer();
 
-            Assert.IsNotNull(container.Resolve<Func<DateTime>>());
+            Assert.IsNotNull(container.Resolve<Func<long>>());
         }
 
         [Test]

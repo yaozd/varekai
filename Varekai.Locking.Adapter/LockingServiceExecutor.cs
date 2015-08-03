@@ -14,7 +14,7 @@ namespace Varekai.Locking.Adapter
 
         readonly IEnumerable<LockingNode> _lockingNodes;
         readonly ILogger _logger;
-        readonly Func<DateTime> _timeProvider;
+        readonly Func<long> _timeProvider;
         readonly IServiceExecution _serviceExecution;
         readonly LockId _lockId;
 
@@ -22,7 +22,7 @@ namespace Varekai.Locking.Adapter
         
         public LockingServiceExecutor(
             IServiceExecution serviceExecution,
-            Func<DateTime> timeProvider,
+            Func<long> timeProvider,
             ILogger logger,
             IEnumerable<LockingNode> lockingNodes,
             LockId lockId)
@@ -128,7 +128,7 @@ namespace Varekai.Locking.Adapter
 
         static LockingCoordinator InitCoordinator(
             IEnumerable<LockingNode> nodes,
-            Func<DateTime> timeProvider,
+            Func<long> timeProvider,
             ILogger logger)
         {
             logger.ToInfoLog("Creating the locking nodes...");

@@ -20,7 +20,7 @@ namespace ServiceInfrastructureHelper
                 .RegisterSerilogConfiguration(applicationName, logsPath)
                 .RegisterLockingAdapterDependencies(
                     ctx => new SerilogLogger(ctx.Resolve<SerilogRollingFileConfiguration>()),
-                    () => DateTime.Now,
+                    TimeUtils.MonotonicTimeTicksProvider(),
                     () => 
                         JsonFileReadUtil
                         .ReadJsonFromFile(nodesConfigFilePath)

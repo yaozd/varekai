@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using Varekai.Utils;
 using Varekai.Utils.Logging;
 
 namespace Varekai.Locker.Tests.Unit
@@ -20,7 +21,7 @@ namespace Varekai.Locker.Tests.Unit
         {
             var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
                 CreateNodes(),
-                () => DateTime.Now,
+                TimeUtils.MonotonicTimeTicksProvider(),
                 CreateRedisClientMock(
                     _ => Task.FromResult(acquireRsult),
                     _ => Task.FromResult("OK"),
@@ -42,7 +43,7 @@ namespace Varekai.Locker.Tests.Unit
         {
             var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
                 CreateNodes(),
-                () => DateTime.Now,
+                TimeUtils.MonotonicTimeTicksProvider(),
                 CreateRedisClientMock(
                     _ => Task.FromResult("OK"),
                     _ => Task.FromResult("OK"),
@@ -64,7 +65,7 @@ namespace Varekai.Locker.Tests.Unit
         {
             var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
                 CreateNodes(),
-                () => DateTime.Now,
+                TimeUtils.MonotonicTimeTicksProvider(),
                 CreateRedisClientMock(
                     _ => Task.FromResult("OK"),
                     _ => Task.FromResult(releaseRsult),
@@ -90,7 +91,7 @@ namespace Varekai.Locker.Tests.Unit
         {
             var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
                 CreateNodes(),
-                () => DateTime.Now,
+                TimeUtils.MonotonicTimeTicksProvider(),
                 CreateRedisClientMock(
                     async lockId => 
                     {
@@ -119,7 +120,7 @@ namespace Varekai.Locker.Tests.Unit
 
             LockingCoordinator.CreateNewForNodesWithClient(
                 nodes,
-                () => DateTime.Now,
+                TimeUtils.MonotonicTimeTicksProvider(),
                 CreateRedisConnectingClientMock(() => Task.FromResult(connectCount++)),
                 Mock.Of<ILogger>());
             

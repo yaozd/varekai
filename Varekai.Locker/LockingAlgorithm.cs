@@ -6,9 +6,9 @@ namespace Varekai.Locker
 {
     public static class LockingAlgorithm
     {
-        public static double CalculateRemainingValidityTime(this LockId lockId, DateTime acquisitionStartTime, DateTime acquisitionEndTime)
+        public static double CalculateRemainingValidityTime(this LockId lockId, long acquisitionStartTimeTicks, long acquisitionEndTimeTicks)
         {
-            var elapsedMilliseconds = acquisitionEndTime.Subtract(acquisitionStartTime).TotalMilliseconds;
+            var elapsedMilliseconds = (double)(acquisitionEndTimeTicks - acquisitionStartTimeTicks) / TimeSpan.TicksPerMillisecond;
 
             return elapsedMilliseconds < lockId.ExpirationTimeMillis
                 ? lockId.ExpirationTimeMillis - elapsedMilliseconds
@@ -39,10 +39,10 @@ namespace Varekai.Locker
             return (double)lockId.ExpirationTimeMillis / 3;
         }
 
-        public static bool IsTimeLeftEnoughToUseTheLock(DateTime acquisitionStartTime, DateTime acquisitionEndTime, LockId lockId)
+        public static bool IsTimeLeftEnoughToUseTheLock(long acquisitionStartTimeTicks, long acquisitionEndTimeTicks, LockId lockId)
         {
             return
-                lockId.CalculateRemainingValidityTime(acquisitionStartTime, acquisitionEndTime) 
+                lockId.CalculateRemainingValidityTime(acquisitionStartTimeTicks, acquisitionEndTimeTicks) 
                 >= 
                 (lockId.CalculateConfirmationIntervalMillis() + lockId.CalculateValidityTimeSafetyMargin());
         }

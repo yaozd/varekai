@@ -19,13 +19,13 @@ namespace Varekai.Locker
 
         readonly ILogger _logger;
         readonly ReadOnlyCollection<LockingNode> _nodes;
-        readonly Func<DateTime> _timeProvider;
+        readonly Func<long> _timeProvider;
         readonly Func<LockingNode, IRedisClient> _redisClientFactory;
         readonly List<IRedisClient> _redisClients;
 
         LockingCoordinator(
             IEnumerable<LockingNode> nodes,
-            Func<DateTime> timeProvider,
+            Func<long> timeProvider,
             Func<LockingNode, IRedisClient> redisClientFactory,
             ILogger logger)
         {
@@ -43,7 +43,7 @@ namespace Varekai.Locker
 
         public static LockingCoordinator CreateNewForNodes(
             IEnumerable<LockingNode> nodes, 
-            Func<DateTime> timeProvider,
+            Func<long> timeProvider,
             ILogger logger)
         {
             return CreateNewForNodesWithClient(
@@ -55,7 +55,7 @@ namespace Varekai.Locker
 
         public static LockingCoordinator CreateNewForNodesWithClient(
             IEnumerable<LockingNode> nodes, 
-            Func<DateTime> timeProvider,
+            Func<long> timeProvider,
             Func<LockingNode, IRedisClient> redisClientFactory,
             ILogger logger)
         {

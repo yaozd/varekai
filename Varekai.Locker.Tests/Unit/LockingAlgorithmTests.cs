@@ -1,6 +1,6 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using NUnit.Framework;
 using Varekai.Utils;
 
 namespace Varekai.Locker.Tests.Unit
@@ -24,13 +24,12 @@ namespace Varekai.Locker.Tests.Unit
         {
             var lid = LockId.CreateNew("Test Resource", Guid.NewGuid(), expirationTimeMillis);
 
-            var timeStart = DateTime.UtcNow;
-
-            var elapsed = durationMillis.WithMillisecondsCreateTimeSpan();
+            var timeStart = TimeUtils.MonotonicTimeTicksProvider()();
+            var timeEnd = timeStart + (long)(durationMillis * TimeSpan.TicksPerMillisecond);
 
             Assert.AreEqual(
                 expectedRemainingValidity,
-                lid.CalculateRemainingValidityTime(timeStart, timeStart.Add(elapsed)),
+                lid.CalculateRemainingValidityTime(timeStart, timeEnd),
                 0.000001
             );
         }
@@ -66,14 +65,12 @@ namespace Varekai.Locker.Tests.Unit
         {
             var lid = LockId.CreateNew("Test Resource", Guid.NewGuid(), expirationTimeMillis);
 
-            var timeStart = DateTime.UtcNow;
+            var timeStart = TimeUtils.MonotonicTimeTicksProvider()();
+            var timeEnd = timeStart + (long)(durationMillis * TimeSpan.TicksPerMillisecond);
 
             Assert.AreEqual(
                 expectedTimeValidity,
-                LockingAlgorithm.IsTimeLeftEnoughToUseTheLock(
-                    timeStart,
-                    timeStart.Add(durationMillis.WithMillisecondsCreateTimeSpan()),
-                    lid)
+                LockingAlgorithm.IsTimeLeftEnoughToUseTheLock(timeStart, timeEnd, lid)
             );
         }
     }

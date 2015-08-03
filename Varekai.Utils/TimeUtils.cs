@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Varekai.Utils
 {
@@ -28,6 +29,11 @@ namespace Varekai.Utils
                 (long)
                 (milliseconds * TimeSpan.TicksPerMillisecond)
             );
+        }
+
+        public static Func<long> MonotonicTimeTicksProvider()
+        {
+            return () => Stopwatch.GetTimestamp();
         }
     }
 }
