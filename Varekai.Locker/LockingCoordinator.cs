@@ -41,19 +41,19 @@ namespace Varekai.Locker
                     .ToList();
         }
 
-        public static LockingCoordinator CreateNewForNodes(
+        public static async Task<LockingCoordinator> CreateNewForNodes(
             IEnumerable<LockingNode> nodes, 
             Func<long> timeProvider,
             ILogger logger)
         {
-            return CreateNewForNodesWithClient(
+            return await CreateNewForNodesWithClient(
                 nodes,
                 timeProvider,
                 nd => new ServiceStackClient(nd, () => SuccessResult, () => FailResult, logger),
                 logger);
         }
 
-        public static LockingCoordinator CreateNewForNodesWithClient(
+        public static async Task<LockingCoordinator> CreateNewForNodesWithClient(
             IEnumerable<LockingNode> nodes, 
             Func<long> timeProvider,
             Func<LockingNode, IRedisClient> redisClientFactory,
@@ -65,20 +65,18 @@ namespace Varekai.Locker
                 redisClientFactory,
                 logger);
 
-            TryConnectClients(coordinator);
+            await TryConnectClients(coordinator);
 
             return coordinator;
         }
 
-        static void TryConnectClients(LockingCoordinator coordinator)
+        static async Task TryConnectClients(LockingCoordinator coordinator)
         {
             var connectActions = coordinator
                 ._redisClients
                 .Select(async cli => await cli.TryConnect());
 
-            TaskUtils
-                .SilentlyCanceledWhenAll(connectActions)
-                .Wait();
+            await TaskUtils.SilentlyCanceledWhenAll(connectActions);
         }
 
         public async Task<bool> TryAcquireLock(LockId lockId)

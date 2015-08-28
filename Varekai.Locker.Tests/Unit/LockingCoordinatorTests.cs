@@ -19,7 +19,7 @@ namespace Varekai.Locker.Tests.Unit
         [TestCase(null, false)]
         public async Task TryAcquireLockTests(string acquireRsult, bool expectedResult)
         {
-            var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
+            var coordinator = await LockingCoordinator.CreateNewForNodesWithClient(
                 CreateNodes(),
                 TimeUtils.MonotonicTimeTicksProvider(),
                 CreateRedisClientMock(
@@ -41,7 +41,7 @@ namespace Varekai.Locker.Tests.Unit
         [TestCase(null, false)]
         public async Task TryConfirmLockTests(string confirmRsult, bool expectedResult)
         {
-            var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
+            var coordinator = await LockingCoordinator.CreateNewForNodesWithClient(
                 CreateNodes(),
                 TimeUtils.MonotonicTimeTicksProvider(),
                 CreateRedisClientMock(
@@ -63,7 +63,7 @@ namespace Varekai.Locker.Tests.Unit
         [TestCase(null, false)]
         public async Task TryReleaseLockTests(string releaseRsult, bool expectedResult)
         {
-            var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
+            var coordinator = await LockingCoordinator.CreateNewForNodesWithClient(
                 CreateNodes(),
                 TimeUtils.MonotonicTimeTicksProvider(),
                 CreateRedisClientMock(
@@ -89,7 +89,7 @@ namespace Varekai.Locker.Tests.Unit
         [TestCase(1)]
         public async Task LockAcquireTimeTest(int lockExpirationTime)
         {
-            var coordinator = LockingCoordinator.CreateNewForNodesWithClient(
+            var coordinator = await LockingCoordinator.CreateNewForNodesWithClient(
                 CreateNodes(),
                 TimeUtils.MonotonicTimeTicksProvider(),
                 CreateRedisClientMock(

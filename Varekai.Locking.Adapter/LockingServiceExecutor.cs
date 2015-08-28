@@ -52,7 +52,7 @@ namespace Varekai.Locking.Adapter
                 try
                 {
                     if(_lockingCoordinator == null)
-                        _lockingCoordinator = InitCoordinator(
+                        _lockingCoordinator = await InitCoordinator(
                             _lockingNodes,
                             _timeProvider,
                             _logger);
@@ -133,14 +133,14 @@ namespace Varekai.Locking.Adapter
 
         #endregion
 
-        static LockingCoordinator InitCoordinator(
+        static async Task<LockingCoordinator> InitCoordinator(
             IEnumerable<LockingNode> nodes,
             Func<long> timeProvider,
             ILogger logger)
         {
             logger.ToInfoLog("Creating the locking nodes...");
 
-            return LockingCoordinator
+            return await LockingCoordinator
                 .CreateNewForNodes(
                     nodes,
                     timeProvider,
