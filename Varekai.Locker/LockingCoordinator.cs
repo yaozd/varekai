@@ -35,22 +35,22 @@ namespace Varekai.Locker
             _redisClientFactory = redisClientFactory;
             _lockAcquisitionCancellation = new CancellationTokenSource();
 
-            _redisClients = 
-                _nodes
-                    .Select(_redisClientFactory)
-                    .ToList();
+            _redisClients = _nodes
+                            .Select(_redisClientFactory)
+                            .ToList();
         }
 
-        public static async Task<LockingCoordinator> CreateNewForNodes(
+        public static Task<LockingCoordinator> CreateNewForNodes(
             IEnumerable<LockingNode> nodes, 
             Func<long> timeProvider,
             ILogger logger)
         {
-            return await CreateNewForNodesWithClient(
-                nodes,
-                timeProvider,
-                nd => new ServiceStackClient(nd, () => SuccessResult, () => FailResult, logger),
-                logger);
+            return
+                CreateNewForNodesWithClient(
+                    nodes,
+                    timeProvider,
+                    nd => new ServiceStackClient(nd, () => SuccessResult, () => FailResult, logger),
+                    logger);
         }
 
         public static async Task<LockingCoordinator> CreateNewForNodesWithClient(
@@ -70,13 +70,13 @@ namespace Varekai.Locker
             return coordinator;
         }
 
-        static async Task TryConnectClients(LockingCoordinator coordinator)
+        static Task TryConnectClients(LockingCoordinator coordinator)
         {
             var connectActions = coordinator
                 ._redisClients
                 .Select(async cli => await cli.TryConnect());
 
-            await TaskUtils.SilentlyCanceledWhenAll(connectActions);
+            return TaskUtils.SilentlyCanceledWhenAll(connectActions);
         }
 
         public async Task<bool> TryAcquireLock(LockId lockId)
@@ -90,8 +90,7 @@ namespace Varekai.Locker
             var finishTime = _timeProvider();
 
             if (lockAcquired 
-                && LockingAlgorithm.IsTimeLeftEnoughToUseTheLock(startTime, finishTime, lockId))
-                    return lockAcquired;
+                && lockId.HasEnoughTimeBeforeExpire(startTime, finishTime)) return lockAcquired;
 
             if (!lockAcquired)
                 _logger.ToDebugLog("Unable to acquire the lock. Releasing all...");
@@ -99,6 +98,7 @@ namespace Varekai.Locker
                 _logger.ToDebugLog("Lock correctly acquired but the time left to use it is not enough. Releasing all...");
 
             await TryReleaseTheLock(lockId);
+
             return false;
         }
 
@@ -110,20 +110,19 @@ namespace Varekai.Locker
                 await TryInParallelOnAllClients(async cli => await cli.Set(lockId));
         }
 
-        public async Task<bool> TryConfirmTheLock(LockId lockId)
+        public Task<bool> TryConfirmTheLock(LockId lockId)
         {
-            return await TryInParallelOnAllClients(async cli => await cli.Confirm(lockId));
+            return TryInParallelOnAllClients(async cli => await cli.Confirm(lockId));
         }
 
-        public async Task<bool> TryReleaseTheLock(LockId lockId)
+        public Task<bool> TryReleaseTheLock(LockId lockId)
         {
             _logger.ToDebugLog("Releasing the lock...");
 
-            if (_redisClients == null
-                || _redisClients.Count == 0)
-                return false;
+            if (_redisClients == null 
+                || _redisClients.Count == 0) return false.FromResult();
 
-            return await TryInParallelOnAllClients(async cli => await cli.Release(lockId));
+            return TryInParallelOnAllClients(async cli => await cli.Release(lockId));
         }
 
         async Task<bool> TryInParallelOnAllClients(Func<IRedisClient, Task<string>> operationOnClient)
@@ -132,16 +131,10 @@ namespace Varekai.Locker
 
             var sessions = 
                 _redisClients
-                    .AsParallel()
-                    .Select(
-                        cli => Task.Run(
-                            async () => 
-                                {
-                                    return await TryOnClient(
-                                        async () => await operationOnClient(cli),
-                                        _logger);
-                                },
-                            _lockAcquisitionCancellation.Token));
+                .AsParallel()
+                .Select(cli => TryOnClient(
+                    async () => await operationOnClient(cli),
+                    _logger));
 
             var succeded = await TaskUtils.SilentlyCanceledWhenAll(sessions);
 
@@ -151,10 +144,7 @@ namespace Varekai.Locker
                 quorum;
         }
 
-
-        static async Task<bool> TryOnClient(
-            Func<Task<string>> operationOnClient,
-            ILogger logger)
+        static async Task<bool> TryOnClient(Func<Task<string>> operationOnClient, ILogger logger)
         {
             try
             {

@@ -70,7 +70,7 @@ namespace Varekai.Locker.Tests.Unit
 
             Assert.AreEqual(
                 expectedTimeValidity,
-                LockingAlgorithm.IsTimeLeftEnoughToUseTheLock(timeStart, timeEnd, lid)
+                lid.HasEnoughTimeBeforeExpire(timeStart, timeEnd)
             );
         }
 

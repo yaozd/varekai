@@ -46,7 +46,7 @@ namespace Varekai.Locker
             return new Tuple<int, int>(confirmation, confirmation * 2);
         }
 
-        public static bool IsTimeLeftEnoughToUseTheLock(long acquisitionStartTimeTicks, long acquisitionEndTimeTicks, LockId lockId)
+        public static bool HasEnoughTimeBeforeExpire(this LockId lockId, long acquisitionStartTimeTicks, long acquisitionEndTimeTicks)
         {
             return
                 lockId.CalculateRemainingValidityTime(acquisitionStartTimeTicks, acquisitionEndTimeTicks) 
