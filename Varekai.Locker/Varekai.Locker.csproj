@@ -69,6 +69,9 @@
     <Compile Include="RedisClients\StackExchangeClientHelper.cs" />
     <Compile Include="LockingEngine.cs" />
     <Compile Include="Events\LockAcquired.cs" />
+    <Compile Include="Events\LockHeldLost.cs" />
+    <Compile Include="Events\LockReleased.cs" />
+    <Compile Include="Events\LockReleaseStarted.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

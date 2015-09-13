@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Varekai.Locker.Events;
 using Varekai.Utils;
 using Varekai.Utils.Logging;
 
@@ -15,7 +17,7 @@ namespace Varekai.Locker
         readonly Func<long> _timeProvider;
         readonly LockId _lockId;
 
-        public LockingEngine(
+        LockingEngine(
             Func<long> timeProvider,
             ILogger logger,
             IEnumerable<LockingNode> lockingNodes,
@@ -27,7 +29,21 @@ namespace Varekai.Locker
             _lockingNodes = lockingNodes;
         }
 
-        public IObservable<object> StartLockingSequence()
+        public static IObservable<object> Acquire(
+            Func<long> timeProvider,
+            ILogger logger,
+            IEnumerable<LockingNode> lockingNodes,
+            LockId lockId)
+        {
+            var lockingEngine = new LockingEngine(timeProvider, logger, lockingNodes, lockId);
+
+            return lockingEngine
+                .StartLockingProcess()
+                .SubscribeOn(ThreadPoolScheduler.Instance)
+                .ObserveOn(Scheduler.CurrentThread);
+        }
+
+        IObservable<object> StartLockingProcess()
         {
             return Observable.Create<object>(
                 observer => 
@@ -87,7 +103,7 @@ namespace Varekai.Locker
                     {
                         logger.ToInfoLog(string.Format("DISTRIBUTED LOCK ACQUIRED for {0}", lockId.Resource));
 
-                        //TODO notify acquired
+                        observer.OnNext(new LockAcquired());
                     }
                     else
                     {
@@ -131,7 +147,7 @@ namespace Varekai.Locker
 
             try
             {
-                while(holdingLock)
+                while(!lockingCancellationSource.IsCancellationRequested && holdingLock)
                 {
                     holdingLock = await lockingCoordinator
                         .TryConfirmTheLock(_lockId)
@@ -152,7 +168,7 @@ namespace Varekai.Locker
                     await lockingCoordinator.TryReleaseTheLock(_lockId).ConfigureAwait(false);
             }
 
-            //TODO Notify acquired lock lost
+            observer.OnNext(new LockHeldLost());
         }
 
         async Task ReleaseLock(
@@ -167,9 +183,7 @@ namespace Varekai.Locker
                 if(!lockingCancellationSource.IsCancellationRequested)
                     lockingCancellationSource.Cancel();
 
-                logger.ToInfoLog("The service is stopping...");
-
-                //TODO releasing lock stop before
+                observer.OnNext(new LockReleaseStarted());
 
                 logger.ToInfoLog(string.Format("Releasing the lock on {0} before shutting the service down...", _lockId.Resource));
 
@@ -178,7 +192,7 @@ namespace Varekai.Locker
                 
                 logger.ToInfoLog(string.Format("DISTRIBUTED LOCK RELEASED for {0}", _lockId.Resource));
 
-                //TODO release complete
+                observer.OnNext(new LockReleased());
             }
             catch (Exception ex)
             {

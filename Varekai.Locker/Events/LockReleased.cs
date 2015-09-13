@@ -1,5 +1,5 @@
 ﻿namespace Varekai.Locker.Events
 {
-    public struct LockAcquired{}
+    public struct LockReleased{}
 }
 
