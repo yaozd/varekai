@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Threading;
-using Varekai.Utils.Logging;
 using System.Collections.Generic;
+using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Varekai.Utils;
-using System.Reactive.Linq;
+using Varekai.Utils.Logging;
 
 namespace Varekai.Locker
 {
@@ -14,6 +14,18 @@ namespace Varekai.Locker
         readonly ILogger _logger;
         readonly Func<long> _timeProvider;
         readonly LockId _lockId;
+
+        public LockingEngine(
+            Func<long> timeProvider,
+            ILogger logger,
+            IEnumerable<LockingNode> lockingNodes,
+            LockId lockId)
+        {
+            _timeProvider = timeProvider;
+            _logger = logger;
+            _lockId = lockId;
+            _lockingNodes = lockingNodes;
+        }
 
         public IObservable<object> StartLockingSequence()
         {
@@ -32,7 +44,13 @@ namespace Varekai.Locker
                     ReleaseLock(coordinator,_lockId, _logger, cancellation, observer)
                         .Wait();
 
-                    return null;
+                    coordinator.Dispose();
+
+                    return () => 
+                    {
+                        if(cancellation != null && !cancellation.IsCancellationRequested)
+                            cancellation.Cancel();
+                    };
                 });
         }
 
