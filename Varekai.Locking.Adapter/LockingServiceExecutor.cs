@@ -15,7 +15,7 @@ namespace Varekai.Locking.Adapter
         readonly IEnumerable<LockingNode> _lockingNodes;
         readonly ILogger _logger;
         readonly Func<long> _timeProvider;
-        readonly IServiceExecution _serviceExecution;
+        readonly IServiceOperation _serviceExecution;
         readonly LockId _lockId;
 
         readonly Random _numericGenerator;
@@ -23,7 +23,7 @@ namespace Varekai.Locking.Adapter
         LockingCoordinator _lockingCoordinator;
         
         public LockingServiceExecutor(
-            IServiceExecution serviceExecution,
+            IServiceOperation serviceExecution,
             Func<long> timeProvider,
             ILogger logger,
             IEnumerable<LockingNode> lockingNodes,

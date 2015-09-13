@@ -5,7 +5,7 @@ using Varekai.Utils.Logging;
 
 namespace SampleLockingService
 {
-    public class HelloWorldService : IServiceExecution
+    public class HelloWorldService : IServiceOperation
     {
         readonly ILogger _logger;
 

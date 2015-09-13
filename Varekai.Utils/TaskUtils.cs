@@ -10,7 +10,7 @@ namespace Varekai.Utils
         {
             try
             {
-                await Task.Delay(waitInterval, cancellation);
+                await Task.Delay(waitInterval, cancellation).ConfigureAwait(false);
             }
             catch (TaskCanceledException) { /*ignore*/ }
         }
@@ -19,7 +19,7 @@ namespace Varekai.Utils
         {
             try
             {
-                return await Task.WhenAll(toWait);
+                return await Task.WhenAll(toWait).ConfigureAwait(false);
             }
             catch (TaskCanceledException) { /*ignore*/ }
 
@@ -30,7 +30,7 @@ namespace Varekai.Utils
         {
             try
             {
-                await Task.WhenAll(toWait);
+                await Task.WhenAll(toWait).ConfigureAwait(false);
             }
             catch (TaskCanceledException) { /*ignore*/ }
         }

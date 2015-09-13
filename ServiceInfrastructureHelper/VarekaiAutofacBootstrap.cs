@@ -12,7 +12,7 @@ namespace ServiceInfrastructureHelper
     {
         public static IContainer SetupVarekaiContainer(
             string applicationName,
-            Func<IComponentContext, IServiceExecution> serviceFactory,
+            Func<IComponentContext, IServiceOperation> serviceFactory,
             string nodesConfigFilePath,
             string logsPath)
         {
@@ -60,11 +60,11 @@ namespace ServiceInfrastructureHelper
             return builder;
         }
 
-        static ContainerBuilder RegisterService(this ContainerBuilder builder, Func<IComponentContext, IServiceExecution> serviceFactory)
+        static ContainerBuilder RegisterService(this ContainerBuilder builder, Func<IComponentContext, IServiceOperation> serviceFactory)
         {
             builder
                 .Register(ctx => serviceFactory(ctx))
-                .As<IServiceExecution>();
+                .As<IServiceOperation>();
 
             return builder;
         }

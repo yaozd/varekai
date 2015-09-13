@@ -35,10 +35,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="IServiceExecution.cs" />
     <Compile Include="ILockingServiceExecution.cs" />
     <Compile Include="LockingServiceExecutor.cs" />
     <Compile Include="BootstrapHelpers\LockingExecutorBootstrap.cs" />
+    <Compile Include="IServiceOperation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

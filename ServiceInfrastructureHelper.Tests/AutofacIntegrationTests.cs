@@ -23,7 +23,7 @@ namespace ServiceInfrastructureHelper.Tests
         {
             var container = SetupContainer();
 
-            Assert.IsNotNull(container.Resolve<IServiceExecution>());
+            Assert.IsNotNull(container.Resolve<IServiceOperation>());
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace ServiceInfrastructureHelper.Tests
             return VarekaiAutofacBootstrap
                 .SetupVarekaiContainer(
                     "TestSetup",
-                    _ => Mock.Of<IServiceExecution>(),
+                    _ => Mock.Of<IServiceOperation>(),
                     "TestNodesPath",
                     "TestLogsPath"
                 );
