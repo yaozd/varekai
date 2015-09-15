@@ -75,10 +75,6 @@
       <Project>{B0545B8D-EA20-46B2-8C99-1FEB3F2D2095}</Project>
       <Name>Varekai.Utils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Varekai.Locking.Adapter\Varekai.Locking.Adapter.csproj">
-      <Project>{61D0BD6A-B9BC-4433-B486-84B61478BC25}</Project>
-      <Name>Varekai.Locking.Adapter</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Varekai.Locker\Varekai.Locker.csproj">
       <Project>{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}</Project>
       <Name>Varekai.Locker</Name>

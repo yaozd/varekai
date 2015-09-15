@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
-using Varekai.Locking.Adapter;
-using Varekai.Utils.Logging;
+﻿using System;
+using System.Threading.Tasks;
+using ServiceInfrastructureHelper;
 using Varekai.Locker;
-using System;
+using Varekai.Locker.Events;
+using Varekai.Utils.Logging;
+using System.Threading;
 
 namespace SampleLockingService
 {
@@ -13,32 +15,17 @@ namespace SampleLockingService
 
         IDisposable _lockingStream;
 
+        CancellationTokenSource _cancellation;
+
         public HelloWorldService(LockingEngine locker, ILogger logger)
         {
             _locker = locker;
             _logger = logger;
         }
 
-        #region IServiceExecution implementation
-
         public void Start()
         {
             _lockingStream = _locker.LockStream(DispatchEvent);
-        }
-
-        void DispatchEvent(object @event)
-        {
-            
-        }
-
-        void Acquired()
-        {
-            while (true)
-            {
-                _logger.ToInfoLog("Hello World Varekai service running...");
-
-                Task.Delay(2000);
-            }
         }
 
         public void Stop()
@@ -48,16 +35,37 @@ namespace SampleLockingService
             _logger.ToInfoLog("Hello World Varekai service stopped");
         }
 
-        #endregion
-
-        #region IDisposable implementation
-
         public void Dispose()
         {
             _lockingStream.Dispose();
         }
 
-        #endregion
+        void DispatchEvent(object @event)
+        {
+            if(@event is LockAcquired) StartServiceOperation();
+            if(@event is LockHeldLost) StopServiceOperation();
+            if(@event is LockReleaseStarted) StopServiceOperation();
+            if(@event is LockReleased) StartServiceOperation();
+        }
+
+        void StartServiceOperation()
+        {
+            _cancellation = new CancellationTokenSource();
+
+            while (!_cancellation.IsCancellationRequested)
+            {
+                _logger.ToInfoLog("Hello World Varekai service running...");
+
+                Task
+                    .Delay(2000, _cancellation.Token)
+                    .Wait(_cancellation.Token);
+            }
+        }
+
+        void StopServiceOperation()
+        {
+            _cancellation.Cancel();
+        }
     }
 }
 

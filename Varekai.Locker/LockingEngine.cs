@@ -34,7 +34,7 @@ namespace Varekai.Locker
             return
                 StartLockingProcess()
                 .SubscribeOn(ThreadPoolScheduler.Instance)
-                .ObserveOn(Scheduler.CurrentThread)
+                .ObserveOn(ThreadPoolScheduler.Instance)
                 .Subscribe(onEvent);
         }
 
@@ -59,8 +59,13 @@ namespace Varekai.Locker
 
                     return () => 
                     {
+                        _logger.ToInfoLog("Disposing the logging stream...");
+
                         if(cancellation != null && !cancellation.IsCancellationRequested)
                             cancellation.Cancel();
+
+                        ReleaseLock(coordinator,_lockId, _logger, cancellation, observer)
+                            .Wait(cancellation.Token);
                     };
                 });
         }
@@ -113,11 +118,11 @@ namespace Varekai.Locker
                 catch (Exception ex)
                 {
                     logger.ToErrorLog(ex);
-                }
-                finally
-                {
+
                     if(lockingCoordinator != null)
                         await lockingCoordinator.TryReleaseTheLock(lockId).ConfigureAwait(false);
+
+                    holdingLock = false;
                 }
             }
         }

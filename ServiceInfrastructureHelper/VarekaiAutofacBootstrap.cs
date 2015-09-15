@@ -71,7 +71,7 @@ namespace ServiceInfrastructureHelper
                     ctx => new SerilogRollingFileConfiguration(
                         logsPath + applicationName + "-{Date}.txt",
                         filesToKeep: 50,
-                        logLevel: LogLevels.Information))
+                        logLevel: LogLevels.Debug))
                 .AsSelf();
 
             builder

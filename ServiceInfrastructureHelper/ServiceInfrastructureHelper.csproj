@@ -60,6 +60,7 @@
     <Compile Include="VarekaiService.cs" />
     <Compile Include="VarekaiAutofacBootstrap.cs" />
     <Compile Include="PhisicalNode.cs" />
+    <Compile Include="IServiceOperation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
