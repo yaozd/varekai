@@ -2,14 +2,13 @@
 using System.Threading.Tasks;
 using Varekai.Locking.Adapter;
 using Varekai.Utils.Logging;
+using Varekai.Locker;
 
 namespace SampleLockingService
 {
     public class HelloWorldService : IServiceOperation
     {
         readonly ILogger _logger;
-
-        CancellationTokenSource _cancellation;
 
         public HelloWorldService(ILogger logger)
         {
@@ -18,23 +17,22 @@ namespace SampleLockingService
         
         #region IServiceExecution implementation
 
-        public async Task Start()
+        public void Start()
         {
-            _cancellation = new CancellationTokenSource();
+        }
 
-            while (!_cancellation.IsCancellationRequested)
+        void Acquired()
+        {
+            while (true)
             {
                 _logger.ToInfoLog("Hello World Varekai service running...");
-                
-                await Task.Delay(2000, _cancellation.Token);
+
+                Task.Delay(2000);
             }
         }
 
         public void Stop()
         {
-            if(_cancellation != null)
-                _cancellation.Cancel();
-
             _logger.ToInfoLog("Hello World Varekai service stopped");
         }
 

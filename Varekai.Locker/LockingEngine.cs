@@ -37,7 +37,8 @@ namespace Varekai.Locker
         {
             var lockingEngine = new LockingEngine(timeProvider, logger, lockingNodes, lockId);
 
-            return lockingEngine
+            return
+                lockingEngine
                 .StartLockingProcess()
                 .SubscribeOn(ThreadPoolScheduler.Instance)
                 .ObserveOn(Scheduler.CurrentThread);
@@ -58,7 +59,7 @@ namespace Varekai.Locker
                         .Wait(cancellation.Token);
 
                     ReleaseLock(coordinator,_lockId, _logger, cancellation, observer)
-                        .Wait();
+                        .Wait(cancellation.Token);
 
                     coordinator.Dispose();
 

@@ -19,12 +19,12 @@ namespace ServiceInfrastructureHelper
             configurator.UseSerilog(autofacContainer.Resolve<LoggerConfiguration>());
             configurator.UseAutofacContainer(autofacContainer);
 
-            configurator.Service<ILockingServiceExecution>(s =>
+            configurator.Service<IServiceOperation>(s =>
                 {
                     s.ConstructUsingAutofacContainer();
 
-                    s.WhenStarted(async lckService => await lckService.LockedStart());
-                    s.WhenStopped(async lckService => await lckService.ReleasedStop());
+                    s.WhenStarted(lckService => lckService.Start());
+                    s.WhenStopped(lckService => lckService.Stop());
                 });
 
             configurator.RunAsLocalService();

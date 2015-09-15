@@ -13,11 +13,12 @@ namespace SampleLockingService
 
         public static void Main(string[] args)
         {
-            var container = VarekaiAutofacBootstrap.SetupVarekaiContainer(
-                ApplicationPrefix,
-                ctx => new HelloWorldService(ctx.Resolve<ILogger>()),
-                PhisicalNodesConfigFile,
-                LogsPath);
+            var container = 
+                VarekaiAutofacBootstrap.SetupVarekaiContainer(
+                    ApplicationPrefix,
+                    ctx => new HelloWorldService(ctx.Resolve<ILogger>()),
+                    PhisicalNodesConfigFile,
+                    LogsPath);
 
             HostFactory.Run(
                 ctx => ctx.SetupLockingService(

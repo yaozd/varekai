@@ -157,7 +157,7 @@ namespace Varekai.Locking.Adapter
 
             _logger.ToInfoLog("Starting the service");
 
-            await _serviceExecution.Start();
+            _serviceExecution.Start();
         }
 
 

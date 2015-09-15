@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using Autofac;
+using Varekai.Locker;
 using Varekai.Locking.Adapter;
-using Varekai.Locking.Adapter.BootstrapHelpers;
 using Varekai.Utils;
-using Varekai.Utils.Logging.Implementations;
 using Varekai.Utils.Logging;
+using Varekai.Utils.Logging.Implementations;
 
 namespace ServiceInfrastructureHelper
 {
@@ -18,15 +19,7 @@ namespace ServiceInfrastructureHelper
         {
             return WithContainerBuilder()
                 .RegisterSerilogConfiguration(applicationName, logsPath)
-                .RegisterLockingAdapterDependencies(
-                    ctx => new SerilogLogger(ctx.Resolve<SerilogRollingFileConfiguration>()),
-                    TimeUtils.MonotonicTimeTicksProvider(),
-                    () => 
-                        JsonFileUtils
-                        .ReadJsonFromFile(nodesConfigFilePath)
-                        .GenerateLockingNodes(operationTimeoutMillis:3000),
-                    () => applicationName)
-                .RegisterLockingExecution()
+                .RegisterLockingDependencies(nodesConfigFilePath, applicationName)
                 .RegisterService(serviceFactory)
                 .CreateContainer();
         }
@@ -39,6 +32,26 @@ namespace ServiceInfrastructureHelper
         static IContainer CreateContainer(this ContainerBuilder builder)
         {
             return builder.Build();
+        }
+
+        static ContainerBuilder RegisterLockingDependencies(this ContainerBuilder builder, string nodesConfigFilePath, string applicationName)
+        {
+            builder
+                .Register<Func<long>>(_ => TimeUtils.MonotonicTimeTicksProvider())
+                .AsSelf();
+            
+            builder
+                .Register(_ => JsonFileUtils
+                    .ReadJsonFromFile(nodesConfigFilePath)
+                    .GenerateLockingNodes(operationTimeoutMillis:3000))
+                .As<IEnumerable<LockingNode>>()
+                .SingleInstance();
+
+            builder
+                .Register(_ => LockId.CreateNewFor(applicationName))
+                .AsSelf();
+
+            return builder;
         }
 
         static ContainerBuilder RegisterSerilogConfiguration(this ContainerBuilder builder, string applicationName, string logsPath)
@@ -57,13 +70,17 @@ namespace ServiceInfrastructureHelper
                         ctx.Resolve<SerilogRollingFileConfiguration>()))
                 .AsSelf();
 
+            builder
+                .RegisterType<SerilogLogger>()
+                .As<ILogger>();
+
             return builder;
         }
 
         static ContainerBuilder RegisterService(this ContainerBuilder builder, Func<IComponentContext, IServiceOperation> serviceFactory)
         {
             builder
-                .Register(ctx => serviceFactory(ctx))
+                .Register(serviceFactory)
                 .As<IServiceOperation>();
 
             return builder;
