@@ -2,6 +2,7 @@
 using Autofac;
 using Moq;
 using NUnit.Framework;
+using Varekai.Locker;
 using Varekai.Locking.Adapter;
 using Varekai.Utils.Logging;
 
@@ -42,15 +43,22 @@ namespace ServiceInfrastructureHelper.Tests
             Assert.IsNotNull(container.Resolve<Serilog.LoggerConfiguration>());
         }
 
+        [Test]
+        public void TheServiceContainerRegistersALockingEngine()
+        {
+            var container = SetupContainer();
+
+            Assert.IsNotNull(container.Resolve<LockingEngine>());
+        }
+
         static IContainer SetupContainer()
         {
-            return VarekaiAutofacBootstrap
-                .SetupVarekaiContainer(
+            return
+                VarekaiAutofacBootstrap.SetupVarekaiContainer(
                     "TestSetup",
                     _ => Mock.Of<IServiceOperation>(),
-                    "TestNodesPath",
-                    "TestLogsPath"
-                );
+                    "../../TestRedisNodesList.txt",
+                    "TestLogsPath");
         }
     }
 }

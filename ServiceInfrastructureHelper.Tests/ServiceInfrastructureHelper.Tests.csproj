@@ -52,6 +52,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="TestRedisNodesList.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ServiceInfrastructureHelper\ServiceInfrastructureHelper.csproj">

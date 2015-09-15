@@ -20,6 +20,7 @@ namespace ServiceInfrastructureHelper
             return WithContainerBuilder()
                 .RegisterSerilogConfiguration(applicationName, logsPath)
                 .RegisterLockingDependencies(nodesConfigFilePath, applicationName)
+                .RegisterLockingEngine()
                 .RegisterService(serviceFactory)
                 .CreateContainer();
         }
@@ -49,6 +50,15 @@ namespace ServiceInfrastructureHelper
 
             builder
                 .Register(_ => LockId.CreateNewFor(applicationName))
+                .AsSelf();
+
+            return builder;
+        }
+
+        static ContainerBuilder RegisterLockingEngine(this ContainerBuilder builder)
+        {
+            builder
+                .RegisterType<LockingEngine>()
                 .AsSelf();
 
             return builder;

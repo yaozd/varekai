@@ -1,24 +1,34 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Varekai.Locking.Adapter;
 using Varekai.Utils.Logging;
 using Varekai.Locker;
+using System;
 
 namespace SampleLockingService
 {
     public class HelloWorldService : IServiceOperation
     {
+        readonly LockingEngine _locker;
         readonly ILogger _logger;
 
-        public HelloWorldService(ILogger logger)
+        IDisposable _lockingStream;
+
+        public HelloWorldService(LockingEngine locker, ILogger logger)
         {
+            _locker = locker;
             _logger = logger;
         }
-        
+
         #region IServiceExecution implementation
 
         public void Start()
         {
+            _lockingStream = _locker.LockStream(DispatchEvent);
+        }
+
+        void DispatchEvent(object @event)
+        {
+            
         }
 
         void Acquired()
@@ -33,6 +43,8 @@ namespace SampleLockingService
 
         public void Stop()
         {
+            _lockingStream.Dispose();
+
             _logger.ToInfoLog("Hello World Varekai service stopped");
         }
 
@@ -42,6 +54,7 @@ namespace SampleLockingService
 
         public void Dispose()
         {
+            _lockingStream.Dispose();
         }
 
         #endregion

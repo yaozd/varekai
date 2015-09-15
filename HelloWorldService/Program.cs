@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using ServiceInfrastructureHelper;
 using Topshelf;
+using Varekai.Locker;
 using Varekai.Utils.Logging;
 
 namespace SampleLockingService
@@ -16,7 +17,7 @@ namespace SampleLockingService
             var container = 
                 VarekaiAutofacBootstrap.SetupVarekaiContainer(
                     ApplicationPrefix,
-                    ctx => new HelloWorldService(ctx.Resolve<ILogger>()),
+                    ctx => new HelloWorldService(ctx.Resolve<LockingEngine>(), ctx.Resolve<ILogger>()),
                     PhisicalNodesConfigFile,
                     LogsPath);
 

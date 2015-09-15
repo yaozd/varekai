@@ -17,7 +17,7 @@ namespace Varekai.Locker
         readonly Func<long> _timeProvider;
         readonly LockId _lockId;
 
-        LockingEngine(
+        public LockingEngine(
             Func<long> timeProvider,
             ILogger logger,
             IEnumerable<LockingNode> lockingNodes,
@@ -29,19 +29,13 @@ namespace Varekai.Locker
             _lockingNodes = lockingNodes;
         }
 
-        public static IObservable<object> Acquire(
-            Func<long> timeProvider,
-            ILogger logger,
-            IEnumerable<LockingNode> lockingNodes,
-            LockId lockId)
+        public IDisposable LockStream(Action<object> onEvent)
         {
-            var lockingEngine = new LockingEngine(timeProvider, logger, lockingNodes, lockId);
-
             return
-                lockingEngine
-                .StartLockingProcess()
+                StartLockingProcess()
                 .SubscribeOn(ThreadPoolScheduler.Instance)
-                .ObserveOn(Scheduler.CurrentThread);
+                .ObserveOn(Scheduler.CurrentThread)
+                .Subscribe(onEvent);
         }
 
         IObservable<object> StartLockingProcess()
