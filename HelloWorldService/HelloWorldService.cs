@@ -30,6 +30,8 @@ namespace SampleLockingService
 
         public void Stop()
         {
+            _logger.ToInfoLog("Stopping Hello World Varekai service...");
+
             _lockingStream.Dispose();
 
             _logger.ToInfoLog("Hello World Varekai service stopped");
@@ -37,7 +39,8 @@ namespace SampleLockingService
 
         public void Dispose()
         {
-            _lockingStream.Dispose();
+            if(_lockingStream != null)
+                _lockingStream.Dispose();
         }
 
         void DispatchEvent(object @event)

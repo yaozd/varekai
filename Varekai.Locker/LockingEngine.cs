@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Varekai.Locker.Events;
 using Varekai.Utils;
 using Varekai.Utils.Logging;
+using System.Reactive.Disposables;
 
 namespace Varekai.Locker
 {
@@ -57,16 +58,16 @@ namespace Varekai.Locker
 
                     coordinator.Dispose();
 
-                    return () => 
+                    return Disposable.Create(() => 
                     {
-                        _logger.ToInfoLog("Disposing the logging stream...");
+                        _logger.ToInfoLog("Disposing the locking stream...");
 
                         if(cancellation != null && !cancellation.IsCancellationRequested)
                             cancellation.Cancel();
 
                         ReleaseLock(coordinator,_lockId, _logger, cancellation, observer)
                             .Wait(cancellation.Token);
-                    };
+                    });
                 });
         }
 
