@@ -10,15 +10,14 @@ namespace Varekai.Utils.Logging.Implementations
         public static LoggerConfiguration CreateDefaultConfiguration(SerilogRollingFileConfiguration fileConfiguration)
         {
             return new LoggerConfiguration()
-                .MinimumLevel
-                    .ControlledBy(fileConfiguration.GetLoggingLevelSwitch())
-                .WriteTo
-                    .ColoredConsole(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] {Message}{NewLine}{Exception}")
-                .WriteTo
-                    .RollingFile(
-                        fileConfiguration.FilePath,
-                        fileSizeLimitBytes: fileConfiguration.FileSize,
-                        retainedFileCountLimit: fileConfiguration.NumberOfFilesToKeep);
+                .Enrich.WithThreadId()
+                .MinimumLevel.ControlledBy(fileConfiguration.GetLoggingLevelSwitch())
+                .WriteTo.ColoredConsole(
+                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} - {ThreadId} - [{Level}] {Message}{NewLine}{Exception}")
+                .WriteTo.RollingFile(
+                    fileConfiguration.FilePath,
+                    fileSizeLimitBytes: fileConfiguration.FileSize,
+                    retainedFileCountLimit: fileConfiguration.NumberOfFilesToKeep);
         }
 
         public SerilogLogger(SerilogRollingFileConfiguration fileConfiguration)

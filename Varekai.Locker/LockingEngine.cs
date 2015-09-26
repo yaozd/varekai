@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Varekai.Locker.Events;
 using Varekai.Utils;
 using Varekai.Utils.Logging;
-using System.Reactive.Disposables;
 
 namespace Varekai.Locker
 {
@@ -30,44 +29,25 @@ namespace Varekai.Locker
             _lockingNodes = lockingNodes;
         }
 
-        public IDisposable LockStream(Action<object> onEvent)
-        {
-            return
-                StartLockingProcess()
-                .SubscribeOn(ThreadPoolScheduler.Instance)
-                .ObserveOn(ThreadPoolScheduler.Instance)
-                .Subscribe(onEvent);
-        }
-
-        IObservable<object> StartLockingProcess()
+        internal IObservable<object> CreateStream()
         {
             return Observable.Create<object>(
-                observer => 
+                async observer => 
                 {
                     var cancellation = new CancellationTokenSource();
                     var coordinator = InitCoordinator(_lockingNodes, _timeProvider, _logger).Result;
 
-                    StartAttemptingAcquisition(coordinator, _lockId, _logger, cancellation, observer)
-                        .Wait(cancellation.Token);
-
-                    KeepConfirmingLock(coordinator, _logger, cancellation, observer)
-                        .Wait(cancellation.Token);
-
-                    ReleaseLock(coordinator,_lockId, _logger, cancellation, observer)
-                        .Wait(cancellation.Token);
+                    await StartAttemptingAcquisition(coordinator, _lockId, _logger, cancellation, observer);
+                    
+                    await KeepConfirmingLock(coordinator, _logger, cancellation, observer);
+                    
+                    await ReleaseLock(coordinator,_lockId, _logger, cancellation, observer);
 
                     coordinator.Dispose();
 
-                    return Disposable.Create(() => 
-                    {
-                        _logger.ToInfoLog("Disposing the locking stream...");
+                    observer.OnCompleted();
 
-                        if(cancellation != null && !cancellation.IsCancellationRequested)
-                            cancellation.Cancel();
-
-                        ReleaseLock(coordinator,_lockId, _logger, cancellation, observer)
-                            .Wait(cancellation.Token);
-                    });
+                    return Disposable.Empty;
                 });
         }
 
@@ -169,6 +149,8 @@ namespace Varekai.Locker
                     await lockingCoordinator.TryReleaseTheLock(_lockId).ConfigureAwait(false);
             }
 
+            logger.ToDebugLog(string.Format("Lock held for {0} lost", _lockId.Resource));
+
             observer.OnNext(new LockHeldLost());
         }
 
@@ -186,7 +168,7 @@ namespace Varekai.Locker
 
                 observer.OnNext(new LockReleaseStarted());
 
-                logger.ToInfoLog(string.Format("Releasing the lock on {0} before shutting the service down...", _lockId.Resource));
+                logger.ToInfoLog(string.Format("Releasing the lock on {0}...", _lockId.Resource));
 
                 if(lockingCoordinator != null)
                     await lockingCoordinator.TryReleaseTheLock(lockId).ConfigureAwait(false);

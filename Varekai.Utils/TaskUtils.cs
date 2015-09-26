@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,6 +14,15 @@ namespace Varekai.Utils
                 await Task.Delay(waitInterval, cancellation).ConfigureAwait(false);
             }
             catch (TaskCanceledException) { /*ignore*/ }
+        }
+
+        public static void SilentlyCanceledDelaySync(int waitInterval, CancellationToken cancellation)
+        {
+            try
+            {
+                Task.Delay(waitInterval, cancellation).Wait(cancellation);
+            }
+            catch (OperationCanceledException) { /*ignore*/ }
         }
 
         public static async Task<T[]> SilentlyCanceledWhenAll<T>(IEnumerable<Task<T>> toWait)

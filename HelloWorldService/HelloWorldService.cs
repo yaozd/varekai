@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Threading;
 using ServiceInfrastructureHelper;
 using Varekai.Locker;
 using Varekai.Locker.Events;
+using Varekai.Utils;
 using Varekai.Utils.Logging;
-using System.Threading;
 
 namespace SampleLockingService
 {
@@ -13,9 +13,10 @@ namespace SampleLockingService
         readonly LockingEngine _locker;
         readonly ILogger _logger;
 
-        IDisposable _lockingStream;
+        IDisposable _lockingStreamSubscription;
 
-        CancellationTokenSource _cancellation;
+        CancellationTokenSource _serviceCancellation;
+        CancellationTokenSource _helloWordlActivityCancellation;
 
         public HelloWorldService(LockingEngine locker, ILogger logger)
         {
@@ -25,50 +26,73 @@ namespace SampleLockingService
 
         public void Start()
         {
-            _lockingStream = _locker.LockStream(DispatchEvent);
+            _logger.ToInfoLog("Starting Hello World Varekai service...");
+
+            if(_serviceCancellation == null)
+                _serviceCancellation = new CancellationTokenSource();
+
+            _lockingStreamSubscription = _locker.CreateLockingStream(DispatchEvent);
+
+            _logger.ToInfoLog("Hello World Varekai service started");
         }
 
         public void Stop()
         {
             _logger.ToInfoLog("Stopping Hello World Varekai service...");
 
-            _lockingStream.Dispose();
-
             _logger.ToInfoLog("Hello World Varekai service stopped");
         }
 
         public void Dispose()
         {
-            if(_lockingStream != null)
-                _lockingStream.Dispose();
+            if(_serviceCancellation != null)
+                _serviceCancellation.Cancel();
+
+            if (_helloWordlActivityCancellation != null)
+                _helloWordlActivityCancellation.Cancel();
+
+            if(_lockingStreamSubscription != null)
+                _lockingStreamSubscription.Dispose();
         }
 
         void DispatchEvent(object @event)
         {
-            if(@event is LockAcquired) StartServiceOperation();
-            if(@event is LockHeldLost) StopServiceOperation();
-            if(@event is LockReleaseStarted) StopServiceOperation();
-            if(@event is LockReleased) StartServiceOperation();
+            _logger.ToDebugLog(string.Format("Dispatching event {0}", @event.GetType().FullName));
+
+            if (@event is LockAcquired) StartServiceOperation();
+            if (@event is LockHeldLost) StopServiceOperation();
+            if (@event is LockReleaseStarted) StopServiceOperation();
+            if (@event is LockReleased)
+            {
+                if(!_serviceCancellation.IsCancellationRequested)
+                    StartServiceOperation();
+            }
         }
 
         void StartServiceOperation()
         {
-            _cancellation = new CancellationTokenSource();
+            _logger.ToDebugLog("Starting srvice activity...");
 
-            while (!_cancellation.IsCancellationRequested)
+            if(_helloWordlActivityCancellation == null)
+                _helloWordlActivityCancellation = new CancellationTokenSource();
+
+            while (!_serviceCancellation.IsCancellationRequested && !_helloWordlActivityCancellation.IsCancellationRequested)
             {
                 _logger.ToInfoLog("Hello World Varekai service running...");
 
-                Task
-                    .Delay(2000, _cancellation.Token)
-                    .Wait(_cancellation.Token);
+                TaskUtils.SilentlyCanceledDelaySync(2000, _serviceCancellation.Token);
             }
         }
 
         void StopServiceOperation()
         {
-            _cancellation.Cancel();
+            _logger.ToDebugLog("Stopping srvice activity...");
+
+            if (_helloWordlActivityCancellation != null)
+            {
+                _helloWordlActivityCancellation.Cancel();
+                _helloWordlActivityCancellation = null;
+            }
         }
     }
 }
-
