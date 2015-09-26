@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,13 +28,13 @@ namespace Varekai.Locker
             _lockingNodes = lockingNodes;
         }
 
-        internal IObservable<object> CreateStream()
+        public IObservable<object> CreateStream()
         {
             return Observable.Create<object>(
                 async observer => 
                 {
                     var cancellation = new CancellationTokenSource();
-                    var coordinator = InitCoordinator(_lockingNodes, _timeProvider, _logger).Result;
+                    var coordinator = await InitCoordinator(_lockingNodes, _timeProvider, _logger);
 
                     await StartAttemptingAcquisition(coordinator, _lockId, _logger, cancellation, observer);
                     
@@ -47,7 +46,15 @@ namespace Varekai.Locker
 
                     observer.OnCompleted();
 
-                    return Disposable.Empty;
+                    return async () => 
+                    {
+                        _logger.ToInfoLog("Disposing the locking stream...");
+
+                        if(cancellation != null && !cancellation.IsCancellationRequested)
+                            cancellation.Cancel();
+
+                        await ReleaseLock(coordinator,_lockId, _logger, cancellation, observer);
+                    };
                 });
         }
 
@@ -149,7 +156,7 @@ namespace Varekai.Locker
                     await lockingCoordinator.TryReleaseTheLock(_lockId).ConfigureAwait(false);
             }
 
-            logger.ToDebugLog(string.Format("Lock held for {0} lost", _lockId.Resource));
+            logger.ToInfoLog(string.Format("Lock held for {0} lost", _lockId.Resource));
 
             observer.OnNext(new LockHeldLost());
         }
