@@ -17,7 +17,7 @@ namespace SampleLockingService
         IDisposable _lockingStreamSubscription;
 
         CancellationTokenSource _serviceCancellation;
-        CancellationTokenSource _helloWordlActivityCancellation;
+        Tuple<Task, CancellationTokenSource> _sericeActivity;
 
         public HelloWorldService(LockingEngine locker, ILogger logger)
         {
@@ -45,69 +45,61 @@ namespace SampleLockingService
 
             _lockingStreamSubscription.Dispose();
 
+            if(_serviceCancellation != null)
+                _serviceCancellation.Cancel();
+            
             _logger.ToInfoLog("Hello World Varekai service stopped");
         }
 
-        public void Dispose()
-        {
-            if(_serviceCancellation != null)
-                _serviceCancellation.Cancel();
-
-            if (_helloWordlActivityCancellation != null)
-                _helloWordlActivityCancellation.Cancel();
-
-            if(_lockingStreamSubscription != null)
-                _lockingStreamSubscription.Dispose();
-        }
+        public void Dispose(){}
 
         void DispatchEvent(object @event)
         {
             _logger.ToDebugLog(string.Format("Dispatching event {0}", @event.GetType().FullName));
 
-            if (@event is LockAcquired) StartServiceOperation();
-            if (@event is LockHeldLost) StopServiceOperation();
-            if (@event is LockReleaseStarted) StopServiceOperation();
+            if (@event is LockAcquired) _sericeActivity = StartServiceOperation();
+            if (@event is LockHeldLost) StopServiceOperation(_sericeActivity);
+            if (@event is LockReleaseStarted) StopServiceOperation(_sericeActivity);
             if (@event is LockReleased)
             {
                 if (!_serviceCancellation.IsCancellationRequested)
                 {
-                    _lockingStreamSubscription.Dispose();
-                    _lockingStreamSubscription = _locker
-                        .CreateStream()
-                        .Subscribe(DispatchEvent);
+                    if (_sericeActivity != null)
+                        _sericeActivity.Item2.Cancel();
+                    
+                    Start();
                 }
             }
         }
 
-        Task StartServiceOperation()
+        Tuple<Task, CancellationTokenSource> StartServiceOperation()
         {
             _logger.ToDebugLog("Starting srvice activity...");
 
-            if(_helloWordlActivityCancellation == null)
-                _helloWordlActivityCancellation = new CancellationTokenSource();
+            var cancellation = new CancellationTokenSource();
 
-            return Task.Run(() =>
-                {
-                    while (!_serviceCancellation.IsCancellationRequested && !_helloWordlActivityCancellation.IsCancellationRequested)
+            return Tuple.Create(
+                Task.Run(() =>
                     {
-                        _logger.ToInfoLog("Hello World Varekai service running...");
+                        while (!_serviceCancellation.IsCancellationRequested && !cancellation.IsCancellationRequested)
+                        {
+                            _logger.ToInfoLog("Hello World Varekai service running...");
 
-                        TaskUtils.SilentlyCanceledDelaySync(2000, _serviceCancellation.Token);
-                    }
+                            TaskUtils.SilentlyCanceledDelaySync(2000, _serviceCancellation.Token);
+                        }
 
-                    _logger.ToInfoLog("Hello World Varekai activity complete");
-                });
+                        _logger.ToInfoLog("Hello World Varekai activity complete");
+                    })
+                , cancellation);
         }
 
-        void StopServiceOperation()
+        void StopServiceOperation(Tuple<Task, CancellationTokenSource> serviceActivity)
         {
             _logger.ToDebugLog("Stopping service activity...");
 
-            if (_helloWordlActivityCancellation != null)
-            {
-                _helloWordlActivityCancellation.Cancel();
-                _helloWordlActivityCancellation = null;
-            }
+            serviceActivity.Item2.Cancel();
+
+            serviceActivity.Item1.Wait(1000, _serviceCancellation.Token);
         }
     }
 }
