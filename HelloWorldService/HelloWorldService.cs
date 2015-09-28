@@ -76,7 +76,7 @@ namespace SampleLockingService
 
         CancellationTokenSource StartServiceOperation()
         {
-            _logger.ToDebugLog("Starting srvice activity...");
+            _logger.ToDebugLog("Starting service activity...");
 
             var cancellation = new CancellationTokenSource();
 
