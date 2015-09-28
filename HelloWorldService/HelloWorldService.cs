@@ -28,8 +28,7 @@ namespace SampleLockingService
         {
             _logger.ToInfoLog("Starting Hello World Varekai service...");
 
-            if(_serviceCancellation == null)
-                _serviceCancellation = new CancellationTokenSource();
+            _serviceCancellation = new CancellationTokenSource();
             
             _lockingStreamSubscription = _locker
                 .CreateStream()
@@ -44,11 +43,11 @@ namespace SampleLockingService
 
             if (_activityCancellation != null)
                 _activityCancellation.Cancel();
-            
-            if(_serviceCancellation != null)
-                _serviceCancellation.Cancel();
 
             _lockingStreamSubscription.Dispose();
+
+            if(_serviceCancellation != null)
+                _serviceCancellation.Cancel();
             
             _logger.ToInfoLog("Hello World Varekai service stopped");
         }
@@ -66,10 +65,11 @@ namespace SampleLockingService
             {
                 if (!_serviceCancellation.IsCancellationRequested)
                 {
-                    if (_activityCancellation != null)
-                        _activityCancellation.Cancel();
+                    if (_activityCancellation != null) _activityCancellation.Cancel();
                     
-                    Start();
+                    _lockingStreamSubscription = _locker
+                        .CreateStream()
+                        .Subscribe(DispatchEvent);;
                 }
             }
         }
