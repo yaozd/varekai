@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Autofac;
 using Varekai.Locker;
-using Varekai.Locking.Adapter;
 using Varekai.Utils;
 using Varekai.Utils.Logging;
 using Varekai.Utils.Logging.Implementations;
@@ -71,7 +70,7 @@ namespace ServiceInfrastructureHelper
                     ctx => new SerilogRollingFileConfiguration(
                         logsPath + applicationName + "-{Date}.txt",
                         filesToKeep: 50,
-                        logLevel: LogLevels.Debug))
+                        logLevel: LogLevels.Information))
                 .AsSelf();
 
             builder

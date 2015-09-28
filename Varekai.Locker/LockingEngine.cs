@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,16 +37,17 @@ namespace Varekai.Locker
                     var cancellation = new CancellationTokenSource();
                     var coordinator = await InitCoordinator(_lockingNodes, _timeProvider, _logger);
 
-                    await StartAttemptingAcquisition(coordinator, _lockId, _logger, cancellation, observer);
+                    Task.Run(async () =>
+                    {    
+                        await StartAttemptingAcquisition(coordinator, _lockId, _logger, cancellation, observer);
+                        
+                        await KeepConfirmingLock(coordinator, _logger, cancellation, observer);
+    
+                        coordinator.Dispose();
+                        
+                        observer.OnCompleted();
+                    });
                     
-                    await KeepConfirmingLock(coordinator, _logger, cancellation, observer);
-                    
-                    await ReleaseLock(coordinator,_lockId, _logger, cancellation, observer);
-
-                    coordinator.Dispose();
-
-                    observer.OnCompleted();
-
                     return async () => 
                     {
                         _logger.ToInfoLog("Disposing the locking stream...");
@@ -53,9 +55,9 @@ namespace Varekai.Locker
                         if(cancellation != null && !cancellation.IsCancellationRequested)
                             cancellation.Cancel();
 
-                        await ReleaseLock(coordinator,_lockId, _logger, cancellation, observer);
+                        await ReleaseLock(coordinator, _lockId, _logger, cancellation, observer);
                     };
-                });
+                }).ObserveOn(ThreadPoolScheduler.Instance);
         }
 
         async static Task<LockingCoordinator> InitCoordinator(
@@ -127,7 +129,7 @@ namespace Varekai.Locker
 
                 return;
             }
-                
+
             var holdingLock = true;
             var confirmationInterval = _lockId.CalculateConfirmationIntervalMillis();
 
@@ -156,7 +158,8 @@ namespace Varekai.Locker
                     await lockingCoordinator.TryReleaseTheLock(_lockId).ConfigureAwait(false);
             }
 
-            logger.ToInfoLog(string.Format("Lock held for {0} lost", _lockId.Resource));
+            if(!lockingCancellationSource.IsCancellationRequested)
+                logger.ToInfoLog(string.Format("Lock held for {0} lost", _lockId.Resource));
 
             observer.OnNext(new LockHeldLost());
         }

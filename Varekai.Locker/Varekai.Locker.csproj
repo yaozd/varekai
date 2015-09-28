@@ -72,7 +72,6 @@
     <Compile Include="Events\LockHeldLost.cs" />
     <Compile Include="Events\LockReleased.cs" />
     <Compile Include="Events\LockReleaseStarted.cs" />
-    <Compile Include="LockingStreamEx.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

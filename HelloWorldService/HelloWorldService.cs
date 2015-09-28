@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 using ServiceInfrastructureHelper;
 using Varekai.Locker;
 using Varekai.Locker.Events;
@@ -17,7 +16,7 @@ namespace SampleLockingService
         IDisposable _lockingStreamSubscription;
 
         CancellationTokenSource _serviceCancellation;
-        Tuple<Task, CancellationTokenSource> _sericeActivity;
+        CancellationTokenSource _activityCancellation;
 
         public HelloWorldService(LockingEngine locker, ILogger logger)
         {
@@ -43,10 +42,13 @@ namespace SampleLockingService
         {
             _logger.ToInfoLog("Stopping Hello World Varekai service...");
 
-            _lockingStreamSubscription.Dispose();
-
+            if (_activityCancellation != null)
+                _activityCancellation.Cancel();
+            
             if(_serviceCancellation != null)
                 _serviceCancellation.Cancel();
+
+            _lockingStreamSubscription.Dispose();
             
             _logger.ToInfoLog("Hello World Varekai service stopped");
         }
@@ -57,49 +59,44 @@ namespace SampleLockingService
         {
             _logger.ToDebugLog(string.Format("Dispatching event {0}", @event.GetType().FullName));
 
-            if (@event is LockAcquired) _sericeActivity = StartServiceOperation();
-            if (@event is LockHeldLost) StopServiceOperation(_sericeActivity);
-            if (@event is LockReleaseStarted) StopServiceOperation(_sericeActivity);
+            if (@event is LockAcquired) _activityCancellation = StartServiceOperation();
+            if (@event is LockHeldLost) StopServiceOperation(_activityCancellation);
+            if (@event is LockReleaseStarted) StopServiceOperation(_activityCancellation);
             if (@event is LockReleased)
             {
                 if (!_serviceCancellation.IsCancellationRequested)
                 {
-                    if (_sericeActivity != null)
-                        _sericeActivity.Item2.Cancel();
+                    if (_activityCancellation != null)
+                        _activityCancellation.Cancel();
                     
                     Start();
                 }
             }
         }
 
-        Tuple<Task, CancellationTokenSource> StartServiceOperation()
+        CancellationTokenSource StartServiceOperation()
         {
             _logger.ToDebugLog("Starting srvice activity...");
 
             var cancellation = new CancellationTokenSource();
 
-            return Tuple.Create(
-                Task.Run(() =>
-                    {
-                        while (!_serviceCancellation.IsCancellationRequested && !cancellation.IsCancellationRequested)
-                        {
-                            _logger.ToInfoLog("Hello World Varekai service running...");
+            while (!_serviceCancellation.IsCancellationRequested && !cancellation.IsCancellationRequested)
+            {
+                _logger.ToInfoLog("Hello World Varekai service running...");
 
-                            TaskUtils.SilentlyCanceledDelaySync(2000, _serviceCancellation.Token);
-                        }
+                TaskUtils.SilentlyCanceledDelaySync(2000, _serviceCancellation.Token);
+            }
 
-                        _logger.ToInfoLog("Hello World Varekai activity complete");
-                    })
-                , cancellation);
+            _logger.ToInfoLog("Hello World Varekai activity complete");
+
+            return cancellation;
         }
 
-        void StopServiceOperation(Tuple<Task, CancellationTokenSource> serviceActivity)
+        void StopServiceOperation(CancellationTokenSource activityCancellation)
         {
             _logger.ToDebugLog("Stopping service activity...");
 
-            serviceActivity.Item2.Cancel();
-
-            serviceActivity.Item1.Wait(1000, _serviceCancellation.Token);
+            activityCancellation.Cancel();
         }
     }
 }

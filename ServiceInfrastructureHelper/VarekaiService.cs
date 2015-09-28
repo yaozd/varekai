@@ -3,7 +3,6 @@ using Serilog;
 using Topshelf;
 using Topshelf.Autofac;
 using Topshelf.HostConfigurators;
-using Varekai.Locking.Adapter;
 
 namespace ServiceInfrastructureHelper
 {
