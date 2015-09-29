@@ -55,4 +55,4 @@ To tell to Varekai where to find the Redis servers you have to edit the file Red
 
 ###How To Use It###
 
-The sample services are only some possible ways to use and experimet Varekai. I plan to add more of them and try to explore different use cases for the RedLock algorithm, but I use my spare time to do this, so I really don't know how much it will be able to proceed. In case you want to play with it, all the dependencies of the Locking Adapter are injected using Autofac so it shouldn't be a problem to start from the Hello World service and implement your own logic over it.
+The sample services are only some possible ways to use and experiment Varekai. I plan to add more of them and try to explore different use cases for the RedLock algorithm, but I use my spare time to do it, so I really don't know how much it will be able to proceed. In case you want to play with it, all the dependencies of the Locking Adapter are injected using Autofac so it shouldn't be a problem to start from the Hello World service and implement your own logic over it.
