@@ -15,7 +15,7 @@ Varekai is written in C# on Mono using Xamarin Studio. I develop and run it on M
 
 ###How To Run It###
 
-To run Varekai you need access to a number of instances of Redis server. The algorithm is quorum based so, in case of compeeting clients, the lock will be considered held if the write succeedes at least on the half plus one of the Redis servers. This makes possible to have any number (even or uneven) of nodes, even though doesn't make a lot of sense having less than three. If you need info on how to configure Redis the official <a href="http://redis.io/documentation" target="_blank">documentation</a> is a good place to start. Also you might find useful tips <a href="https://barambani.wordpress.com/2015/04/02/redis-cluster" target="_blank">here</a> if you are running Redis on MacOS X.
+To run Varekai you need access to a number of instances of Redis server. The algorithm is quorum based so, in case of compeeting clients, the lock will be considered held if the write succeedes at least on the half plus one of the Redis servers. This makes possible to have any number (even or uneven) of nodes, even though doesn't make a lot of sense having less than three. If you need info on how to configure Redis the official <a href="http://redis.io/documentation" target="_blank">documentation</a> is a good place to start. Also you might find the tips <a href="https://barambani.wordpress.com/2015/04/02/redis-cluster" target="_blank">here</a> useful if you are running Redis on MacOS X.
 
 To tell to Varekai where to find the Redis servers you have to edit the file RedisNodes.txt of the SampleLockingService project. The version in this repository assumes you have 7 Redis nodes running locally (localhost) listening on the ports from 7001 to 7007
 
