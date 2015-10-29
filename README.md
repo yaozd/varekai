@@ -7,9 +7,8 @@ Varekai is written in C# on Mono using Xamarin Studio. I develop and run it on M
 ###Modules###
 
 * __Locker__: the locking library, it implements the locking algorithm
-* __Locking Adapter__: a service adapter that blocks the adapted service until the lock is acquired
 * __Sample Services__: sample Topshelf services that demonstrate the adapter in some use cases
-* __Infrastructure Helpers__: some helper functions to speed up the services creation
+* __Infrastructure Helpers__: some helper functions to speed up the services' creation
 * __Utility__: a set of useful functions
 
 

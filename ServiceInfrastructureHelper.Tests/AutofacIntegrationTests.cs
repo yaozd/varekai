@@ -3,7 +3,6 @@ using Autofac;
 using Moq;
 using NUnit.Framework;
 using Varekai.Locker;
-using Varekai.Locking.Adapter;
 using Varekai.Utils.Logging;
 
 namespace ServiceInfrastructureHelper.Tests

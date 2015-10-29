@@ -5,8 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Varekai.Utils", "Varekai.Ut
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Varekai.Locker", "Varekai.Locker\Varekai.Locker.csproj", "{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Varekai.Locking.Adapter", "Varekai.Locking.Adapter\Varekai.Locking.Adapter.csproj", "{61D0BD6A-B9BC-4433-B486-84B61478BC25}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceInfrastructureHelper", "ServiceInfrastructureHelper\ServiceInfrastructureHelper.csproj", "{C2933B9D-5EAB-4E31-92D7-07764DE9A7B2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleServices", "SampleServices", "{AD891BD0-E1E3-44D1-B95E-F8FEAE035A6C}"
@@ -43,10 +41,6 @@ Global
 		{42476624-8DC9-4F91-8819-C2350D3ED12B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42476624-8DC9-4F91-8819-C2350D3ED12B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42476624-8DC9-4F91-8819-C2350D3ED12B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{61D0BD6A-B9BC-4433-B486-84B61478BC25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{61D0BD6A-B9BC-4433-B486-84B61478BC25}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{61D0BD6A-B9BC-4433-B486-84B61478BC25}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{61D0BD6A-B9BC-4433-B486-84B61478BC25}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}.Release|Any CPU.ActiveCfg = Release|Any CPU
