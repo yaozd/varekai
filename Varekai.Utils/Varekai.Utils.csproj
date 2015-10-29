@@ -43,10 +43,10 @@
     </Reference>
     <Reference Include="System.Numerics" />
     <Reference Include="Serilog">
-      <HintPath>..\packages\Serilog.1.5.11\lib\net45\Serilog.dll</HintPath>
+      <HintPath>..\packages\Serilog.1.5.12\lib\net45\Serilog.dll</HintPath>
     </Reference>
     <Reference Include="Serilog.FullNetFx">
-      <HintPath>..\packages\Serilog.1.5.11\lib\net45\Serilog.FullNetFx.dll</HintPath>
+      <HintPath>..\packages\Serilog.1.5.12\lib\net45\Serilog.FullNetFx.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
