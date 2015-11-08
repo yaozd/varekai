@@ -110,7 +110,9 @@ namespace Varekai.Locker
                     logger.ToErrorLog(ex);
 
                     if(lockingCoordinator != null)
-                        await lockingCoordinator.TryReleaseTheLock(lockId).ConfigureAwait(false);
+                        await lockingCoordinator
+                            .TryReleaseTheLock(lockId)
+                            .ConfigureAwait(false);
 
                     holdingLock = false;
                 }
@@ -140,8 +142,8 @@ namespace Varekai.Locker
                 while(!lockingCancellationSource.IsCancellationRequested && holdingLock)
                 {
                     holdingLock = await lockingCoordinator
-                        .TryConfirmTheLock(_lockId)
-                        .ConfigureAwait(false);
+                                    .TryConfirmTheLock(_lockId)
+                                    .ConfigureAwait(false);
 
                     await TaskUtils
                         .SilentlyCanceledDelay((int)confirmationInterval, lockingCancellationSource.Token)
@@ -155,7 +157,9 @@ namespace Varekai.Locker
             finally
             {
                 if (lockingCoordinator != null)
-                    await lockingCoordinator.TryReleaseTheLock(_lockId).ConfigureAwait(false);
+                    await lockingCoordinator
+                        .TryReleaseTheLock(_lockId)
+                        .ConfigureAwait(false);
             }
 
             if(!lockingCancellationSource.IsCancellationRequested)
@@ -181,7 +185,9 @@ namespace Varekai.Locker
                 logger.ToInfoLog(string.Format("Releasing the lock on {0}...", _lockId.Resource));
 
                 if(lockingCoordinator != null)
-                    await lockingCoordinator.TryReleaseTheLock(lockId).ConfigureAwait(false);
+                    await lockingCoordinator
+                        .TryReleaseTheLock(lockId)
+                        .ConfigureAwait(false);
                 
                 logger.ToInfoLog(string.Format("DISTRIBUTED LOCK RELEASED for {0}", _lockId.Resource));
 
