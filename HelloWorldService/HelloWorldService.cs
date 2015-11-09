@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using ServiceInfrastructureHelper;
 using Varekai.Locker;
 using Varekai.Locker.Events;
@@ -79,7 +80,6 @@ namespace SampleLockingService
         void HandleError(Exception exception)
         {
             _logger.ToErrorLog(exception);
-            _lockingStreamSubscription.Dispose();
             Stop();
         }
 
@@ -89,6 +89,14 @@ namespace SampleLockingService
 
             var cancellation = new CancellationTokenSource();
 
+            //  the thread dispatching events from the locker must not be stopped
+            Task.Run(() => ServiceLongRunningOperation(cancellation));
+
+            return cancellation;
+        }
+
+        void ServiceLongRunningOperation(CancellationTokenSource cancellation)
+        {
             while (!_serviceCancellation.IsCancellationRequested && !cancellation.IsCancellationRequested)
             {
                 _logger.ToInfoLog("Hello World Varekai service running...");
@@ -97,8 +105,6 @@ namespace SampleLockingService
             }
 
             _logger.ToInfoLog("Hello World Varekai activity complete");
-
-            return cancellation;
         }
 
         void StopServiceOperation(CancellationTokenSource activityCancellation)
@@ -106,7 +112,6 @@ namespace SampleLockingService
             _logger.ToDebugLog("Stopping service activity...");
 
             activityCancellation.Cancel();
-            _lockingStreamSubscription.Dispose();
         }
     }
 }

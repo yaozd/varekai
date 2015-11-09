@@ -35,19 +35,16 @@ namespace Varekai.Locker
                 async observer => 
                 {
                     var cancellation = new CancellationTokenSource();
-                    var coordinator = await InitCoordinator(_lockingNodes, _timeProvider, _logger);
+                    var coordinator = await InitCoordinator(_lockingNodes, _timeProvider, _logger).ConfigureAwait(false);
+                     
+                    await StartAttemptingAcquisition(coordinator, _lockId, _logger, cancellation, observer).ConfigureAwait(false);
+                
+                    await KeepConfirmingTheLock(coordinator, _logger, cancellation, observer).ConfigureAwait(false);
 
-                    Task.Run(async () =>
-                    {    
-                        await StartAttemptingAcquisition(coordinator, _lockId, _logger, cancellation, observer);
-                        
-                        await KeepConfirmingTheLock(coordinator, _logger, cancellation, observer);
-    
-                        coordinator.Dispose();
+                    coordinator.Dispose();
 
-                        observer.OnCompleted();
-                    });
-                    
+                    observer.OnCompleted();
+
                     return async () => 
                     {
                         _logger.ToInfoLog("Disposing the locking stream...");
@@ -55,9 +52,10 @@ namespace Varekai.Locker
                         if(cancellation != null && !cancellation.IsCancellationRequested)
                             cancellation.Cancel();
 
-                        await ReleaseLock(coordinator, _lockId, _logger, cancellation, observer);
+                        await ReleaseLock(coordinator, _lockId, _logger, cancellation, observer).ConfigureAwait(false);
                     };
-                });
+                })
+                .SubscribeOn(ThreadPoolScheduler.Instance);
         }
 
         async static Task<LockingCoordinator> InitCoordinator(
@@ -92,8 +90,6 @@ namespace Varekai.Locker
                     if(holdingLock)
                     {
                         logger.ToInfoLog(string.Format("DISTRIBUTED LOCK ACQUIRED for {0}", lockId.Resource));
-
-                        observer.OnNext(new LockAcquired());
                     }
                     else
                     {
@@ -132,6 +128,7 @@ namespace Varekai.Locker
                 return;
             }
 
+            var acquisitionSignaled = false;
             var holdingLock = true;
             var confirmationInterval = _lockId.CalculateConfirmationIntervalMillis();
 
@@ -141,33 +138,39 @@ namespace Varekai.Locker
             {
                 while(!lockingCancellationSource.IsCancellationRequested && holdingLock)
                 {
-                    holdingLock = await lockingCoordinator
-                                    .TryConfirmTheLock(_lockId)
-                                    .ConfigureAwait(false);
-
                     await TaskUtils
                         .SilentlyCanceledDelay(
                             (int)confirmationInterval,
                             lockingCancellationSource.Token)
                         .ConfigureAwait(false);
+
+                    //  in a partition guarantees that the other lock holder have the time to realize
+                    //  it's not holding the lock anymore
+                    if(!acquisitionSignaled)
+                    {
+                        observer.OnNext(new LockAcquired());
+                        acquisitionSignaled = true;
+                    }
+                    
+                    holdingLock = await lockingCoordinator
+                                    .TryConfirmTheLock(_lockId)
+                                    .ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
             {
                 observer.OnError(ex);
             }
-            finally
-            {
-                if (lockingCoordinator != null)
-                    await lockingCoordinator
-                        .TryReleaseTheLock(_lockId)
-                        .ConfigureAwait(false);
-            }
 
             if(!lockingCancellationSource.IsCancellationRequested)
                 logger.ToInfoLog(string.Format("Lock held for {0} lost", _lockId.Resource));
 
             observer.OnNext(new LockHeldLost());
+
+            if (lockingCoordinator != null)
+                await lockingCoordinator
+                    .TryReleaseTheLock(_lockId)
+                    .ConfigureAwait(false);
         }
 
         async Task ReleaseLock(
