@@ -9,6 +9,7 @@ namespace Varekai.Utils.Logging
         void ToWarningLog(string message);
         void ToErrorLog(string message);
         void ToErrorLog(Exception ex);
+        void ToErrorLogDigest(Exception ex);
         void ToErrorLog(AggregateException ex);
         void ToErrorLog(string message, Exception ex);
     }

@@ -41,10 +41,10 @@ namespace Varekai.Locker
                     {    
                         await StartAttemptingAcquisition(coordinator, _lockId, _logger, cancellation, observer);
                         
-                        await KeepConfirmingLock(coordinator, _logger, cancellation, observer);
+                        await KeepConfirmingTheLock(coordinator, _logger, cancellation, observer);
     
                         coordinator.Dispose();
-                        
+
                         observer.OnCompleted();
                     });
                     
@@ -57,7 +57,7 @@ namespace Varekai.Locker
 
                         await ReleaseLock(coordinator, _lockId, _logger, cancellation, observer);
                     };
-                }).ObserveOn(ThreadPoolScheduler.Instance);
+                });
         }
 
         async static Task<LockingCoordinator> InitCoordinator(
@@ -107,7 +107,7 @@ namespace Varekai.Locker
                 }
                 catch (Exception ex)
                 {
-                    logger.ToErrorLog(ex);
+                    observer.OnError(ex);
 
                     if(lockingCoordinator != null)
                         await lockingCoordinator
@@ -119,7 +119,7 @@ namespace Varekai.Locker
             }
         }
 
-        async Task KeepConfirmingLock(
+        async Task KeepConfirmingTheLock(
             LockingCoordinator lockingCoordinator,
             ILogger logger,
             CancellationTokenSource lockingCancellationSource,
@@ -127,7 +127,7 @@ namespace Varekai.Locker
         {
             if (lockingCoordinator == null)
             {
-                //TODO error, incorrect state
+                observer.OnError(new ApplicationException("Trying to confirm lock on a NULL coordinator. Invalid locking engine state. Aborting..."));
 
                 return;
             }
@@ -146,13 +146,15 @@ namespace Varekai.Locker
                                     .ConfigureAwait(false);
 
                     await TaskUtils
-                        .SilentlyCanceledDelay((int)confirmationInterval, lockingCancellationSource.Token)
+                        .SilentlyCanceledDelay(
+                            (int)confirmationInterval,
+                            lockingCancellationSource.Token)
                         .ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
             {
-                logger.ToErrorLog(ex);
+                observer.OnError(ex);
             }
             finally
             {
@@ -195,7 +197,7 @@ namespace Varekai.Locker
             }
             catch (Exception ex)
             {
-                logger.ToErrorLog(ex);
+                observer.OnError(ex);
             }
         }
     }

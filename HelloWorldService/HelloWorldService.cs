@@ -32,7 +32,9 @@ namespace SampleLockingService
             
             _lockingStreamSubscription = _locker
                 .CreateStream()
-                .Subscribe(DispatchEvent);
+                .Subscribe(
+                    DispatchEvent,
+                    HandleError);
 
             _logger.ToInfoLog("Hello World Varekai service started");
         }
@@ -74,6 +76,13 @@ namespace SampleLockingService
             }
         }
 
+        void HandleError(Exception exception)
+        {
+            _logger.ToErrorLog(exception);
+            _lockingStreamSubscription.Dispose();
+            Stop();
+        }
+
         CancellationTokenSource StartServiceOperation()
         {
             _logger.ToDebugLog("Starting service activity...");
@@ -97,6 +106,7 @@ namespace SampleLockingService
             _logger.ToDebugLog("Stopping service activity...");
 
             activityCancellation.Cancel();
+            _lockingStreamSubscription.Dispose();
         }
     }
 }

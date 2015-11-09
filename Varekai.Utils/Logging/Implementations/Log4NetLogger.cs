@@ -49,9 +49,14 @@ namespace Varekai.Utils.Logging.Implementations
             _logger.Error(ex);
         }
 
+        public void ToErrorLogDigest(Exception ex)
+        {
+            _logger.Error(string.Format("{0} - {1}", ex.GetType().FullName, ex.Message));
+        }
+
         public void ToErrorLog(AggregateException ex)
         {
-            //  TODO: write all the inner exceprions
+            //  TODO: write all the inner exceptions
             _logger.Error(ex.Flatten());
         }
 

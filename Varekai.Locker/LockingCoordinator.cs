@@ -159,7 +159,7 @@ namespace Varekai.Locker
             }
             catch (Exception ex)
             {
-                logger.ToErrorLog(ex);
+                logger.ToErrorLogDigest(ex);
                 return false;
             }
         }
