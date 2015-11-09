@@ -41,6 +41,8 @@ namespace Varekai.Locker
                 
                     await KeepConfirmingTheLock(coordinator, _logger, cancellation, observer).ConfigureAwait(false);
 
+                    await ReleaseLock(coordinator, _lockId, _logger, cancellation, observer).ConfigureAwait(false);
+
                     coordinator.Dispose();
 
                     observer.OnCompleted();
@@ -51,8 +53,6 @@ namespace Varekai.Locker
 
                         if(cancellation != null && !cancellation.IsCancellationRequested)
                             cancellation.Cancel();
-
-                        await ReleaseLock(coordinator, _lockId, _logger, cancellation, observer).ConfigureAwait(false);
                     };
                 })
                 .SubscribeOn(ThreadPoolScheduler.Instance);
