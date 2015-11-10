@@ -46,11 +46,11 @@ namespace SampleLockingService
 
             if (_activityCancellation != null)
                 _activityCancellation.Cancel();
-
-            _lockingStreamSubscription.Dispose();
-
+            
             if(_serviceCancellation != null)
                 _serviceCancellation.Cancel();
+
+            _lockingStreamSubscription.Dispose();
             
             _logger.ToInfoLog("Hello World Varekai service stopped");
         }

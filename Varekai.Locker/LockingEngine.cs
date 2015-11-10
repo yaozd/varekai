@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,23 +38,19 @@ namespace Varekai.Locker
                      
                     await StartAttemptingAcquisition(coordinator, _lockId, _logger, cancellation, observer).ConfigureAwait(false);
                 
-                    await KeepConfirmingTheLock(coordinator, _logger, cancellation, observer).ConfigureAwait(false);
-
-                    await ReleaseLock(coordinator, _lockId, _logger, cancellation, observer).ConfigureAwait(false);
-
-                    coordinator.Dispose();
-
-                    observer.OnCompleted();
+                    KeepConfirmingTheLock(coordinator, _logger, cancellation, observer);
 
                     return async () => 
                     {
                         _logger.ToInfoLog("Disposing the locking stream...");
 
-                        if(cancellation != null && !cancellation.IsCancellationRequested)
-                            cancellation.Cancel();
+                        await ReleaseLock(coordinator, _lockId, _logger, cancellation, observer).ConfigureAwait(false);
+
+                        coordinator.Dispose();
+
+                        observer.OnCompleted();
                     };
-                })
-                .SubscribeOn(ThreadPoolScheduler.Instance);
+                });
         }
 
         async static Task<LockingCoordinator> InitCoordinator(
@@ -63,7 +58,7 @@ namespace Varekai.Locker
             Func<long> timeProvider,
             ILogger logger)
         {
-            logger.ToInfoLog("Creating the locking nodes...");
+            logger.ToInfoLog("Connecting to the locking nodes...");
 
             return await LockingCoordinator
                 .CreateNewForNodes(lockingNodes, timeProvider, logger)
@@ -144,8 +139,8 @@ namespace Varekai.Locker
                             lockingCancellationSource.Token)
                         .ConfigureAwait(false);
 
-                    //  in a partition guarantees that the other lock holder have the time to realize
-                    //  it's not holding the lock anymore
+                    //  signaling the acquisition here guarantees that during a partition the former
+                    //  lock holder have the time to realizes it's not holding the lock anymore
                     if(!acquisitionSignaled)
                     {
                         observer.OnNext(new LockAcquired());
@@ -162,15 +157,17 @@ namespace Varekai.Locker
                 observer.OnError(ex);
             }
 
-            if(!lockingCancellationSource.IsCancellationRequested)
+            if (!lockingCancellationSource.IsCancellationRequested)
+            {
                 logger.ToInfoLog(string.Format("Lock held for {0} lost", _lockId.Resource));
 
-            observer.OnNext(new LockHeldLost());
+                observer.OnNext(new LockHeldLost());
 
-            if (lockingCoordinator != null)
-                await lockingCoordinator
-                    .TryReleaseTheLock(_lockId)
-                    .ConfigureAwait(false);
+                if (lockingCoordinator != null)
+                    await lockingCoordinator
+                        .TryReleaseTheLock(_lockId)
+                        .ConfigureAwait(false);
+            }
         }
 
         async Task ReleaseLock(
