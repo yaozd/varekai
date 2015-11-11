@@ -69,6 +69,8 @@ namespace SampleLockingService
                 if (!_serviceCancellation.IsCancellationRequested)
                 {
                     if (_activityCancellation != null) _activityCancellation.Cancel();
+
+                    _lockingStreamSubscription.Dispose();
                     
                     _lockingStreamSubscription = _locker
                         .CreateStream()

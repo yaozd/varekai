@@ -44,7 +44,8 @@ namespace Varekai.Locker
                     {
                         _logger.ToInfoLog("Disposing the locking stream...");
 
-                        await ReleaseLock(coordinator, _lockId, _logger, cancellation, observer).ConfigureAwait(false);
+                        if(coordinator != null)
+                            await ReleaseLock(coordinator, _lockId, _logger, cancellation, observer).ConfigureAwait(false);
                     };
                 });
         }
@@ -129,6 +130,10 @@ namespace Varekai.Locker
             {
                 while(!lockingCancellationSource.IsCancellationRequested && holdingLock)
                 {
+                    holdingLock = await lockingCoordinator
+                        .TryConfirmTheLock(_lockId)
+                        .ConfigureAwait(false);
+                    
                     await TaskUtils
                         .SilentlyCanceledDelay(
                             (int)confirmationInterval,
@@ -142,10 +147,6 @@ namespace Varekai.Locker
                         observer.OnNext(new LockAcquired());
                         acquisitionSignaled = true;
                     }
-                    
-                    holdingLock = await lockingCoordinator
-                                    .TryConfirmTheLock(_lockId)
-                                    .ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
