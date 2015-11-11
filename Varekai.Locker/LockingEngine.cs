@@ -45,10 +45,6 @@ namespace Varekai.Locker
                         _logger.ToInfoLog("Disposing the locking stream...");
 
                         await ReleaseLock(coordinator, _lockId, _logger, cancellation, observer).ConfigureAwait(false);
-
-                        coordinator.Dispose();
-
-                        observer.OnCompleted();
                     };
                 });
         }
@@ -163,10 +159,7 @@ namespace Varekai.Locker
 
                 observer.OnNext(new LockHeldLost());
 
-                if (lockingCoordinator != null)
-                    await lockingCoordinator
-                        .TryReleaseTheLock(_lockId)
-                        .ConfigureAwait(false);
+                await ReleaseLock(lockingCoordinator, _lockId, _logger, lockingCancellationSource, observer).ConfigureAwait(false);
             }
         }
 
@@ -194,6 +187,8 @@ namespace Varekai.Locker
                 logger.ToInfoLog(string.Format("DISTRIBUTED LOCK RELEASED for {0}", _lockId.Resource));
 
                 observer.OnNext(new LockReleased());
+
+                lockingCoordinator.Dispose();
             }
             catch (Exception ex)
             {

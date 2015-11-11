@@ -99,7 +99,7 @@ namespace SampleLockingService
         {
             while (!_serviceCancellation.IsCancellationRequested && !cancellation.IsCancellationRequested)
             {
-                _logger.ToInfoLog("Hello World Varekai service running...");
+                _logger.ToInfoLog("Hello World Varekai activity running...");
 
                 TaskUtils.SilentlyCanceledDelaySync(2000, _serviceCancellation.Token);
             }
