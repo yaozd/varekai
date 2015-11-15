@@ -139,7 +139,7 @@ namespace Varekai.Locker
             var succeded = await TaskUtils.SilentlyCanceledWhenAll(sessions);
 
             return 
-                succeded.Count(res => res)
+                succeded.Count()
                 >=
                 quorum;
         }

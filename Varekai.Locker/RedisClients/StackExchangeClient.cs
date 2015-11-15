@@ -38,7 +38,12 @@ namespace Varekai.Locker.RedisClients
             if (!IsConnected(_stackExchangeClient))
                 await TryConnect();
 
-            _logger.ToDebugLog(string.Format("Trying to set the lock on {0}:{1}...", _node.Host, _node.Port));
+            _logger.ToDebugLog(
+                string.Format(
+                    "Trying to set the lock on {0}:{1} to {2}...",
+                    _node.Host,
+                    _node.Port,
+                    lockId.SessionId));
 
             return ExecResultedSetScript(
                 lockId.GetSetScript,
@@ -62,7 +67,12 @@ namespace Varekai.Locker.RedisClients
             if (!IsConnected(_stackExchangeClient))
                 await TryConnect();
 
-            _logger.ToDebugLog(string.Format("Trying to release the lock on {0}:{1}...", _node.Host, _node.Port));
+            _logger.ToDebugLog(
+                string.Format(
+                    "Trying to release the lock on {0}:{1} set to {2}...",
+                    _node.Host,
+                    _node.Port,
+                    lockId.SessionId));
 
             return ExecResultedConfirmOrReleaseScript(
                 lockId.GetReleaseScript,

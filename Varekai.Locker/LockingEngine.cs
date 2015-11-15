@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Varekai.Locker.Events;
 using Varekai.Utils;
 using Varekai.Utils.Logging;
+using System.Reactive.Concurrency;
 
 namespace Varekai.Locker
 {
@@ -47,7 +48,8 @@ namespace Varekai.Locker
                         if(coordinator != null)
                             await ReleaseLock(coordinator, _lockId, _logger, cancellation, observer).ConfigureAwait(false);
                     };
-                });
+                })
+                .ObserveOn(ThreadPoolScheduler.Instance);
         }
 
         async static Task<LockingCoordinator> InitCoordinator(
