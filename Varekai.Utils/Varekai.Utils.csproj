@@ -65,6 +65,7 @@
     <Compile Include="JsonFileUtils.cs" />
     <Compile Include="SerializationUtils.cs" />
     <Compile Include="ActionUtils.cs" />
+    <Compile Include="TupleUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -90,7 +90,7 @@ namespace Varekai.Locker
                         logger.ToDebugLog("Unable to acquire the lock, retrying...");
 
                         await TaskUtils.SilentlyCanceledDelay(
-                            randomGenerator.Next(retryInterval.Item1, retryInterval.Item2),
+                            randomGenerator.Next(retryInterval.First(), retryInterval.Second()),
                             lockingCancellationSource.Token)
                         .ConfigureAwait(false);
                     }
