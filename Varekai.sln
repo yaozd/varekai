@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceInfrastructureHelper
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleServices", "SampleServices", "{AD891BD0-E1E3-44D1-B95E-F8FEAE035A6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleShardingLockingService", "SampleShardingLockingService\SampleShardingLockingService.csproj", "{EE4313BC-7010-48D1-BBF0-5DCC3AA463C2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorldService", "HelloWorldService\HelloWorldService.csproj", "{FA80446E-03BE-4DDC-BCA1-9522C24FC4C0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D4CE9465-42D2-45B5-AD36-C5EDB9551C8B}"
@@ -20,8 +18,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Varekai.Locker.Tests", "Varekai.Locker.Tests\Varekai.Locker.Tests.csproj", "{3DE65FA1-E28F-43A5-A4A1-7230F1AF14FE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceInfrastructureHelper.Tests", "ServiceInfrastructureHelper.Tests\ServiceInfrastructureHelper.Tests.csproj", "{9258FB66-6A72-4746-94D2-87D71F101585}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleShardingLockingService.Tests", "SampleShardingLockingService.Tests\SampleShardingLockingService.Tests.csproj", "{42476624-8DC9-4F91-8819-C2350D3ED12B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,10 +33,6 @@ Global
 		{3DE65FA1-E28F-43A5-A4A1-7230F1AF14FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DE65FA1-E28F-43A5-A4A1-7230F1AF14FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DE65FA1-E28F-43A5-A4A1-7230F1AF14FE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{42476624-8DC9-4F91-8819-C2350D3ED12B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{42476624-8DC9-4F91-8819-C2350D3ED12B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{42476624-8DC9-4F91-8819-C2350D3ED12B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{42476624-8DC9-4F91-8819-C2350D3ED12B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D6A6FEF-0AFE-499C-81B8-4ACDC5BBF445}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -57,10 +49,6 @@ Global
 		{C2933B9D-5EAB-4E31-92D7-07764DE9A7B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2933B9D-5EAB-4E31-92D7-07764DE9A7B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2933B9D-5EAB-4E31-92D7-07764DE9A7B2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EE4313BC-7010-48D1-BBF0-5DCC3AA463C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EE4313BC-7010-48D1-BBF0-5DCC3AA463C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EE4313BC-7010-48D1-BBF0-5DCC3AA463C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EE4313BC-7010-48D1-BBF0-5DCC3AA463C2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FA80446E-03BE-4DDC-BCA1-9522C24FC4C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FA80446E-03BE-4DDC-BCA1-9522C24FC4C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA80446E-03BE-4DDC-BCA1-9522C24FC4C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -83,11 +71,9 @@ Global
 		{CB44CF17-39DD-4A44-ADA3-4BEA14EA85EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{EE4313BC-7010-48D1-BBF0-5DCC3AA463C2} = {AD891BD0-E1E3-44D1-B95E-F8FEAE035A6C}
 		{FA80446E-03BE-4DDC-BCA1-9522C24FC4C0} = {AD891BD0-E1E3-44D1-B95E-F8FEAE035A6C}
 		{0249D7FB-9D88-4BA3-9331-C520266412FA} = {D4CE9465-42D2-45B5-AD36-C5EDB9551C8B}
 		{3DE65FA1-E28F-43A5-A4A1-7230F1AF14FE} = {D4CE9465-42D2-45B5-AD36-C5EDB9551C8B}
 		{9258FB66-6A72-4746-94D2-87D71F101585} = {D4CE9465-42D2-45B5-AD36-C5EDB9551C8B}
-		{42476624-8DC9-4F91-8819-C2350D3ED12B} = {D4CE9465-42D2-45B5-AD36-C5EDB9551C8B}
 	EndGlobalSection
 EndGlobal
