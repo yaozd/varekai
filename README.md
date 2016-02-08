@@ -2,7 +2,7 @@
 
 Varekai is a coding excercise. The purpose here is to create a different implementation of the RedLock distributed locking algorithm. It is written in C# using Xamarin Studio and is developed on Mono over Mac OS X.
 
-More details about <a href="http://redis.io/topics/distlock" target="_blank">RedLock</a> can be found <a href="http://redis.io/topics/distlock" target="_blank">here</a>. Anyone interested in it or in distributed locking algorithms, might also find useful <a href="http://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html" target="_blank">this article</a> by <a href="http://martin.kleppmann.com/" target="_blank">Martin Kleppmann</a> on the reasons why RedLock might not be your best choice, or <a href="http://static.googleusercontent.com/media/research.google.com/it//archive/chubby-osdi06.pdf" target="_blank">this paper</a> about Chubby, a distributed lock service from Google.
+More details about <a href="http://redis.io/topics/distlock" target="_blank">RedLock</a> can be found <a href="http://redis.io/topics/distlock" target="_blank">here</a>. Anyone interested in it or in distributed locking algorithms, might also find of some use <a href="http://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html" target="_blank">this article</a> by <a href="http://martin.kleppmann.com/" target="_blank">Martin Kleppmann</a> on the reasons why RedLock might not be your best choice, or <a href="http://static.googleusercontent.com/media/research.google.com/it//archive/chubby-osdi06.pdf" target="_blank">this paper</a> about Chubby, a distributed lock service from Google.
 
 ###Modules###
 
