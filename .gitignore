@@ -1,6 +1,7 @@
 # Build and temp folders
 [Bb]in/
 [Oo]bj/
+.vscode/
 
 # mstest test results
 TestResults

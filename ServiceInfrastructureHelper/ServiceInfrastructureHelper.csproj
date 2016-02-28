@@ -29,29 +29,29 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="Topshelf">
-      <HintPath>..\packages\Topshelf.3.2.0\lib\net40-full\Topshelf.dll</HintPath>
-    </Reference>
     <Reference Include="Autofac">
       <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
-    </Reference>
-    <Reference Include="Topshelf.Autofac">
-      <HintPath>..\packages\Topshelf.Autofac.1.0.0\lib\net40\Topshelf.Autofac.dll</HintPath>
-    </Reference>
-    <Reference Include="Topshelf.Serilog">
-      <HintPath>..\packages\Topshelf.Serilog.3.2.0\lib\net40-full\Topshelf.Serilog.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Topshelf.Linux">
       <HintPath>..\packages\Topshelf.Linux.1.0.12.11\lib\Topshelf.Linux.dll</HintPath>
     </Reference>
+    <Reference Include="Topshelf">
+      <HintPath>..\packages\Topshelf.3.3.1\lib\net40-full\Topshelf.dll</HintPath>
+    </Reference>
     <Reference Include="Serilog">
-      <HintPath>..\packages\Serilog.1.5.12\lib\net45\Serilog.dll</HintPath>
+      <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.dll</HintPath>
     </Reference>
     <Reference Include="Serilog.FullNetFx">
-      <HintPath>..\packages\Serilog.1.5.12\lib\net45\Serilog.FullNetFx.dll</HintPath>
+      <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.FullNetFx.dll</HintPath>
+    </Reference>
+    <Reference Include="Topshelf.Serilog">
+      <HintPath>..\packages\Topshelf.Serilog.3.3.1\lib\net40-full\Topshelf.Serilog.dll</HintPath>
+    </Reference>
+    <Reference Include="Topshelf.Autofac">
+      <HintPath>..\packages\Topshelf.Autofac.1.1.0\lib\net40\Topshelf.Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
