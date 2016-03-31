@@ -1,0 +1,11 @@
+{
+    "projects":[
+        "HelloWorldService",
+        "ServiceInfrastructureHelper",
+        "ServiceInfrastructureHelper.Tests",
+        "Varekai.Locker",
+        "Varekai.Locker.Tests",
+        "Varekai.Utils",
+        "Varekai.Utils.Tests"
+    ]
+}

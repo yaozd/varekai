@@ -1,0 +1,663 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"mu",
+				"mustEqual"
+			],
+			[
+				"seq",
+				"sequence"
+			],
+			[
+				"Inventory",
+				"InventoryItemDeactivated	(InventoryItem.scala)"
+			],
+			[
+				"Itemre",
+				"ItemsRemovedFromInventory	(Events.scala)"
+			],
+			[
+				"It",
+				"ItemsCheckedInToInventory	(Events.scala)"
+			],
+			[
+				"Invento",
+				"InventoryItemRenamed	(Events.scala)"
+			],
+			[
+				"Deac",
+				"InventoryItemDeactivated"
+			],
+			[
+				"UI",
+				"UUID"
+			],
+			[
+				"Invent",
+				"InventoryItemCreated"
+			],
+			[
+				"Inv",
+				"InventoryItemCreated"
+			],
+			[
+				"In",
+				"InventoryItemCreated	(InventoryItem.scala)"
+			],
+			[
+				"Inve",
+				"InventoryItem	(InventoryItemTests.scala)"
+			],
+			[
+				"app",
+				"applyAndAppend"
+			],
+			[
+				"Inver",
+				"InventoryItemDeactivated"
+			],
+			[
+				"u",
+				"UIID"
+			],
+			[
+				"Item",
+				"ItemsRemovedFromInventory	(Events.scala)"
+			],
+			[
+				"U",
+				"UUID	(Events.scala)"
+			],
+			[
+				"Even",
+				"Event"
+			],
+			[
+				"Ceck",
+				"CheckInItemsToInventory"
+			],
+			[
+				"cla",
+				"case class	case class"
+			],
+			[
+				"init",
+				"initialState"
+			],
+			[
+				"path",
+				"pathSet"
+			],
+			[
+				"paht",
+				"pathSets"
+			],
+			[
+				"n",
+				"next"
+			],
+			[
+				"pat",
+				"Path"
+			],
+			[
+				"tra",
+				"trackState"
+			],
+			[
+				"glas",
+				"glass"
+			],
+			[
+				"Po",
+				"Pouring"
+			],
+			[
+				"guess",
+				"guesses"
+			],
+			[
+				"to",
+				"toList"
+			],
+			[
+				"Str",
+				"Stream"
+			],
+			[
+				"test",
+				"testVoc"
+			],
+			[
+				"Pl",
+				"Polynomial"
+			],
+			[
+				"start",
+				"startsWith"
+			],
+			[
+				"qu",
+				"queens"
+			],
+			[
+				"que",
+				"queenSpot"
+			],
+			[
+				"quee",
+				"queen"
+			],
+			[
+				"sol",
+				"solQueens"
+			],
+			[
+				"curre",
+				"currentRow"
+			],
+			[
+				"fs",
+				"fst"
+			],
+			[
+				"prin",
+				"printBoth"
+			],
+			[
+				"li",
+				"list1"
+			],
+			[
+				"acc",
+				"accs"
+			],
+			[
+				"Li",
+				"List"
+			],
+			[
+				"in",
+				"Int"
+			],
+			[
+				"xs",
+				"xs1"
+			],
+			[
+				"mat",
+				"matchItem"
+			],
+			[
+				"chi",
+				"child"
+			],
+			[
+				"chil",
+				"childPrint"
+			],
+			[
+				"ch",
+				"childPrint"
+			],
+			[
+				"ex",
+				"Expr"
+			],
+			[
+				"Exp",
+				"ExprHelper"
+			],
+			[
+				"cas",
+				"case	case"
+			],
+			[
+				"ma",
+				"match	match"
+			],
+			[
+				"ca",
+				"case	case"
+			],
+			[
+				"cl",
+				"case class	case class"
+			],
+			[
+				"h",
+				"h"
+			],
+			[
+				"Test",
+				"Test_sub"
+			],
+			[
+				"obj",
+				"object	object"
+			],
+			[
+				"ne",
+				"neg"
+			],
+			[
+				"tailrec",
+				"tailrec"
+			]
+		]
+	},
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"tes",
+				"SBT: Start Continuous Testing"
+			],
+			[
+				"sbt",
+				"SBT: Start Continuous Testing"
+			],
+			[
+				"upgr",
+				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"repl",
+				"SublimeREPL: Scala"
+			],
+			[
+				"update",
+				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"upda",
+				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: u",
+				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"Package Control: lis",
+				"Package Control: List Packages"
+			],
+			[
+				"bts",
+				"SBT: Start Continuous Compiling"
+			],
+			[
+				"upgra",
+				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"up",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"Package Control: in",
+				"Package Control: List Unmanaged Packages"
+			],
+			[
+				"",
+				"Bookmarks: Select Next"
+			],
+			[
+				"scala",
+				"SublimeREPL: Scala"
+			],
+			[
+				"sbtrepl",
+				"SublimeREPL: SBT for opened folder"
+			],
+			[
+				"load",
+				"SublimeREPL: Load current file"
+			],
+			[
+				"packag",
+				"Package Control: Remove Package"
+			],
+			[
+				"works",
+				"Show Scala Worksheet"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"packc",
+				"Package Control: List Packages"
+			],
+			[
+				"contu",
+				"SBT: Start Continuous Compiling"
+			],
+			[
+				"reload",
+				"SBT: Reload"
+			],
+			[
+				"sbtcom",
+				"SBT: Start Continuous Compiling"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"remov",
+				"Package Control: Remove Package"
+			],
+			[
+				"intall",
+				"Package Control: Install Package"
+			],
+			[
+				"installp",
+				"Package Control: Install Package"
+			],
+			[
+				"startcon",
+				"SBT: Start Continuous Compiling"
+			],
+			[
+				"stop",
+				"SBT: Stop SBT"
+			],
+			[
+				"StartS",
+				"SBT: Start SBT"
+			],
+			[
+				"Package insta",
+				"Package Control: Install Package"
+			],
+			[
+				"Snippet: t",
+				"Snippet: Language Extension"
+			],
+			[
+				"Package Control: inst",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: insta",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: instal",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: ins",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: int",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 449.0
+	},
+	"console":
+	{
+		"height": 586.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = 'eb2297e1a458f27d836c04bb0cbaf282' + 'd0e7a3098092775ccb37ca9d6b2e4b7d'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/f17/PhantomWorks/Repos/Public/SimpleCQRS-Scala/CommandSide/src/test/scala/EventsTests.scala",
+		"/Users/f17/PhantomWorks/Repos/Public/SimpleCQRS-Scala/CommandSide/src/main/scala/Commands.scala",
+		"/Users/f17/PhantomWorks/Repos/Public/SimpleCQRS-Scala/QuerySide/build.sbt",
+		"/Users/f17/PhantomWorks/Repos/Public/SimpleCQRS-Scala/CommandSide/build.sbt",
+		"/Users/f17/.gitconfig",
+		"/Users/f17/PhantomWorks/Repos/Public/SimpleCQRS-Scala/CommandSide/src/main/scala/Events.scala",
+		"/Users/f17/PhantomWorks/Repos/Public/SimpleCQRS-Scala/CommandSide/src/test/scala/InventoryItemTests.scala",
+		"/Users/f17/PhantomWorks/Repos/Public/SimpleCQRS-Scala/CommandSide/src/main/scala/InventoryItem.scala",
+		"/Users/f17/PhantomWorks/Repos/Public/SimpleCQRS-Scala/CommandSide/src/main/scala/Domain.scala",
+		"/Users/f17/PhantomWorks/Repos/Public/SimpleCQRS-Scala/.gitignore",
+		"/Users/f17/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/f17/PhantomWorks/Repos/Public/SimpleCQRS-Scala/build.sbt",
+		"/Users/f17/PhantomWorks/Repos/Public/SimpleCQRS-Scala/simplecqrs-scala.sublime-project",
+		"/private/etc/zshenv",
+		"/Users/f17/PhantomWorks/Repos/Public/Varekai/Varekai.Locker/project.json",
+		"/Users/f17/PhantomWorks/Repos/Public/Varekai/Varekai.Locker/LockingAlgorithm.cs",
+		"/Users/f17/PhantomWorks/Repos/Public/Varekai/Varekai.Locker/LockingEngine.cs",
+		"/Users/f17/PhantomWorks/Repos/Public/Varekai/Varekai.Locker/packages.config",
+		"/Users/f17/PhantomWorks/Repos/Public/Varekai/Varekai.Locker/NuGet.Config",
+		"/Users/f17/PhantomWorks/Repos/Public/Varekai/project.json",
+		"/Users/f17/.zshrc",
+		"/Users/f17/PhantomWorks/Repos/Public/Varekai/Varekai.Locker/bin/Debug/System.Reactive.PlatformServices.dll",
+		"/Users/f17/.emacs",
+		"/Users/f17/PhantomWorks/Scala/Udacity Deep Learning/project/Dependencies.scala",
+		"/Users/f17/PhantomWorks/Scala/Udacity Deep Learning/build.sbt",
+		"/Users/f17/Library/Application Support/Sublime Text 3/Packages/User/MarkdownPreview.sublime-settings",
+		"/Users/f17/Library/Application Support/Sublime Text 3/Packages/Package Control/Package Control.sublime-settings",
+		"/Users/f17/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/Users/f17/PhantomWorks/Scala/Coursera Functional Programming Principles in Scala/LecturesExercises/WaterPouringProblem.scala",
+		"/Users/f17/PhantomWorks/Scala/Coursera Functional Programming Principles in Scala/LecturesExercises/Prime.scala",
+		"/Users/f17/PhantomWorks/Scala/Coursera Functional Programming Principles in Scala/LecturesExercises/NewtonSqrRoot.scala",
+		"/Users/f17/PhantomWorks/Scala/Coursera Functional Programming Principles in Scala/LecturesExercises/TreeSet.scala",
+		"/Users/f17/PhantomWorks/Scala/Coursera Functional Programming Principles in Scala/LecturesExercises/lecturesexercises.sublime-project",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/TelephoneVocabulary.scala",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/ListHelper.scala",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/SpeakingTelephone.scala",
+		"/Users/f17/Library/Application Support/Sublime Text 3/Packages/User/Distraction Free.sublime-settings",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/Polynomials.scala",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/EightQueens.scala",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/ForComprehension.scala",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/Prime.scala",
+		"/Users/f17/Library/Application Support/Sublime Text 3/Packages/User/LoadFileToRepl.sublime-settings",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/ListHelper.scala (worksheet)",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/Rational.scala",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/TailRecursive.scala",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/MergeSort.scala",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/Expression.scala",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/MyList.scala",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/NewtonSqrRoot.scala",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/List.scala",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/TreeSet.scala",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/IntList.scala",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/newtonSqrRoot.scala",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/tailRecursive.scala",
+		"/Users/f17/PhantomWorks/Repos/Public/FreeStack.Text/.gitignore",
+		"/Users/f17/PhantomWorks/Repos/Public/Varekai/.gitignore",
+		"/usr/local/bin/git-merge-tool-cmd.sh",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/LecturesExercises/newtonsquareroot.sublime-project",
+		"/Users/f17/PhantomWorks/Repos/Public/Varekai/Varekai.sublime-project",
+		"/Users/f17/PhantomWorks/Repos/Public/Varekai/Varekai.sln",
+		"/Users/f17/PhantomWorks/Repos/Public/Varekai/README.md",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/example/build.sbt",
+		"/Users/f17/PhantomWorks/TempProjects/Coursera Scala/example/project/buildSettings.sbt",
+		"/Users/f17/PhantomWorks/Haskell/Course/test1.hs",
+		"/Users/f17/PhantomWorks/dsc-cassandra-2.0.7/conf/cassandra.yaml",
+		"/Users/f17/PhantomWorks/Repos/Public/FreeStack.Text/NuGet/NuGetPush.sh",
+		"/Users/f17/PhantomWorks/Repos/Public/FreeStack.Text/NuGet/NuGetPack.sh",
+		"/Users/f17/PhantomWorks/Repos/Public/FreeStack.Text/NuGet/ServiceStack.Text/servicestack.text.nuspec",
+		"/Users/f17/PhantomWorks/MonoDependencies.sh",
+		"/Users/f17/PhantomWorks/MonoBuild.sh",
+		"/Users/f17/PhantomWorks/Repos/Public/FreeStack.Redis/src/ServiceStack.Redis/bin/Release/ServiceStack.Redis.XML",
+		"/Users/f17/PhantomWorks/Repos/Public/FreeStack.Redis/NuGet/NuGetPack.sh",
+		"/Users/f17/PhantomWorks/Repos/Public/Nhiredis/hiredisx/Makefile",
+		"/Users/f17/connections.xml",
+		"/Users/f17/PhantomWorks/DataStore/Redis/7001/redis.conf",
+		"/Users/f17/PhantomWorks/DataStore/EventStore/startCluster.sh",
+		"/Users/f17/PhantomWorks/DataStore/Redis/create-redis-cluster.sh",
+		"/Users/f17/PhantomWorks/DataStore/Redis/7008/redis.conf",
+		"/Users/f17/PhantomWorks/DataStore/Redis/7002/redis.conf",
+		"/Users/f17/PhantomWorks/DataStore/Redis/7006/redis.conf",
+		"/Users/f17/PhantomWorks/DataStore/Redis/7005/redis.conf",
+		"/Users/f17/PhantomWorks/DataStore/Redis/7004/redis.conf",
+		"/Users/f17/PhantomWorks/DataStore/Redis/7007/redis.conf",
+		"/Users/f17/PhantomWorks/DataStore/Redis/7003/redis.conf",
+		"/Users/f17/PhantomWorks/DataStore/Redis/delete-redis-cluster.sh",
+		"/Users/f17/PhantomWorks/redis-3.0.0/redis.conf",
+		"/Users/f17/.Trash/redisOLD.conf",
+		"/Users/f17/PhantomWorks/DataStore/Redis/7001/redisOLD.conf",
+		"/Users/f17/PhantomWorks/DataStore/Redis/7007/nodes.conf",
+		"/Users/f17/PhantomWorks/DataStore/Redis/start-redis-nodes.sh",
+		"/Users/f17/PhantomWorks/DataStore/Redis/stop-redis-nodes.sh",
+		"/Users/f17/PhantomWorks/DataStore/Redis/start-redis-cluster.sh",
+		"/Users/f17/Library/Application Support/Sublime Text 3/Packages/User/Default.sublime-keymap",
+		"/Users/f17/Library/Application Support/Sublime Text 3/Packages/User/SublimeHaskell.sublime-settings"
+	],
+	"find":
+	{
+		"height": 23.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"  ",
+			"evolve",
+			"()",
+			"	  		\n",
+			"def",
+			"scala",
+			"Polynomial",
+			"maxmemory",
+			"deleted"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.sbt":
+	{
+		"height": 204.0
+	},
+	"output.sbt_error":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"~/PhantomWorks/Haskell/Course/test1.hs"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 207.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 392.0
+	},
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 254.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
