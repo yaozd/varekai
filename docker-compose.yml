@@ -1,0 +1,37 @@
+version: '2'
+services:
+  
+  redis1:
+    image: redis:alpine
+    ports:
+      - 7001:6379
+
+  redis2:
+    image: redis:alpine
+    ports:
+      - 7002:6379
+
+  redis3:
+    image: redis:alpine
+    ports:
+      - 7003:6379
+
+  redis4:
+    image: redis:alpine
+    ports:
+      - 7004:6379
+
+  redis5:
+    image: redis:alpine
+    ports:
+      - 7005:6379
+
+  redis6:
+    image: redis:alpine
+    ports:
+      - 7006:6379
+
+  redis7:
+    image: redis:alpine
+    ports:
+      - 7007:6379
