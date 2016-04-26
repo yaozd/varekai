@@ -15,8 +15,8 @@ More details about <a href="http://redis.io/topics/distlock" target="_blank">Red
 
 ###How To Run It###
 
-To run Varekai you need access to a number of instances of Redis server. The algorithm is quorum based so, in case of compeeting clients, the lock will be considered held if the write succeedes at least on the half plus one of the Redis servers. This makes possible to have any number (even or uneven) of nodes, even though doesn't make a lot of sense having less than three. If you need info on how to configure Redis the official <a href="http://redis.io/documentation" target="_blank">documentation</a> is a good place to start. As an alternative the docker-compose.yml file might be used to start seven instances of redis on alpine Linux listening on the ports from 7001 to 7007.
-To tell to Varekai where it will find the servers you have to edit the file RedisNodes.txt of the HelloWorldService project. The version already in this repository works with the instances created by the docker compose file.
+To run Varekai you need access to a number of instances of Redis server. The algorithm is quorum based so, in case of compeeting clients, the lock will be considered held if the write succeedes at least on the half plus one of the Redis servers. This makes possible to have any number (even or uneven) of nodes, even though doesn't make a lot of sense having less than three. If you need info on how to configure Redis the official <a href="http://redis.io/documentation" target="_blank">documentation</a> is a good place to start. As an alternative the docker-compose.yml file might be used to start seven instances of Redis on alpine Linux listening on the ports from 7001 to 7007.
+To tell to Varekai where it will find the servers you have to edit the file RedisNodes.txt of the HelloWorldService project. The version included in this repository works with the instances created by the docker compose file.
 
 ```
 [
